@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.service.ServiceQdump;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Consumes(MediaType.APPLICATION_JSON)
@@ -25,8 +26,6 @@ import org.springframework.stereotype.Component;
 public class TestResource {
 	@Autowired
 	private ServiceQdump service;
-	@PersistenceContext(unitName = "qdump-persistence")
-	private EntityManager em;
 	
 	@GET
 	public Response getTest() {
@@ -43,7 +42,7 @@ public class TestResource {
 	@GET
 	@Path("get/person")
 	public PersonEntity getPerson() {
-		return em.find(PersonEntity.class, 1l);
+		return service.getPersonEntity(1l);
 	}
 	
 	@GET

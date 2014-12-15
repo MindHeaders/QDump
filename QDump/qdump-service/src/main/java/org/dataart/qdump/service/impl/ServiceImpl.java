@@ -14,6 +14,7 @@ import org.dataart.qdump.persistence.repository.QuestionCrudRepository;
 import org.dataart.qdump.persistence.repository.QuestionnaireCrudRepository;
 import org.dataart.qdump.service.ServiceQdump;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service

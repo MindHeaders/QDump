@@ -2,7 +2,6 @@ package org.dataart.qdump.persistence.config;
 
 import java.util.Properties;
 
-import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
@@ -21,23 +20,17 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-
 @Configuration
 @PropertySource("classpath:application.properties")
 @EnableTransactionManagement
 @EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory")
-@ComponentScan("org.data.art")
+@ComponentScan("org.dataart.qdump")
 public class AppConfig {
 	@Autowired
 	private Environment env;
-	@Resource(lookup = "java:jboss/datasource/qdump")
+	@Autowired
 	private DataSource dataSource;
-	@Bean
-	public PlatformTransactionManager transactionManager(
-			EntityManagerFactory emf) {
-		return new JpaTransactionManager(
-				emf);
-	}
+
 	@Bean
 	public BasicDataSource dataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
@@ -47,29 +40,48 @@ public class AppConfig {
 		dataSource.setDriverClassName(env.getProperty("db.driver"));
 		return dataSource;
 	}
+
+	/*@Bean
+	public PlatformTransactionManager transactionManagerSessionFactory(
+			SessionFactory sessionFactory) {
+		return new HibernateTransactionManager(sessionFactory);
+	}
+
 	@Bean
-	public LocalContainerEntityManagerFactoryBean 
-		entityManagerFactory() {
-		LocalContainerEntityManagerFactoryBean bean = new 
-				LocalContainerEntityManagerFactoryBean();
-		bean.setPackagesToScan("org.hillel.it");
+	public LocalSessionFactoryBean sessionFactory() {
+		LocalSessionFactoryBean bean = new LocalSessionFactoryBean();
+		bean.setDataSource(dataSource);
+		bean.setPackagesToScan("org.dataart.qdump");
+		Properties properties = new Properties();
+		properties.put("hibernate.dialect",
+				env.getProperty("hibernate.dialect"));
+		properties.put("hibernate.hbm2ddl.auto",
+				env.getProperty("hbm2ddl.auto"));
+		properties.put("hibernate.show_sql", env.getProperty("show_sql"));
+		bean.setHibernateProperties(properties);
+		bean.setEntityInterceptor(new GlobalInterceptor());
+		return bean;
+	}*/
+
+	@Bean
+	public PlatformTransactionManager transactionManager(
+			EntityManagerFactory emf) {
+		return new JpaTransactionManager(emf);
+	}
+
+	@Bean
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+		LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
+		bean.setPackagesToScan("org.dataart.qdump");
 		bean.setDataSource(dataSource);
 		Properties properties = new Properties();
-		properties.put("hibernate.dialect", 
+		properties.put("hibernate.dialect",
 				env.getProperty("hibernate.dialect"));
-		properties.put("hibernate.cache.use_second_level_cache", 
-				env.getProperty("second.level.cache"));
-		properties.put("hibernate.cache.provider_class", 
-				env.getProperty("cache.provider.class"));
-		properties.put("hibernate.hbm2ddl.auto", 
+		properties.put("hibernate.hbm2ddl.auto",
 				env.getProperty("hbm2ddl.auto"));
-		properties.put("hibernate.show_sql", 
-				env.getProperty("show_sql"));
-		properties.put("hibernate.cache.region.factory_class", 
-				env.getProperty("cache.region.class"));
+		properties.put("hibernate.show_sql", env.getProperty("show_sql"));
 		bean.setJpaProperties(properties);
-		JpaVendorAdapter adapter = new 
-				HibernateJpaVendorAdapter();
+		JpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
 		bean.setJpaVendorAdapter(adapter);
 		return bean;
 	}

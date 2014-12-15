@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import org.dataart.qdump.service.resources.PersonEntityResource;
 import org.dataart.qdump.service.resources.TestResource;
 
 @ApplicationPath("/rest")
@@ -15,6 +16,7 @@ public class MyApplication extends Application{
 	
 	public MyApplication() {
 		singletons.add(new TestResource());
+		singletons.add(new PersonEntityResource());
 	}
 	@Override
 	public Set<Class<?>> getClasses() {

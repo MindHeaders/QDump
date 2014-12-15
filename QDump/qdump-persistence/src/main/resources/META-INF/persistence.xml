@@ -2,10 +2,8 @@
 <persistence version="2.1"
 	xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-	<persistence-unit name="qdump-persistence"
-		transaction-type="JTA">
+	<persistence-unit name="qdump-persistence" transaction-type="JTA">
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-		<jta-data-source>java:jboss/datasource/test</jta-data-source>
 		<class>org.dataart.qdump.entities.questionnaire.BaseEntity</class>
 		<class>org.dataart.qdump.entities.questionnaire.QuestionnaireBaseEntity</class>
 		<class>org.dataart.qdump.entities.questionnaire.AnswerEntity</class>
@@ -16,17 +14,16 @@
 		<class>org.dataart.qdump.entities.person.PersonEntity</class>
 		<class>org.dataart.qdump.entities.person.PersonQuestionEntity</class>
 		<class>org.dataart.qdump.entities.person.PersonQuestionnaireEntity</class>
-		<class>org.dataart.qdump.entities.dstest.UserEntity</class>
 		<properties>
-			<!-- <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" /> -->
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 			<property name="hibernate.hbm2ddl.auto" value="update" />
-			<!-- <property name="hibernate.ejb.interceptor"
-				value="org.dataart.qdump.persistence.config.GlobalInterceptor" /> -->
+			<property name="hibernate.ejb.interceptor"
+				value="org.dataart.qdump.persistence.config.GlobalInterceptor" />
 			<property name="hibernate.show_sql" value="true" />
-			<!-- <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
-			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/qdump" />
+			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
+			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/test" />
 			<property name="hibernate.connection.username" value="root" />
-			<property name="hibernate.connection.password" value="422617" /> -->
+			<property name="hibernate.connection.password" value="422617" />
 		</properties>
 	</persistence-unit>
 </persistence>

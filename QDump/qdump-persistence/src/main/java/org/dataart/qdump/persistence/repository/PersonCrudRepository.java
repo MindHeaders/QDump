@@ -5,6 +5,7 @@ import java.util.List;
 import org.dataart.qdump.entities.enums.PersonGroupEnums;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * Repository for {@link PersonEntity}
@@ -12,7 +13,7 @@ import org.springframework.data.repository.CrudRepository;
  * @author Ibrichak
  *
  */
-
+@Repository()
 public interface PersonCrudRepository extends
 		CrudRepository<PersonEntity, Long> {
 

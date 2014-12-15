@@ -12,8 +12,8 @@ import org.springframework.data.repository.CrudRepository;
  *
  */
 
-public interface QuestionnaireCrudRepository  extends CrudRepository<QuestionnaireEntity, Long>{
-	
+public interface QuestionnaireCrudRepository extends
+		CrudRepository<QuestionnaireEntity, Long> {
 
 	/**
 	 * This method return Questionnaire by name.

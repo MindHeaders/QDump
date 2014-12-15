@@ -13,8 +13,8 @@ import org.springframework.data.repository.CrudRepository;
  *
  */
 
-public interface PersonQuestionnaireCrudRepository  extends CrudRepository<PersonQuestionnaireEntity, Long>{
-	
+public interface PersonQuestionnaireCrudRepository extends
+		CrudRepository<PersonQuestionnaireEntity, Long> {
 
 	/**
 	 * This method return PersonQuestionnaire by PersonId.
@@ -23,7 +23,8 @@ public interface PersonQuestionnaireCrudRepository  extends CrudRepository<Perso
 	 *            {@link PersonQuestionnaireEntity#getOwnBy()}
 	 * @return
 	 */
-	public List<PersonQuestionnaireEntity> getPersonQuestionnaireByPersonId(PersonEntity ownBy);
+	public List<PersonQuestionnaireEntity> getPersonQuestionnaireByPersonId(
+			PersonEntity ownBy);
 
 	/**
 	 * This method return PersonQuestionnaire by status.
@@ -32,16 +33,18 @@ public interface PersonQuestionnaireCrudRepository  extends CrudRepository<Perso
 	 *            {@link PersonQuestionnaireEntity#getStatus()}
 	 * @return
 	 */
-	public List<PersonQuestionnaireEntity> getPersonQuestionnaireByStatus(String status);
-	
+	public List<PersonQuestionnaireEntity> getPersonQuestionnaireByStatus(
+			String status);
+
 	/**
 	 * This method return PersonQuestionnaire by questinnaireName.
 	 * 
 	 * @param questionnaireName
 	 *            name of questionnaire.
 	 * 
-	 * @return list  {@link PersonQuestionnaireEntity}
+	 * @return list {@link PersonQuestionnaireEntity}
 	 */
-	public List<PersonQuestionnaireEntity> getPersonQuestionnaireByQuestinnaireName(String questionnaireName);
-	
+	public List<PersonQuestionnaireEntity> getPersonQuestionnaireByQuestinnaireName(
+			String questionnaireName);
+
 }

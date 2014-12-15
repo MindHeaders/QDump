@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.dataart.qdump.entities.questionnaire.AnswerEntity;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * Repository for {@link AnswerEntity}
