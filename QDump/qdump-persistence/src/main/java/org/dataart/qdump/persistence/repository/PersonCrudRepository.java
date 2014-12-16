@@ -26,6 +26,15 @@ public interface PersonCrudRepository extends
 	public PersonEntity getPersonByEmail(String email);
 
 	/**
+	 * This method return Person by login.
+	 * 
+	 * @param login
+	 *            {@link PersonEntity#getLogin()}
+	 * @return 
+	 */
+	public PersonEntity getPersonByLogin(String login);
+	
+	/**
 	 * This method return Person by personGroup.
 	 * 
 	 * @param personGroup

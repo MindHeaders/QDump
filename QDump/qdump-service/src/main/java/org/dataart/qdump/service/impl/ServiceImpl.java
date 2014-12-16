@@ -34,34 +34,44 @@ public class ServiceImpl implements ServiceQdump{
 	@Autowired
 	QuestionnaireCrudRepository questionnaireCrudRepository;
 
+	
+	//PersonEntity
+	
 	@Override
 	public void addPersonEntity(PersonEntity personEntity) {
-		// TODO Auto-generated method stub
-		
+		personCrudRepository.save(personEntity);
 	}
 
 	@Override
 	public void deletePersonEntity(long id) {
-		// TODO Auto-generated method stub
-		
+		personCrudRepository.delete(id);
 	}
 
+	/**
+	 * This method "deletePersonEntityByEmail(String email)" 
+	 *  should be implemented in a repository 
+	 *  personCrudRepository
+	 *  
+	 */
 	@Override
 	public void deletePersonEntityByEmail(String email) {
-		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * This method "deletePersonEntityByLogin(String login)" 
+	 *  should be implemented in a repository 
+	 *  personCrudRepository
+	 *  
+	 */
 	@Override
 	public void deletePersonEntityByLogin(String login) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void deleteAllPersonEntities() {
-		// TODO Auto-generated method stub
-		
+		personCrudRepository.deleteAll();
 	}
 
 	@Override
@@ -71,82 +81,122 @@ public class ServiceImpl implements ServiceQdump{
 
 	@Override
 	public List<PersonEntity> getPersonEntities() {
-		// TODO Auto-generated method stub
-		return null;
+		return (List<PersonEntity>) personCrudRepository.findAll();
 	}
-
+	
+	@Override
+	public List<PersonEntity> getPersonEntityByEmail(String email){
+		return personCrudRepository.getPersonByEmail(email);;
+	}
+	
+	@Override
+	public List<PersonEntity> getPersonEntityByLogin(String login){
+		return personCrudRepository.getPersonByLogin(login);
+	}
+	
+	//PersonQuestionnaireEntity
 	@Override
 	public void addPersonQuestionnaireEntity(
-			PersonQuestionnaireEntity personQuestionnaireEntity) {
-		// TODO Auto-generated method stub
-		
+			PersonQuestionnaireEntity personQuestionnaireEntity
+			) {
+		personQuestionnaireCrudRepository.save(
+				personQuestionnaireEntity);
 	}
 
 	@Override
 	public void deletePersonQuestionnaireEntity(long id) {
-		// TODO Auto-generated method stub
-		
+		personQuestionnaireCrudRepository.delete(id);		
 	}
 
+	/**
+	 * This method "deletePersonQuestionnaireEntityByOwnBy(String login)" 
+	 *  should be implemented in a repository 
+	 *  personQuestionnaireCrudRepository
+	 *  
+	 */
 	@Override
 	public void deletePersonQuestionnaireEntityByOwnBy(String login) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void deleteAllPersonQuestionnaireEntities() {
-		// TODO Auto-generated method stub
+		personQuestionnaireCrudRepository.deleteAll();
 		
 	}
 
 	@Override
 	public PersonQuestionnaireEntity getPersonQuestionnaireEntity(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return personQuestionnaireCrudRepository.findOne(id);
 	}
 
 	@Override
 	public List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities() {
-		// TODO Auto-generated method stub
-		return null;
+		return (List<PersonQuestionnaireEntity>) 
+				personQuestionnaireCrudRepository.findAll();;
 	}
 
+	//PersonQuestionEntity
+	
 	@Override
 	public void addPersonQuestionEntity(
 			PersonQuestionEntity personQuestionEntity) {
-		// TODO Auto-generated method stub
-		
+		personQuestionCrudRepository.save(
+				personQuestionEntity);
 	}
 
 	@Override
 	public void deletePersonQuestionEntity(long id) {
-		// TODO Auto-generated method stub
-		
+		personQuestionCrudRepository.delete(id);
 	}
-
+	
+	
+	/**
+	 * This method "deletePersonQuestionEntityByPersonQuestionnaireId(long id)" 
+	 *  should be implemented in a repository 
+	 *  personQuestionCrudRepository
+	 *  
+	 */
 	@Override
 	public void deletePersonQuestionEntityByPersonQuestionnaireId(long id) {
-		// TODO Auto-generated method stub
 		
 	}
-
+	
+	
 	@Override
 	public void deleteAllPersonQuestionEntity() {
-		// TODO Auto-generated method stub
-		
+		personQuestionCrudRepository.deleteAll();
 	}
 
+	
 	@Override
 	public PersonQuestionEntity getPersonQuestionEntity(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return personQuestionCrudRepository.findOne(id);
 	}
 
 	@Override
 	public List<PersonQuestionEntity> getPersonQuestionEntities() {
-		// TODO Auto-generated method stub
-		return null;
+		return (List<PersonQuestionEntity>) 
+				personQuestionCrudRepository.findAll();
+	}
+	
+	
+	@Override
+	public List<PersonQuestionEntity> getCorrectQuestion(boolean correct){
+		return (List<PersonQuestionEntity>) 
+				personQuestionCrudRepository.
+				getCorrectQuestion(correct);
+	}
+	
+	@Override
+	public List<PersonQuestionEntity> getQuestionByPersonQuestionnaireId(
+			long personQuestionnaireId);
+		return (List<PersonQuestionEntity>) 
+				personQuestionCrudRepository.
+				getQuestionByPersonQuestionnaireId(
+						personQuestionnaireId);
 	}
 
+	
+	
 }

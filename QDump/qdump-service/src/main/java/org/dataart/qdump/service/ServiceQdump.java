@@ -16,6 +16,8 @@ public interface ServiceQdump {
 	void deleteAllPersonEntities();
 	PersonEntity getPersonEntity(long id);
 	List<PersonEntity> getPersonEntities();
+	void getPersonEntityByEmail(String email);
+	void getPersonEntityByLogin(String login);
 	
 	//PersonQuestionnaireEntity
 	void addPersonQuestionnaireEntity(PersonQuestionnaireEntity personQuestionnaireEntity);
@@ -32,8 +34,14 @@ public interface ServiceQdump {
 	void deleteAllPersonQuestionEntity();
 	PersonQuestionEntity getPersonQuestionEntity(long id);
 	List<PersonQuestionEntity> getPersonQuestionEntities();
-	
-	
+	/**
+	 * Added the implementation of the repository
+	 * PersonQuestionCrudRepository
+	 * 
+	 */
+	List<PersonQuestionEntity> getCorrectQuestion(boolean correct);
+	List<PersonQuestionEntity> getQuestionByPersonQuestionnaireId(
+			long personQuestionnaireId);
 	
 	
 }

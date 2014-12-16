@@ -38,7 +38,7 @@ import com.google.common.base.Preconditions;
 @NamedQueries({
 		@NamedQuery(name = "PersonQuestionEntity.getCorrectQuestion", query = "FROM PersonQuestionEntity pq "
 				+ "WHERE pq.correct = ?1"),
-				@NamedQuery(name = "PersonQuestionEntity.getQuestionByPersonQuestionnaireId", query = "FROM PersonQuestionEntity pq "
+		@NamedQuery(name = "PersonQuestionEntity.getQuestionByPersonQuestionnaireId", query = "FROM PersonQuestionEntity pq "
 						+ "WHERE pq.personQuestionnaireEntity.id = ?1") })
 public class PersonQuestionEntity extends BaseEntity implements
 		Serializable {
