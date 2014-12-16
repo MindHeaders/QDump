@@ -16,8 +16,6 @@ public interface ServiceQdump {
 	void deleteAllPersonEntities();
 	PersonEntity getPersonEntity(long id);
 	List<PersonEntity> getPersonEntities();
-	void getPersonEntityByEmail(String email);
-	void getPersonEntityByLogin(String login);
 	
 	//PersonQuestionnaireEntity
 	void addPersonQuestionnaireEntity(PersonQuestionnaireEntity personQuestionnaireEntity);

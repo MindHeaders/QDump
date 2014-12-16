@@ -84,16 +84,6 @@ public class ServiceImpl implements ServiceQdump{
 		return (List<PersonEntity>) personCrudRepository.findAll();
 	}
 	
-	@Override
-	public List<PersonEntity> getPersonEntityByEmail(String email){
-		return personCrudRepository.getPersonByEmail(email);;
-	}
-	
-	@Override
-	public List<PersonEntity> getPersonEntityByLogin(String login){
-		return personCrudRepository.getPersonByLogin(login);
-	}
-	
 	//PersonQuestionnaireEntity
 	@Override
 	public void addPersonQuestionnaireEntity(
@@ -133,7 +123,7 @@ public class ServiceImpl implements ServiceQdump{
 	@Override
 	public List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities() {
 		return (List<PersonQuestionnaireEntity>) 
-				personQuestionnaireCrudRepository.findAll();;
+				personQuestionnaireCrudRepository.findAll();
 	}
 
 	//PersonQuestionEntity
@@ -190,7 +180,7 @@ public class ServiceImpl implements ServiceQdump{
 	
 	@Override
 	public List<PersonQuestionEntity> getQuestionByPersonQuestionnaireId(
-			long personQuestionnaireId);
+			long personQuestionnaireId){
 		return (List<PersonQuestionEntity>) 
 				personQuestionCrudRepository.
 				getQuestionByPersonQuestionnaireId(
