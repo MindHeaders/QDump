@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonAutoDetect
 @JsonIgnoreProperties({"createdDate", "modifiedDate"})
 @NamedQueries({
-	@NamedQuery(name = "PersonAnswerEntity.getPersonByPersonQuestionId", query = "FROM PersonAnswerEntity pa "
+	@NamedQuery(name = "PersonAnswerEntity.getPersonAnswerByPersonQuestionId", query = "FROM PersonAnswerEntity pa "
 			+ "WHERE pa.personQuestionEntity.id = ?1")	
 	 })
 public class PersonAnswerEntity extends BaseEntity implements

@@ -14,25 +14,24 @@ import org.dataart.qdump.persistence.repository.QuestionCrudRepository;
 import org.dataart.qdump.persistence.repository.QuestionnaireCrudRepository;
 import org.dataart.qdump.service.ServiceQdump;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ServiceImpl implements ServiceQdump{
 	
-	@Autowired
-	AnswerCrudRepository answerCrudRepository;
-	@Autowired
+	@Autowired(required = false)
+	AnswerCrudRepository answerEntityRepository;
+	@Autowired(required = false)
 	PersonAnswerCrudRepository personAnswerCrudRepository;
-	@Autowired
+	@Autowired(required = false)
 	PersonCrudRepository personCrudRepository;
-	@Autowired
+	@Autowired(required = false)
 	PersonQuestionCrudRepository personQuestionCrudRepository;
-	@Autowired
+	@Autowired(required = false)
 	PersonQuestionnaireCrudRepository personQuestionnaireCrudRepository;
-	@Autowired
+	@Autowired(required = false)
 	QuestionCrudRepository questionCrudRepository;
-	@Autowired
+	@Autowired(required = false)
 	QuestionnaireCrudRepository questionnaireCrudRepository;
 
 	@Override
@@ -149,5 +148,4 @@ public class ServiceImpl implements ServiceQdump{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

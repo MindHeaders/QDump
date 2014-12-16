@@ -32,8 +32,4 @@ public interface ServiceQdump {
 	void deleteAllPersonQuestionEntity();
 	PersonQuestionEntity getPersonQuestionEntity(long id);
 	List<PersonQuestionEntity> getPersonQuestionEntities();
-	
-	
-	
-	
 }

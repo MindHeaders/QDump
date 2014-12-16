@@ -1,10 +1,12 @@
 package org.dataart.qdump.service.resources;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
+import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.service.ServiceQdump;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,5 +21,12 @@ public class PersonEntityResource {
 	public String get() {
 		return String.format("ServiceQdump is - %s",
 				serviceQdump == null ? "null" : "not null");
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("test")
+	public PersonEntity getPersonEntity(@QueryParam("id") Long id) {
+		return serviceQdump.getPersonEntity(id);
 	}
 }

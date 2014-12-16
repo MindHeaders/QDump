@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @PropertySource("classpath:application.properties")
 @EnableTransactionManagement
-@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory")
+@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackages = "org.dataart.qdump")
 @ComponentScan("org.dataart.qdump")
 public class AppConfig {
 	@Autowired
@@ -33,35 +33,17 @@ public class AppConfig {
 
 	@Bean
 	public BasicDataSource dataSource() {
-		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setUrl(env.getProperty("db.url"));
-		dataSource.setUsername(env.getProperty("db.user"));
-		dataSource.setPassword(env.getProperty("db.password"));
-		dataSource.setDriverClassName(env.getProperty("db.driver"));
-		return dataSource;
+		/*final JndiDataSourceLookup dsLookup = new JndiDataSourceLookup();
+		dsLookup.setResourceRef(true);
+		DataSource dataSource = dsLookup.getDataSource("java:jboss/datasource/qdump");*/
+		BasicDataSource basicDataSource = new BasicDataSource(); 
+		basicDataSource.setUrl(env.getProperty("db.url"));
+		basicDataSource.setUsername(env.getProperty("db.user"));
+		basicDataSource.setPassword(env.getProperty("db.password"));
+		basicDataSource.setDriverClassName(env.getProperty("db.driver"));
+		return basicDataSource;
+		/*return dataSource;*/
 	}
-
-	/*@Bean
-	public PlatformTransactionManager transactionManagerSessionFactory(
-			SessionFactory sessionFactory) {
-		return new HibernateTransactionManager(sessionFactory);
-	}
-
-	@Bean
-	public LocalSessionFactoryBean sessionFactory() {
-		LocalSessionFactoryBean bean = new LocalSessionFactoryBean();
-		bean.setDataSource(dataSource);
-		bean.setPackagesToScan("org.dataart.qdump");
-		Properties properties = new Properties();
-		properties.put("hibernate.dialect",
-				env.getProperty("hibernate.dialect"));
-		properties.put("hibernate.hbm2ddl.auto",
-				env.getProperty("hbm2ddl.auto"));
-		properties.put("hibernate.show_sql", env.getProperty("show_sql"));
-		bean.setHibernateProperties(properties);
-		bean.setEntityInterceptor(new GlobalInterceptor());
-		return bean;
-	}*/
 
 	@Bean
 	public PlatformTransactionManager transactionManager(

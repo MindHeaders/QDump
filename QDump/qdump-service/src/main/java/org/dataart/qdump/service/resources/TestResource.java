@@ -3,8 +3,6 @@ package org.dataart.qdump.service.resources;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,7 +14,6 @@ import javax.ws.rs.core.Response;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.service.ServiceQdump;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Consumes(MediaType.APPLICATION_JSON)
@@ -31,6 +28,12 @@ public class TestResource {
 	public Response getTest() {
 		String value = "hello world"; 
 		return Response.status(200).entity(value).build();
+	}
+	
+	@GET
+	@Path("service")
+	public String getServiceStatus() {
+		return String.format("Service is = %s", service == null ? "null" : "not null");
 	}
 	
 	@GET

@@ -23,7 +23,7 @@ public interface PersonQuestionnaireCrudRepository extends
 	 *            {@link PersonQuestionnaireEntity#getOwnBy()}
 	 * @return
 	 */
-	public List<PersonQuestionnaireEntity> getPersonQuestionnaireByPersonId(
+	public List<PersonQuestionnaireEntity> findByOwnBy(
 			PersonEntity ownBy);
 
 	/**
@@ -44,7 +44,7 @@ public interface PersonQuestionnaireCrudRepository extends
 	 * 
 	 * @return list {@link PersonQuestionnaireEntity}
 	 */
-	public List<PersonQuestionnaireEntity> getPersonQuestionnaireByQuestinnaireName(
+	public List<PersonQuestionnaireEntity> getPersonQuestionnaireByQuestionnaireName(
 			String questionnaireName);
 
 }

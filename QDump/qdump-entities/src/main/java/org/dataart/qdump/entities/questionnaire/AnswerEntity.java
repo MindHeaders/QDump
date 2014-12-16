@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @NamedQueries({
 		@NamedQuery(name = "AnswerEntity.getAnswerByQuestionId", query = "FROM AnswerEntity a "
 				+ "WHERE a.questionEntity.id = ?1"),
-		@NamedQuery(name = "QuestionEntity.getAnswerByQuestionnaireId", query = "FROM AnswerEntity a  "
+		@NamedQuery(name = "AnswerEntity.getAnswerByQuestionnaireId", query = "FROM AnswerEntity a  "
 				+ "WHERE a.questionEntity.questionnaireEntity.id = ?1") })
 public class AnswerEntity extends BaseEntity implements Serializable{
 	private static final long serialVersionUID = -5973094404031746982L;

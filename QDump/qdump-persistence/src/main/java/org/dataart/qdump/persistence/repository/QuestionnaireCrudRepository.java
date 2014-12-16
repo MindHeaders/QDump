@@ -22,6 +22,6 @@ public interface QuestionnaireCrudRepository extends
 	 *            {@link QuestionnaireEntity#getName()}
 	 * @return
 	 */
-	public List<QuestionnaireEntity> getQuestionnaireByName(String name);
+	public List<QuestionnaireEntity> findByName(String name);
 
 }

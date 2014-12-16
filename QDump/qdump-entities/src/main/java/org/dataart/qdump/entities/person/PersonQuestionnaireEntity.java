@@ -34,9 +34,9 @@ import com.google.common.base.Preconditions;
 @NamedQueries({
 		@NamedQuery(name = "PersonQuestionnaireEntity.findByOwnBy", query = "FROM PersonQuestionnaireEntity pinq "
 				+ "WHERE pinq.ownBy = ?1"),
-		@NamedQuery(name = "PersonQuestionnaireEntity.getPersonQuestinnaireByStatus", query = "FROM PersonQuestionnaireEntity pinq "
+		@NamedQuery(name = "PersonQuestionnaireEntity.getPersonQuestionnaireByStatus", query = "FROM PersonQuestionnaireEntity pinq "
 				+ "WHERE pinq.status = ?1"),
-		@NamedQuery(name = "PersonQuestionnaireEntity.getPersonQuestinnaireByQuestinnaireName", query = "FROM PersonQuestionnaireEntity pinq "
+		@NamedQuery(name = "PersonQuestionnaireEntity.getPersonQuestionnaireByQuestionnaireName", query = "FROM PersonQuestionnaireEntity pinq "
 				+ "WHERE pinq.questionnaireEntity.name = ?1") })
 public class PersonQuestionnaireEntity extends PersonQuestionnaireBaseEntity
 		implements Serializable {

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.dataart.qdump.entities.questionnaire.AnswerEntity;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
 /**
  * Repository for {@link AnswerEntity}
@@ -23,7 +22,7 @@ public interface AnswerCrudRepository extends
 	 *            id of question
 	 * @return list  {@link AnswerEntity}
 	 */
-	public List<AnswerEntity> getAnswerByName(Long questionId);
+	public List<AnswerEntity> getAnswerByQuestionId(Long questionId);
 
 	/**
 	 * This method return Answer by questionnaireId.
