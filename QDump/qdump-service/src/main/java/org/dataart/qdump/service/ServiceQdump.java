@@ -2,9 +2,13 @@ package org.dataart.qdump.service;
 
 import java.util.List;
 
+import org.dataart.qdump.entities.person.PersonAnswerEntity;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.person.PersonQuestionEntity;
 import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
+import org.dataart.qdump.entities.questionnaire.AnswerEntity;
+import org.dataart.qdump.entities.questionnaire.QuestionEntity;
+import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
 
 
 public interface ServiceQdump {
@@ -42,5 +46,32 @@ public interface ServiceQdump {
 			long personQuestionnaireId);
 
 	
+	//AnswerEntity
+	void addAnswerEntity(AnswerEntity answerEntity);
+	void deleteAnswerEntity(long id);
+	void deleteAllAnswerEntity();
+	AnswerEntity getAnswerEntity(long id);
+	List<AnswerEntity> getAnswerEntities();
+	
+	//QuestionEntity
+	void addQuestionEntity(QuestionEntity questionEntity);
+	void deleteQuestionEntity(long id);
+	void deleteAllQuestionEntity();
+	QuestionEntity getQuestionEntity(long id);
+	List<QuestionEntity> getQuestionEntities();
+	
+	//QuestionnaireEntity
+	void addQuestionnaireEntity(QuestionnaireEntity questionnaireEntity);
+	void deleteQuestionnaireEntity(long id);
+	void deleteAllQuestionnaireEntity();
+	QuestionnaireEntity getQuestionnaireEntity(long id);
+	List<QuestionnaireEntity> getQuestionnaireEntities();
+	
+	//PersonAnswerEntity
+	void addPersonAnswerEntity(PersonAnswerEntity personAnswerEntity);
+	void deletePersonAnswerEntity(long id);
+	void deleteAllPersonAnswerEntity();
+	PersonAnswerEntity getPersonAnswerEntity(long id);
+	List<PersonAnswerEntity> getPersonAnswerEntities();
 	
 }

@@ -2,9 +2,13 @@ package org.dataart.qdump.service.impl;
 
 import java.util.List;
 
+import org.dataart.qdump.entities.person.PersonAnswerEntity;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.person.PersonQuestionEntity;
 import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
+import org.dataart.qdump.entities.questionnaire.AnswerEntity;
+import org.dataart.qdump.entities.questionnaire.QuestionEntity;
+import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
 import org.dataart.qdump.persistence.repository.AnswerCrudRepository;
 import org.dataart.qdump.persistence.repository.PersonAnswerCrudRepository;
 import org.dataart.qdump.persistence.repository.PersonCrudRepository;
@@ -185,5 +189,115 @@ public class ServiceImpl implements ServiceQdump{
 				personQuestionCrudRepository.
 				getQuestionByPersonQuestionnaireId(
 						personQuestionnaireId);
-	}	
+	}
+	
+	//AnswerEntity
+	
+	@Override
+	public void addAnswerEntity(AnswerEntity answerEntity) {
+		answerCrudRepository.save(answerEntity);
+	}
+
+	@Override
+	public void deleteAnswerEntity(long id) {
+		answerCrudRepository.delete(id);
+	}
+
+	@Override
+	public void deleteAllAnswerEntity() {
+		answerCrudRepository.deleteAll();
+	}
+
+	@Override
+	public AnswerEntity getAnswerEntity(long id) {
+		return answerCrudRepository.findOne(id);
+	}
+
+	@Override
+	public List<AnswerEntity> getAnswerEntities() {
+		return (List<AnswerEntity>) answerCrudRepository.findAll();
+	}
+
+	
+	//QuestionEntity
+	@Override
+	public void addQuestionEntity(QuestionEntity questionEntity) {
+		questionCrudRepository.save(questionEntity);
+	}
+
+	@Override
+	public void deleteQuestionEntity(long id) {
+		questionCrudRepository.delete(id);
+	}
+
+	@Override
+	public void deleteAllQuestionEntity() {
+		questionCrudRepository.deleteAll();
+	}
+
+	@Override
+	public QuestionEntity getQuestionEntity(long id) {
+		return questionCrudRepository.findOne(id);
+	}
+
+	@Override
+	public List<QuestionEntity> getQuestionEntities() {
+		return (List<QuestionEntity>) questionCrudRepository.findAll();
+	}
+
+	
+	//QuestionnaireEntity
+	@Override
+	public void addQuestionnaireEntity(QuestionnaireEntity questionnaireEntity) {
+		questionnaireCrudRepository.save(questionnaireEntity);
+	}
+
+	@Override
+	public void deleteQuestionnaireEntity(long id) {
+		questionnaireCrudRepository.delete(id);
+	}
+
+	@Override
+	public void deleteAllQuestionnaireEntity() {
+		questionnaireCrudRepository.deleteAll();
+	}
+
+	@Override
+	public QuestionnaireEntity getQuestionnaireEntity(long id) {
+		return questionnaireCrudRepository.findOne(id);
+	}
+
+	@Override
+	public List<QuestionnaireEntity> getQuestionnaireEntities() {
+		return (List<QuestionnaireEntity>) 
+		questionnaireCrudRepository.findAll();
+	}
+
+	
+	//PersonAnswerEntity
+	@Override
+	public void addPersonAnswerEntity(PersonAnswerEntity personAnswerEntity) {
+		personAnswerCrudRepository.save(personAnswerEntity);
+	}
+
+	@Override
+	public void deletePersonAnswerEntity(long id) {
+		personAnswerCrudRepository.delete(id);
+	}
+
+	@Override
+	public void deleteAllPersonAnswerEntity() {
+		personAnswerCrudRepository.deleteAll();
+	}
+
+	@Override
+	public PersonAnswerEntity getPersonAnswerEntity(long id) {
+		return personAnswerCrudRepository.findOne(id);
+	}
+
+	@Override
+	public List<PersonAnswerEntity> getPersonAnswerEntities() {
+		return (List<PersonAnswerEntity>) 
+				personAnswerCrudRepository.findAll();
+	}
 }
