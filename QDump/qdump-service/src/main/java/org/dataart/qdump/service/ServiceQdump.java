@@ -32,4 +32,15 @@ public interface ServiceQdump {
 	void deleteAllPersonQuestionEntity();
 	PersonQuestionEntity getPersonQuestionEntity(long id);
 	List<PersonQuestionEntity> getPersonQuestionEntities();
+	/**
+	 * Added the implementation of the repository
+	 * PersonQuestionCrudRepository
+	 * 
+	 */
+	List<PersonQuestionEntity> getCorrectQuestion(boolean correct);
+	List<PersonQuestionEntity> getQuestionByPersonQuestionnaireId(
+			long personQuestionnaireId);
+
+	
+	
 }

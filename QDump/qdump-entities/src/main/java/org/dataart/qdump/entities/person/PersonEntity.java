@@ -36,6 +36,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @NamedQueries({
 	@NamedQuery(name = "PersonEntity.getPersonByEmail", query = "FROM PersonEntity p "
 			+ "WHERE p.email = ?1"),
+	@NamedQuery(name = "PersonEntity.getPersonByLogin", query = "FROM PersonEntity p "
+			+ "WHERE p.login = ?1"),
 	@NamedQuery(name = "PersonEntity.getPersonByPersonGroup", query = "FROM PersonEntity p  "
 					+ "WHERE p.personGroup = ?1")		
 	 })
