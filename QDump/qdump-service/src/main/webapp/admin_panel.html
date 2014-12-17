@@ -1,0 +1,147 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>QDump My account</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="shortcut icon" type="image/QDump" href="style/images/favicon.png"/>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style/css/ui.css" media="all"/>
+    <script type="text/javascript" src="style/js/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="style/js/jquery.placeholder.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+    <script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
+    <noscript>Javascript is disabled in your browser!<br>Turn Javascript on.<br>Have no idea how? Look this -->
+        <a href=" http://www.wikihow.com/Turn-on-Javascript-in-Internet-Browsers">dasf</a></noscript>
+</head>
+<body>
+
+<div class="ui-bg">
+    <div class="main">
+        <!-- Header -->
+        <header>
+            <a class="QD" href="/"><img src="style/images/QD.png" alt="QDump logo"></a>
+        </header>
+        <!-- /Header -->
+        <!-- Begin Menu -->
+        <ul class="ui_menu">
+
+            <!-- b1 -->
+            <li aria-haspopup="true">
+                <a href="index.html"><i class="fa fa-star"></i>Home</a>
+            </li>
+            <!--/ b1 -->
+
+
+            <!-- logoutf-->
+            <li aria-haspopup="true" class="right">
+                <a href="#" onclick><i class="fa fa-sign-in"></i>Log out</a>
+            </li>
+            <!--/ logout-->
+        </ul>
+        <!--/ mega menu -->
+
+        <!--content -->
+
+        <div class="center" align="center">
+            <div class="content">
+                <br><br>
+
+                <div>%username%</div>
+                <div><font size="3" color="#63a6ab">admin</font></div>
+                <div ng-app="" ng-controller="get_users_and_tests">
+                    <br>
+
+                    <h3>User list</h3>
+                    <table>
+                        <tr>
+                            <td>Login</td>
+                            <td>E-Mail</td>
+                            <td>Group</td>
+                        </tr>
+                        <tr ng-repeat="x in names | orderBy : 'Country'">
+                            <td>{{ x.login }}</td>
+                            <td>{{ x.email }}</td>
+                            <td>{{ x.person_group }}</td>
+                            <td><a ng-click="editUser(user.id)" class="btn btn-small btn-primary">edit</a></td>
+                            <td><a ng-click="deleteUser(user.id)" class="btn btn-small btn-danger">delete</a></td>
+                        </tr>
+                    </table>
+                    <br>
+
+                    <h3>Test list</h3>
+                    <table>
+                        <tr>
+                            <td class="table_header">Name</td>
+                            <td class="table_header">Description</td>
+                            <td class="table_header">CreationDate</td>
+                            <td class="table_header">ModifiedDate</td>
+                            <td class="table_header">Created By</td>
+                            <td class="table_header">Modified By</td>
+                            <td class="table_header">Published</td>
+                        </tr>
+                        <tr ng-repeat="x in tests | orderBy : 'Country'">
+                            <td>{{ x.name }}</td>
+                            <td>{{ x.description }}</td>
+                            <td>{{ x.created_date }}</td>
+                            <td>{{ x.modified_date }}</td>
+                            <td>{{ x.created_by.login }}</td>
+                            <td>{{ x.modified_by.login }}</td>
+                            <td>{{ x.published }}</td>
+                            <td><a ng-click="editUser(user.id)" class="btn btn-small btn-primary">edit</a></td>
+                            <td><a ng-click="deleteUser(user.id)" class="btn btn-small btn-danger">delete</a></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <a ng-click="createNew(Test)" class="btn btn-small btn-info ">create new test</a>
+                </div>
+                <br>
+            </div>
+        </div>
+        <!--/content -->
+        <!-- footer -->
+        <div class="footer" align="center">
+            <img src="style/images/MH.png" alt="MindHeaders logo">
+        </div>
+        <!--/footer -->
+    </div>
+
+
+<!-- тут должно быть получение тестов с сервера-->
+<script>
+    function get_users_and_tests($scope) {
+
+        var m_names = ["Jan", "Feb", "Mar",
+            "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+            "Oct", "Nov", "Dec"];
+
+        String.prototype.format = function () {
+            var i = 0, args = arguments;
+            return this.replace(/{}/g, function () {
+                return typeof args[i] != 'undefined' ? args[i++] : '';
+            });
+        };
+
+
+        var json_text = '[{"id": 0,"email": "first@gmail.com","login": "login1","password": "$2a$10$63ACjoD63.HlIFFqFIlJjuPAhFcScTbg3YHhaDvpo.YfhDh/XFHPe","gender": 1,"name": "name1","enabled": true,"surname": "surname1","created_date": 1417815892866,"modified_date": 1417815992873,"person_group": "USER"},{"id": 0,"email": "second@gmail.com","login": "login2","password": "$2a$10$B25Qfik5I8BRlLk6VXf2pu8Aidd2po212De5rOZ4CDRhXzsJReqMi","gender": 1,"name": "name2","enabled": true,"surname": "surname2","created_date": 1417815893002,"modified_date": 1417815993002,"person_group": "USER"}]';
+
+        obj = JSON.parse(json_text);
+        $scope.names = obj;
+
+        var json_text = '[{ "id": 0, "name": "first", "description": "first questionnaire", "created_date": 1417815893143, "modified_date": 1417815993143, "created_by": { "id": 0, "email": "first@gmail.com", "login": "login1", "password": "$2a$10$63ACjoD63.HlIFFqFIlJjuPAhFcScTbg3YHhaDvpo.YfhDh/XFHPe", "gender": 1, "name": "name1", "enabled": true, "surname": "surname1", "created_date": 1417815892866, "modified_date": 1417815992873, "person_group": "USER" }, "modified_by": { "id": 0, "email": "first@gmail.com", "login": "login1", "password": "$2a$10$63ACjoD63.HlIFFqFIlJjuPAhFcScTbg3YHhaDvpo.YfhDh/XFHPe", "gender": 1, "name": "name1", "enabled": true, "surname": "surname1", "created_date": 1417815892866, "modified_date": 1417815992873, "person_group": "USER" }, "question_entities": [ { "id": 0, "question": "first question first questionnaire", "created_date": 1417815893143, "modified_date": 1417815993143, "question_type": "CHECKBOX", "answer_entities": [ { "id": 0, "answer": "first answer first question", "correct": true, "created_date": 1417815893143, "modified_date": 1417815993143 } ] } ], "published": true }, { "id": 0, "name": "second", "description": "second questionnaire", "created_date": 1417815893143, "modified_date": 1417815993143, "created_by": { "id": 0, "email": "second@gmail.com", "login": "login2", "password": "$2a$10$B25Qfik5I8BRlLk6VXf2pu8Aidd2po212De5rOZ4CDRhXzsJReqMi", "gender": 1, "name": "name2", "enabled": true, "surname": "surname2", "created_date": 1417815893002, "modified_date": 1417815993002, "person_group": "USER" }, "modified_by": { "id": 0, "email": "second@gmail.com", "login": "login2", "password": "$2a$10$B25Qfik5I8BRlLk6VXf2pu8Aidd2po212De5rOZ4CDRhXzsJReqMi", "gender": 1, "name": "name2", "enabled": true, "surname": "surname2", "created_date": 1417815893002, "modified_date": 1417815993002, "person_group": "USER" }, "question_entities": [ { "id": 0, "question": "second question second questionnaire", "created_date": 1417815893143, "modified_date": 1417815993143, "question_type": "RADIO", "answer_entities": [ { "id": 0, "answer": "first answer second question", "correct": true, "created_date": 1417815893143, "modified_date": 1417815993143 }, { "id": 0, "answer": "second answer second question", "correct": true, "created_date": 1417815893143, "modified_date": 1417815993143 } ] } ], "published": true }, { "id": 0, "name": "third", "description": "third questionnaire", "created_date": 1417815893143, "modified_date": 1417815993143, "created_by": { "id": 0, "email": "first@gmail.com", "login": "login1", "password": "$2a$10$63ACjoD63.HlIFFqFIlJjuPAhFcScTbg3YHhaDvpo.YfhDh/XFHPe", "gender": 1, "name": "name1", "enabled": true, "surname": "surname1", "created_date": 1417815892866, "modified_date": 1417815992873, "person_group": "USER" }, "modified_by": { "id": 0, "email": "first@gmail.com", "login": "login1", "password": "$2a$10$63ACjoD63.HlIFFqFIlJjuPAhFcScTbg3YHhaDvpo.YfhDh/XFHPe", "gender": 1, "name": "name1", "enabled": true, "surname": "surname1", "created_date": 1417815892866, "modified_date": 1417815992873, "person_group": "USER" }, "question_entities": [ { "id": 0, "question": "third question third questionnaire", "created_date": 1417815893143, "modified_date": 1417815993143, "question_type": "SELECT", "answer_entities": [ { "id": 0, "answer": "first answer third question", "correct": true, "created_date": 1417815893143, "modified_date": 1417815993143 }, { "id": 0, "answer": "second answer third question", "correct": true, "created_date": 1417815893143, "modified_date": 1417815993143 }, { "id": 0, "answer": "third answer third question", "correct": true, "created_date": 1417815893143, "modified_date": 1417815993143 } ] } ], "published": false }]';
+        obj = JSON.parse(json_text);
+        for (i = 0; i < obj.length; i++) {
+            date = new Date(obj[i].created_date);
+            formated_date = "{} {} {}".format(m_names[date.getMonth()], date.getDay(), date.getFullYear());
+            obj[i].created_date = formated_date;
+
+            date = new Date(obj[i].modified_date);
+            formated_date = "{} {} {}".format(m_names[date.getMonth()], date.getDay(), date.getFullYear());
+            obj[i].modified_date = formated_date;
+
+        }
+        $scope.tests = obj;
+    }
+</script>
+</div>
+</body>
