@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>QDump Test</title>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+	<script>
+	var url = "http://localhost:8080/qdump/rest/app/get/person";
+		$.getJSON(url, function(data) {
+			console.log(data);
+			$.each(data, function(key, value) {
+				$("input[name=" + key + "]").val(value);	
+			});
+		});
+	</script>
+	<form id="simple-form">
+		<input type="hidden" id="id" name="id" /> 
+		<label for="firstname">First name: </label>
+		<input name="firstname" id="firstname" type="text"/>
+		<p>
+		<label for="lastname">Last name: </label>
+		<input name="lastname" id="lastname" type="text"/>
+		<p>
+		<label for="email">Email: </label>
+		<input name="email" id="email" type="text" />
+		<p>
+		<label for="login">Login: </label>
+		<input name="login" id="login" type="text" />
+		<p>
+		<input type="radio" name="gender" value=1/>Male
+		<input type="radio" name="gender" value=2/>Female
+	</form>
+</body>
+</html>
