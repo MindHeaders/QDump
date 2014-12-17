@@ -5,7 +5,7 @@
 	<persistence-unit name="qdump-persistence"
 		transaction-type="JTA">
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-		<!-- <jta-data-source>java:jboss/datasource/qdump</jta-data-source> -->
+		<jta-data-source>java:jboss/datasources/MySQLDS</jta-data-source>
 		<class>org.dataart.qdump.entities.questionnaire.BaseEntity</class>
 		<class>org.dataart.qdump.entities.questionnaire.QuestionnaireBaseEntity</class>
 		<class>org.dataart.qdump.entities.questionnaire.AnswerEntity</class>
@@ -22,10 +22,6 @@
 			<property name="hibernate.ejb.interceptor"
 				value="org.dataart.qdump.persistence.config.GlobalInterceptor" />
 			<property name="hibernate.show_sql" value="true" />
-			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
-			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/qdump" />
-			<property name="hibernate.connection.username" value="root" />
-			<property name="hibernate.connection.password" value="422617" />
 		</properties>
 	</persistence-unit>
 </persistence>
