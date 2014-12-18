@@ -4,7 +4,7 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.data.art</groupId>
+		<groupId>org.dataart</groupId>
 		<artifactId>QDump</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
@@ -15,7 +15,7 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.data.art</groupId>
+			<groupId>org.dataart</groupId>
 			<artifactId>qdump-entities</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
