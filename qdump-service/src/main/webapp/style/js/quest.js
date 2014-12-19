@@ -63,13 +63,13 @@ function create_object() {
             if (question.children[m].getAttribute('id') == 'answers') {
                 answers_obj = question.children[m].children;
                 switch (quest_type) {
-                    case 'TEXT':
+                    case 'text':
                         answer = {};
                         answer.answer = answers_obj[0].value;
                         answers.push(answer);
                         break;
 
-                    case 'SELECT':
+                    case 'select':
                         answers = parse(answers_obj,2);
                     break;
 
