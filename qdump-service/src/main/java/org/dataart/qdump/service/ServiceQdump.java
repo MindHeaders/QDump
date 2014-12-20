@@ -20,6 +20,10 @@ public interface ServiceQdump {
 	void deleteAllPersonEntities();
 	PersonEntity getPersonEntity(long id);
 	List<PersonEntity> getPersonEntities();
+	PersonEntity getPersonByEmail(String email);
+	PersonEntity getPersonByLogin(String login);
+	List<PersonEntity> getPersonsNameLastname();
+	public PersonEntity getPersonForAuthByLogin(String login);
 	
 	//PersonQuestionnaireEntity
 	void addPersonQuestionnaireEntity(PersonQuestionnaireEntity personQuestionnaireEntity);

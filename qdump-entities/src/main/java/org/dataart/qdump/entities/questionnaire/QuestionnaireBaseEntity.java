@@ -18,13 +18,11 @@ public abstract class QuestionnaireBaseEntity extends BaseEntity implements
 		Serializable {
 	private static final long serialVersionUID = -1310872166991256747L;
 	@JsonSerialize(using = PersonEntitySerializer.class)
-	@JsonProperty("created_by")
 	private PersonEntity createdBy;
 	@JsonSerialize(using = PersonEntitySerializer.class)
-	@JsonProperty("modified_by")
 	private PersonEntity modifiedBy;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "created_by", referencedColumnName = "id_person", nullable = true, updatable = false)
 	public PersonEntity getCreatedBy() {
 		return createdBy;
@@ -34,7 +32,7 @@ public abstract class QuestionnaireBaseEntity extends BaseEntity implements
 		this.createdBy = createdBy;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "modified_by", referencedColumnName = "id_person", nullable = true, updatable = true)
 	public PersonEntity getModifiedBy() {
 		return modifiedBy;

@@ -41,14 +41,13 @@ import com.google.common.base.Preconditions;
 public class PersonQuestionnaireEntity extends PersonQuestionnaireBaseEntity
 		implements Serializable {
 	private static final long serialVersionUID = 586942138808550795L;
-	@JsonProperty("questionnaire_entity")
 	@JsonSerialize(using = QuestionnairePersonSerializer.class)
 	private QuestionnaireEntity questionnaireEntity;
 	private String status;
 	@JsonProperty("person_questions")
 	private List<PersonQuestionEntity> personQuestionEntities;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_questionnaire", referencedColumnName = "id_questionnaire")
 	public QuestionnaireEntity getQuestionnaireEntity() {
 		return questionnaireEntity;

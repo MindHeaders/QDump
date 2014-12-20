@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset = "utf-8">
+		<meta http-equiv="X-UA-Compatible" content = "IE=edge">
+		<title>QDump</title>
+		<meta name = "description" content = "">
+		<meta name = "viewport" content = "width=device-width">
+		<link rel ="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	</head>
+	<body ng-app = "qdumpApp">
+		<div class = "row">
+			<div class="col-md-3"></div>
+			<div class="col-md-3">
+				<div class="dropdown">
+					<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+						data-toggle="dropdown" aria-expanded="true">
+					Menu
+					<span class = "caret"></span>
+					</button>
+					<ul class = "dropdown-menu" role = "menu" aria-labelledby = "dropdownMenu1">
+						<li role = "presentation"><a role = "menuitem" tabindex="-1" href="#/reg">Registration</a></li>
+						<li role = "presentation"><a role = "menuitem" tabindex="-1" href="#/auth">Authorization</a></li>
+						<li role = "presentation"><a role = "menuitem" tabindex="-1" href="#/user-list">Get all users</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="col-md-3"></div>
+			<div class="col-md-3"></div>
+		</div>
+		<div class="container" ng-view=""></div>
+
+		<script src = "js/jquery-2.1.1.min.js"></script>
+		<script src = "js/bootstrap.min.js"></script>
+		<script src = "js/angular.js"></script>
+		<script src = "js/angular-resource.min.js"></script>
+		<script src = "js/angular-route.js"></script>
+		<script src = "scripts/app.js"></script>
+		<script src = "scripts/services/services.js"></script>
+		<script src = "scripts/controllers/controllers.js"></script>
+	</body>
+</html>

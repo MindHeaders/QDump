@@ -45,5 +45,17 @@ public interface PersonCrudRepository extends
 	 */
 	public List<PersonEntity> getPersonByPersonGroup(
 			PersonGroupEnums persongroup);
-
+	
+	/**
+	 * Returns all persons from database only with firstname and lastname
+	 * @return
+	 */
+	public List<PersonEntity> getPersonsNameLastname();
+	
+	/**
+	 * Getter for Authorization
+	 * @param login
+	 * @return
+	 */
+	public PersonEntity getPersonForAuthByLogin(String login);
 }

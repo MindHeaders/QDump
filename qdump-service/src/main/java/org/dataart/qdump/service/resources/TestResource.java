@@ -45,16 +45,22 @@ public class TestResource {
 	@GET
 	@Path("get/person")
 	public PersonEntity getPerson() {
-		return service.getPersonEntity(1l);
+		PersonEntity personEntity = service.getPersonEntity(1l);
+		return personEntity;
 	}
 	
 	@GET
 	@Path("get/persons")
 	public List<PersonEntity> getPersons() {
 		List<PersonEntity> entities = new ArrayList<PersonEntity>();
-		entities.add(new PersonEntity("vlasovartem21@gmail.com", "422617"));
-		entities.add(new PersonEntity("vlasovartem23@gmail.com", "422617"));
-		entities.add(new PersonEntity("vlasovartem25@gmail.com", "422617"));
+		PersonEntity entity1 = new PersonEntity();
+		entity1.setFirstname("firstname1");
+		entity1.setLastname("lastname1");
+		PersonEntity entity2 = new PersonEntity();
+		entity2.setFirstname("firstname2");
+		entity2.setLastname("lastname2");
+		entities.add(entity1);
+		entities.add(entity2);
 		return entities;
 	}
 	
