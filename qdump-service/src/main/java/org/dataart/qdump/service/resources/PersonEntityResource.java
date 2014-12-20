@@ -44,6 +44,7 @@ public class PersonEntityResource {
 	}
 
 	@POST
+	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("login")
 	public Response login(@FormParam("login") String login, @FormParam("password") String password) {

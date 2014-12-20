@@ -1,26 +1,28 @@
 var app = angular.module('qdumpApp.controllers', []);
 
-app.controller('AuthCtrl', ['$scope','AuthFactory', 
-	function($scope, AuthFactory) {
+app.controller('AuthCtrl', ['$scope', '$location', 'AuthFactory', 
+	function($scope, $location, AuthFactory) {
 		$scope.auth = function() {
 			AuthFactory.auth($.param({
 				login : $scope.user.login,
 				password : $scope.user.password
-			}), function(data, status, headers, config) {
+			}), function() {
+				$location.url('/welcome');
 				console.log('You log in')
-				console.log(data)
-				console.log(status)
-				console.log(headers)
-				console.log(config)
 			}, function() {
-				console.log('There is a problem with login or password')
+				console.log(AuthFactory.log())
 			});
 		}
 }]);
 app.controller('RegCtrl', ['$scope', 'RegFactory',
 	function($scope, RegFactory) {
 		$scope.reg = function() {
-			RegFactory.reg($scope.user);
+			RegFactory.reg($scope.user, 
+				function(data) {
+					console.log(data)
+			}, function(data) {
+					console.log(data)
+			});
 		}
 }]);
 app.controller('UserListCtrl', ['$scope', 'UsersFactory',

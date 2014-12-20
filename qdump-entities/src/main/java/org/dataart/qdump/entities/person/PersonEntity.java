@@ -3,7 +3,6 @@ package org.dataart.qdump.entities.person;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.AttributeOverride;
@@ -16,13 +15,15 @@ import javax.persistence.FetchType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.dataart.qdump.entities.enums.PersonGroupEnums;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireBaseEntity;
+import org.hibernate.validator.constraints.Email;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -52,10 +53,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 })
 public class PersonEntity extends QuestionnaireBaseEntity implements Serializable {
 	private static final long serialVersionUID = -219526512840281300L;
+	@Size(min = 2, max = 35) 
+	@Pattern(regexp = "[A-Z][a-zA-Z]*")
 	private String firstname;
+	@Size(min = 2, max = 35)
+	@Pattern(regexp = "[a-zA-z]+([ '-][a-zA-Z]+)*")
 	private String lastname;
+	@Email
 	private String email;
+	@NotNull
 	private String login;
+	@NotNull
 	private String password;
 	@JsonProperty("enabled")
 	private boolean isEnabled;
@@ -206,11 +214,16 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 	 * 
 	 * @param name
 	 */
-	public void validateFirstname() {
-		if (!this.firstname.matches("[A-Z][a-zA-Z]*") && this.firstname != null
-				&& firstname.length() > 35) {
-			throw new RuntimeException("Invalid input firstname, max length - 35 characters, should contains"
-					+ "only A-Z, a-z symbols (valid - John, invalid - john, j0hn)");
+	public static String validateFirstname(String firstname) {
+		if (firstname == null) {
+			return firstname;
+		} else if (!firstname.matches("[A-Z][a-zA-Z]*")
+				|| firstname.length() > 35) {
+			throw new RuntimeException(
+					"Invalid input firstname, max length - 35 characters, should contains"
+							+ "only A-Z, a-z symbols (valid - John, invalid - john, j0hn)");
+		} else {
+			return firstname;
 		}
 	}
 
@@ -222,11 +235,16 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 	 *            Inserted surname for person
 	 * @return
 	 */
-	public void validateLastname(String lastname) {
-		if (!this.lastname.matches("[a-zA-z]+([ '-][a-zA-Z]+)*") && this.lastname != null
-				&& this.lastname.length() > 35) {
-			throw new RuntimeException("Invalid input lastname, max length - 35 characters, should contains"
-					+ "only A-Z, a-z, , ', - symbols (example valid - M`gain, invalid - 1Smith");
+	public static String validateLastname(String lastname) {
+		if (lastname == null) {
+			return lastname;
+		} else if (!lastname.matches("[a-zA-z]+([ '-][a-zA-Z]+)*")
+				|| lastname.length() > 35) {
+			throw new RuntimeException(
+					"Invalid input lastname, max length - 35 characters, should contains"
+							+ "only A-Z, a-z, , ', - symbols (example valid - M`gain, invalid - 1Smith");
+		} else {
+			return lastname;
 		}
 	}
 
@@ -235,10 +253,11 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 	 * 
 	 * @param email
 	 */
-	public void validateEmail(String email) {
+	public static String validateEmail(String email) {
 		if (!EmailValidator.getInstance().isValid(email)) {
 			throw new RuntimeException("You enter invalid email address");
 		}
+		return email;
 	}
 	
 	/**
