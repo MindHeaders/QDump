@@ -18,6 +18,7 @@ config(function($routeProvider, $locationProvider) {
     });
     $routeProvider.
     when('/welcome', {
-        templateUrl: 'welcome.html'
+        templateUrl: 'welcome.html',
+        controller: 'AuthCtrl'
     });
 });
