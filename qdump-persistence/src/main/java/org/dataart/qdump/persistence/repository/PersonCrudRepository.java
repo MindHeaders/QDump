@@ -24,7 +24,7 @@ public interface PersonCrudRepository extends
 	 *            {@link PersonEntity#getEmail()}
 	 * @return 
 	 */
-	public PersonEntity getPersonByEmail(String email);
+	PersonEntity getPersonByEmail(String email);
 
 	/**
 	 * This method return Person by login.
@@ -33,7 +33,7 @@ public interface PersonCrudRepository extends
 	 *            {@link PersonEntity#getLogin()}
 	 * @return 
 	 */
-	public PersonEntity getPersonByLogin(String login);
+	PersonEntity getPersonByLogin(String login);
 	
 	/**
 	 * This method return Person by personGroup.
@@ -43,19 +43,20 @@ public interface PersonCrudRepository extends
 	 * 
 	 * @return 
 	 */
-	public List<PersonEntity> getPersonByPersonGroup(
+	List<PersonEntity> getPersonByPersonGroup(
 			PersonGroupEnums persongroup);
 	
 	/**
 	 * Returns all persons from database only with firstname and lastname
 	 * @return
 	 */
-	public List<PersonEntity> getPersonsNameLastname();
+	List<PersonEntity> getPersonEntitiesForAdminPanel();
 	
-	/**
-	 * Getter for Authorization
-	 * @param login
-	 * @return
-	 */
-	public PersonEntity getPersonForAuthByLogin(String login);
+	PersonEntity getPersonByLoginForAuth(String login);
+	
+	boolean existsByLogin(String login);
+	
+	boolean existsByEmail(String email);
+	
+	String getPersonPasswordByLogin(String login);
 }

@@ -40,7 +40,6 @@ public class ServiceImpl implements ServiceQdump{
 
 	
 	//PersonEntity
-	
 	@Override
 	public void addPersonEntity(PersonEntity personEntity) {
 		personCrudRepository.save(personEntity);
@@ -49,28 +48,6 @@ public class ServiceImpl implements ServiceQdump{
 	@Override
 	public void deletePersonEntity(long id) {
 		personCrudRepository.delete(id);
-	}
-
-	/**
-	 * This method "deletePersonEntityByEmail(String email)" 
-	 *  should be implemented in a repository 
-	 *  personCrudRepository
-	 *  
-	 */
-	@Override
-	public void deletePersonEntityByEmail(String email) {
-		
-	}
-
-	/**
-	 * This method "deletePersonEntityByLogin(String login)" 
-	 *  should be implemented in a repository 
-	 *  personCrudRepository
-	 *  
-	 */
-	@Override
-	public void deletePersonEntityByLogin(String login) {
-		
 	}
 
 	@Override
@@ -82,7 +59,6 @@ public class ServiceImpl implements ServiceQdump{
 	public PersonEntity getPersonEntity(long id) {
 		return personCrudRepository.findOne(id);
 	}
-
 
 	@Override
 	public PersonEntity getPersonByEmail(String email) {
@@ -100,22 +76,45 @@ public class ServiceImpl implements ServiceQdump{
 	}
 	
 	@Override
-	public List<PersonEntity> getPersonsNameLastname() {
-		return personCrudRepository.getPersonsNameLastname();
+	public List<PersonEntity> getPersonEntitiesForAdminPanel() {
+		return personCrudRepository.getPersonEntitiesForAdminPanel();
 	}
 	
 	@Override
-	public PersonEntity getPersonForAuthByLogin(String login) {
-		return personCrudRepository.getPersonForAuthByLogin(login);
+	public PersonEntity getPersonByLoginForAuth(String login) {
+		return personCrudRepository.getPersonByLoginForAuth(login);
+	}
+	
+	@Override
+	public boolean personEntityExists(long id) {
+		return personCrudRepository.exists(id);
+	}
+
+	@Override
+	public long personEntitiesCount() {
+		return personCrudRepository.count();
+	}
+	
+	@Override
+	public boolean existsByLogin(String login) {
+		return personCrudRepository.existsByLogin(login);
+	}
+	
+	@Override
+	public boolean existsByEmail(String email) {
+		return personCrudRepository.existsByEmail(email);
+	}
+	
+	@Override
+	public String getPersonPasswordByLogin(String login) {
+		return personCrudRepository.getPersonPasswordByLogin(login);
 	}
 	
 	//PersonQuestionnaireEntity
 	@Override
 	public void addPersonQuestionnaireEntity(
-			PersonQuestionnaireEntity personQuestionnaireEntity
-			) {
-		personQuestionnaireCrudRepository.save(
-				personQuestionnaireEntity);
+			PersonQuestionnaireEntity personQuestionnaireEntity) {
+		personQuestionnaireCrudRepository.save(personQuestionnaireEntity);
 	}
 
 	@Override
@@ -123,15 +122,9 @@ public class ServiceImpl implements ServiceQdump{
 		personQuestionnaireCrudRepository.delete(id);		
 	}
 
-	/**
-	 * This method "deletePersonQuestionnaireEntityByOwnBy(String login)" 
-	 *  should be implemented in a repository 
-	 *  personQuestionnaireCrudRepository
-	 *  
-	 */
 	@Override
-	public void deletePersonQuestionnaireEntityByOwnBy(String login) {
-		
+	public void deletePersonQuestionnaireEntityByOwnById(long id) {
+		personQuestionnaireCrudRepository.deletePersonQuestionnaireEntityByOwnById(id);
 	}
 
 	@Override
@@ -150,9 +143,18 @@ public class ServiceImpl implements ServiceQdump{
 		return (List<PersonQuestionnaireEntity>) 
 				personQuestionnaireCrudRepository.findAll();
 	}
+	
+	@Override
+	public boolean personQuestionnaireEntityExists(long id) {
+		return personQuestionnaireCrudRepository.exists(id);
+	}
+
+	@Override
+	public long personQuestionnaireEntitiesCount() {
+		return personQuestionnaireCrudRepository.count();
+	}
 
 	//PersonQuestionEntity
-	
 	@Override
 	public void addPersonQuestionEntity(
 			PersonQuestionEntity personQuestionEntity) {
@@ -164,26 +166,17 @@ public class ServiceImpl implements ServiceQdump{
 	public void deletePersonQuestionEntity(long id) {
 		personQuestionCrudRepository.delete(id);
 	}
-	
-	
-	/**
-	 * This method "deletePersonQuestionEntityByPersonQuestionnaireId(long id)" 
-	 *  should be implemented in a repository 
-	 *  personQuestionCrudRepository
-	 *  
-	 */
+
 	@Override
 	public void deletePersonQuestionEntityByPersonQuestionnaireId(long id) {
-		
+		personQuestionCrudRepository.deletePersonQuestionEntityByPersonQuestionnaireId(id);;
 	}
-	
 	
 	@Override
 	public void deleteAllPersonQuestionEntity() {
 		personQuestionCrudRepository.deleteAll();
 	}
 
-	
 	@Override
 	public PersonQuestionEntity getPersonQuestionEntity(long id) {
 		return personQuestionCrudRepository.findOne(id);
@@ -195,105 +188,28 @@ public class ServiceImpl implements ServiceQdump{
 				personQuestionCrudRepository.findAll();
 	}
 	
-	
 	@Override
-	public List<PersonQuestionEntity> getCorrectQuestion(boolean correct){
-		return (List<PersonQuestionEntity>) 
-				personQuestionCrudRepository.
-				getCorrectQuestion(correct);
+	public List<PersonQuestionEntity> getCorrectQuestion(boolean correct) {
+		return (List<PersonQuestionEntity>) personQuestionCrudRepository
+				.getCorrectQuestion(correct);
 	}
 	
 	@Override
 	public List<PersonQuestionEntity> getQuestionByPersonQuestionnaireId(
-			long personQuestionnaireId){
-		return (List<PersonQuestionEntity>) 
-				personQuestionCrudRepository.
-				getQuestionByPersonQuestionnaireId(
-						personQuestionnaireId);
+			long personQuestionnaireId) {
+		return (List<PersonQuestionEntity>) personQuestionCrudRepository
+				.getQuestionByPersonQuestionnaireId(personQuestionnaireId);
 	}
 	
-	//AnswerEntity
-	
 	@Override
-	public void addAnswerEntity(AnswerEntity answerEntity) {
-		answerCrudRepository.save(answerEntity);
+	public boolean personQuestionEntityExists(long id) {
+		return personQuestionCrudRepository.exists(id);
 	}
 
 	@Override
-	public void deleteAnswerEntity(long id) {
-		answerCrudRepository.delete(id);
+	public long personQuestionEntitiesCount() {
+		return personQuestionCrudRepository.count();
 	}
-
-	@Override
-	public void deleteAllAnswerEntity() {
-		answerCrudRepository.deleteAll();
-	}
-
-	@Override
-	public AnswerEntity getAnswerEntity(long id) {
-		return answerCrudRepository.findOne(id);
-	}
-
-	@Override
-	public List<AnswerEntity> getAnswerEntities() {
-		return (List<AnswerEntity>) answerCrudRepository.findAll();
-	}
-
-	
-	//QuestionEntity
-	@Override
-	public void addQuestionEntity(QuestionEntity questionEntity) {
-		questionCrudRepository.save(questionEntity);
-	}
-
-	@Override
-	public void deleteQuestionEntity(long id) {
-		questionCrudRepository.delete(id);
-	}
-
-	@Override
-	public void deleteAllQuestionEntity() {
-		questionCrudRepository.deleteAll();
-	}
-
-	@Override
-	public QuestionEntity getQuestionEntity(long id) {
-		return questionCrudRepository.findOne(id);
-	}
-
-	@Override
-	public List<QuestionEntity> getQuestionEntities() {
-		return (List<QuestionEntity>) questionCrudRepository.findAll();
-	}
-
-	
-	//QuestionnaireEntity
-	@Override
-	public void addQuestionnaireEntity(QuestionnaireEntity questionnaireEntity) {
-		questionnaireCrudRepository.save(questionnaireEntity);
-	}
-
-	@Override
-	public void deleteQuestionnaireEntity(long id) {
-		questionnaireCrudRepository.delete(id);
-	}
-
-	@Override
-	public void deleteAllQuestionnaireEntity() {
-		questionnaireCrudRepository.deleteAll();
-	}
-
-	@Override
-	public QuestionnaireEntity getQuestionnaireEntity(long id) {
-		return questionnaireCrudRepository.findOne(id);
-	}
-
-	@Override
-	public List<QuestionnaireEntity> getQuestionnaireEntities() {
-		return (List<QuestionnaireEntity>) 
-		questionnaireCrudRepository.findAll();
-	}
-
 	
 	//PersonAnswerEntity
 	@Override
@@ -321,4 +237,136 @@ public class ServiceImpl implements ServiceQdump{
 		return (List<PersonAnswerEntity>) 
 				personAnswerCrudRepository.findAll();
 	}
+
+	@Override
+	public boolean personAnswerEntityExists(long id) {
+		return personAnswerCrudRepository.exists(id);
+	}
+	
+	@Override
+	public long personAnswerEntitiesCount() {
+		return personAnswerCrudRepository.count();
+	}
+	
+	//QuestionnaireEntity
+	@Override
+	public void addQuestionnaireEntity(QuestionnaireEntity questionnaireEntity) {
+		questionnaireCrudRepository.save(questionnaireEntity);
+	}
+
+	@Override
+	public void deleteQuestionnaireEntity(long id) {
+		questionnaireCrudRepository.delete(id);
+	}
+
+	@Override
+	public void deleteAllQuestionnaireEntity() {
+		questionnaireCrudRepository.deleteAll();
+	}
+
+	@Override
+	public QuestionnaireEntity getQuestionnaireEntity(long id) {
+		return questionnaireCrudRepository.findOne(id);
+	}
+
+	@Override
+	public List<QuestionnaireEntity> getQuestionnaireEntities() {
+		return (List<QuestionnaireEntity>) questionnaireCrudRepository
+				.findAll();
+	}
+	
+	@Override
+	public boolean questionnaireEntityExists(long id) {
+		return questionnaireCrudRepository.exists(id);
+	}
+
+	@Override
+	public long questionnaireEntitiesCount() {
+		return questionnaireCrudRepository.count();
+	}
+	
+	//QuestionEntity
+	@Override
+	public void addQuestionEntity(QuestionEntity questionEntity) {
+		questionCrudRepository.save(questionEntity);
+	}
+
+	@Override
+	public void deleteQuestionEntity(long id) {
+		questionCrudRepository.delete(id);
+	}
+
+	@Override
+	public void deleteAllQuestionEntity() {
+		questionCrudRepository.deleteAll();
+	}
+
+	@Override
+	public QuestionEntity getQuestionEntity(long id) {
+		return questionCrudRepository.findOne(id);
+	}
+
+	@Override
+	public List<QuestionEntity> getQuestionEntities() {
+		return (List<QuestionEntity>) questionCrudRepository.findAll();
+	}
+	
+	@Override
+	public boolean questionEntityExists(long id) {
+		return questionCrudRepository.exists(id);
+	}
+
+	@Override
+	public long questionEntitiesCount() {
+		return questionCrudRepository.count();
+	}
+	
+	//AnswerEntity
+	@Override
+	public void addAnswerEntity(AnswerEntity answerEntity) {
+		answerCrudRepository.save(answerEntity);
+	}
+
+	@Override
+	public void deleteAnswerEntity(long id) {
+		answerCrudRepository.delete(id);
+	}
+
+	@Override
+	public void deleteAllAnswerEntity() {
+		answerCrudRepository.deleteAll();
+	}
+
+	@Override
+	public AnswerEntity getAnswerEntity(long id) {
+		return answerCrudRepository.findOne(id);
+	}
+
+	@Override
+	public List<AnswerEntity> getAnswerEntities() {
+		return (List<AnswerEntity>) answerCrudRepository.findAll();
+	}
+
+	@Override
+	public List<AnswerEntity> getAnswerByQuestionId(Long questionId) {
+		return answerCrudRepository.getAnswerByQuestionId(questionId);
+	}
+
+	@Override
+	public List<AnswerEntity> getAnswerByQuestionnaireId(Long questionnaireId) {
+		return answerCrudRepository.getAnswerByQuestionnaireId(questionnaireId);
+	}
+
+	@Override
+	public boolean answerEntityExists(long id) {
+		return answerCrudRepository.exists(id);
+	}
+
+	@Override
+	public long answerEntitiesCount() {
+		return answerCrudRepository.count();
+	}
+
+	
+
 }

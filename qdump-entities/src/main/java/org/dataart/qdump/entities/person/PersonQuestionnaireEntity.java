@@ -37,7 +37,10 @@ import com.google.common.base.Preconditions;
 		@NamedQuery(name = "PersonQuestionnaireEntity.getPersonQuestionnaireByStatus", query = "FROM PersonQuestionnaireEntity pinq "
 				+ "WHERE pinq.status = ?1"),
 		@NamedQuery(name = "PersonQuestionnaireEntity.getPersonQuestionnaireByQuestionnaireName", query = "FROM PersonQuestionnaireEntity pinq "
-				+ "WHERE pinq.questionnaireEntity.name = ?1") })
+				+ "WHERE pinq.questionnaireEntity.name = ?1"),
+		@NamedQuery(name = "PersonQuestionnaireEntity.deletePersonQuestionnaireEntityByOwnById", query = "DELETE FROM "
+				+ "PersonQuestionnaireEntity p WHERE p.id = ?1")
+})
 public class PersonQuestionnaireEntity extends PersonQuestionnaireBaseEntity
 		implements Serializable {
 	private static final long serialVersionUID = 586942138808550795L;

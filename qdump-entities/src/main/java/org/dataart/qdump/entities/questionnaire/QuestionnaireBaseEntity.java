@@ -7,10 +7,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.serializer.PersonEntitySerializer;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @MappedSuperclass
@@ -41,4 +42,34 @@ public abstract class QuestionnaireBaseEntity extends BaseEntity implements
 	public void setModifiedBy(PersonEntity modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(17,31)
+			.appendSuper(super.hashCode())
+			.append(createdBy)
+			.append(modifiedBy)
+			.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null) {
+			return false;
+		}
+		if(!(obj instanceof QuestionnaireBaseEntity)) {
+			return false;
+		}
+		if(obj == this) {
+			return true;
+		}
+		QuestionnaireBaseEntity entity = (QuestionnaireBaseEntity) obj;
+		return new EqualsBuilder()
+			.appendSuper(super.equals(obj))
+			.append(createdBy, entity.createdBy)
+			.append(modifiedBy, entity.modifiedBy)
+			.isEquals();
+	}
+
+	
 }

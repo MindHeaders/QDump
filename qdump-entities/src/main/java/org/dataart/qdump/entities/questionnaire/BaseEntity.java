@@ -11,6 +11,9 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @MappedSuperclass
@@ -59,4 +62,29 @@ public abstract class BaseEntity implements Serializable {
 	public void putModifiedDate() {
 		this.modifiedDate = new Date();
 	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(17, 31).append(id).append(createdDate)
+				.append(modifiedDate).toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null) {
+			return false;
+		}
+		if(obj == this) {
+			return true;
+		}
+		if(!(obj instanceof BaseEntity)) {
+			return false;
+		}
+		BaseEntity entity = (BaseEntity) obj;
+		return new EqualsBuilder().append(id, entity.id)
+				.append(createdDate, entity.createdDate)
+				.append(modifiedDate, entity.modifiedDate).isEquals();
+	}
+	
+	
 }

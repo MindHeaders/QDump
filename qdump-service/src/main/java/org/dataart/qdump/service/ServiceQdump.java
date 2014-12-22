@@ -15,23 +15,28 @@ public interface ServiceQdump {
 	//PersonEntity
 	void addPersonEntity(PersonEntity personEntity);
 	void deletePersonEntity(long id);
-	void deletePersonEntityByEmail(String email);
-	void deletePersonEntityByLogin(String login);
 	void deleteAllPersonEntities();
 	PersonEntity getPersonEntity(long id);
 	List<PersonEntity> getPersonEntities();
 	PersonEntity getPersonByEmail(String email);
 	PersonEntity getPersonByLogin(String login);
-	List<PersonEntity> getPersonsNameLastname();
-	public PersonEntity getPersonForAuthByLogin(String login);
+	List<PersonEntity> getPersonEntitiesForAdminPanel();
+	PersonEntity getPersonByLoginForAuth(String login);
+	boolean personEntityExists(long id);
+	long personEntitiesCount();
+	boolean existsByLogin(String login);
+	boolean existsByEmail(String email);
+	String getPersonPasswordByLogin(String login);
 	
 	//PersonQuestionnaireEntity
 	void addPersonQuestionnaireEntity(PersonQuestionnaireEntity personQuestionnaireEntity);
 	void deletePersonQuestionnaireEntity(long id);
-	void deletePersonQuestionnaireEntityByOwnBy(String login);
+	void deletePersonQuestionnaireEntityByOwnById(long id);
 	void deleteAllPersonQuestionnaireEntities();
 	PersonQuestionnaireEntity getPersonQuestionnaireEntity(long id);
 	List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities();
+	boolean personQuestionnaireEntityExists(long id);
+	long personQuestionnaireEntitiesCount();
 	
 	//PersonQuestionEntity
 	void addPersonQuestionEntity(PersonQuestionEntity personQuestionEntity);
@@ -40,36 +45,10 @@ public interface ServiceQdump {
 	void deleteAllPersonQuestionEntity();
 	PersonQuestionEntity getPersonQuestionEntity(long id);
 	List<PersonQuestionEntity> getPersonQuestionEntities();
-	/**
-	 * Added the implementation of the repository
-	 * PersonQuestionCrudRepository
-	 * 
-	 */
 	List<PersonQuestionEntity> getCorrectQuestion(boolean correct);
-	List<PersonQuestionEntity> getQuestionByPersonQuestionnaireId(
-			long personQuestionnaireId);
-
-	
-	//AnswerEntity
-	void addAnswerEntity(AnswerEntity answerEntity);
-	void deleteAnswerEntity(long id);
-	void deleteAllAnswerEntity();
-	AnswerEntity getAnswerEntity(long id);
-	List<AnswerEntity> getAnswerEntities();
-	
-	//QuestionEntity
-	void addQuestionEntity(QuestionEntity questionEntity);
-	void deleteQuestionEntity(long id);
-	void deleteAllQuestionEntity();
-	QuestionEntity getQuestionEntity(long id);
-	List<QuestionEntity> getQuestionEntities();
-	
-	//QuestionnaireEntity
-	void addQuestionnaireEntity(QuestionnaireEntity questionnaireEntity);
-	void deleteQuestionnaireEntity(long id);
-	void deleteAllQuestionnaireEntity();
-	QuestionnaireEntity getQuestionnaireEntity(long id);
-	List<QuestionnaireEntity> getQuestionnaireEntities();
+	List<PersonQuestionEntity> getQuestionByPersonQuestionnaireId(long personQuestionnaireId);
+	boolean personQuestionEntityExists(long id);
+	long personQuestionEntitiesCount();
 	
 	//PersonAnswerEntity
 	void addPersonAnswerEntity(PersonAnswerEntity personAnswerEntity);
@@ -77,5 +56,42 @@ public interface ServiceQdump {
 	void deleteAllPersonAnswerEntity();
 	PersonAnswerEntity getPersonAnswerEntity(long id);
 	List<PersonAnswerEntity> getPersonAnswerEntities();
+	boolean personAnswerEntityExists(long id);
+	long personAnswerEntitiesCount();
+	
+	//QuestionnaireEntity
+	void addQuestionnaireEntity(QuestionnaireEntity questionnaireEntity);
+	void deleteQuestionnaireEntity(long id);
+	void deleteAllQuestionnaireEntity();
+	QuestionnaireEntity getQuestionnaireEntity(long id);
+	List<QuestionnaireEntity> getQuestionnaireEntities();
+	boolean questionnaireEntityExists(long id);
+	long questionnaireEntitiesCount();
+	
+	//QuestionEntity
+	void addQuestionEntity(QuestionEntity questionEntity);
+	void deleteQuestionEntity(long id);
+	void deleteAllQuestionEntity();
+	QuestionEntity getQuestionEntity(long id);
+	List<QuestionEntity> getQuestionEntities();
+	boolean questionEntityExists(long id);
+	long questionEntitiesCount();
+	
+	//AnswerEntity
+	void addAnswerEntity(AnswerEntity answerEntity);
+	void deleteAnswerEntity(long id);
+	void deleteAllAnswerEntity();
+	AnswerEntity getAnswerEntity(long id);
+	List<AnswerEntity> getAnswerEntities();
+	List<AnswerEntity> getAnswerByQuestionId(Long questionId);
+	List<AnswerEntity> getAnswerByQuestionnaireId(Long questionnaireId);
+	boolean answerEntityExists(long id);
+	long answerEntitiesCount();
+	
+
+	
+	
+	
+	
 	
 }

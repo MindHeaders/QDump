@@ -20,6 +20,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.dataart.qdump.entities.enums.PersonGroupEnums;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireBaseEntity;
@@ -44,11 +46,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 			+ "WHERE p.login = ?1"),
 	@NamedQuery(name = "PersonEntity.getPersonByPersonGroup", query = "FROM PersonEntity p  "
 			+ "WHERE p.personGroup = ?1"),
-	@NamedQuery(name = "PersonEntity.getPersonsNameLastname", query = "SELECT NEW "
+	@NamedQuery(name = "PersonEntity.getPersonEntitiesForAdminPanel", query = "SELECT NEW "
 			+ "org.dataart.qdump.entities.person.PersonEntity(p.firstname, p.lastname, p.id) "
 			+ "FROM PersonEntity p"),
-	@NamedQuery(name = "PersonEntity.getPersonForAuthByLogin", query = "SELECT NEW "
+	@NamedQuery(name = "PersonEntity.getPersonByLoginForAuth", query = "SELECT NEW "
 			+ "org.dataart.qdump.entities.person.PersonEntity(p.email, p.password, p.login) "
+			+ "FROM PersonEntity p WHERE p.login = ?1"),
+	@NamedQuery(name = "PersonEntity.deletePersonEntityByEmail", query = "DELETE FROM "
+			+ "PersonEntity p WHERE p.email = ?1"),
+	@NamedQuery(name = "PersonEntity.deletePersonEntityByLogin", query = "DELETE FROM "
+			+ "PersonEntity p WHERE p.login = ?1"),
+	@NamedQuery(name = "PersonEntity.existsByLogin", query = "SELECT CASE WHEN "
+			+ "COUNT(p) > 0 THEN 'true' ELSE 'false' END FROM PersonEntity p WHERE p.login = ?1"),
+	@NamedQuery(name = "PersonEntity.existsByEmail", query = "SELECT CASE WHEN "
+			+ "COUNT(p) > 0 THEN 'true' ELSE 'false' END FROM PersonEntity p WHERE p.email = ?1"),			
+	@NamedQuery(name = "PersonEntity.getPersonPasswordByLogin", query = "SELECT p.password "
 			+ "FROM PersonEntity p WHERE p.login = ?1")
 })
 public class PersonEntity extends QuestionnaireBaseEntity implements Serializable {
@@ -74,6 +86,7 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 
 	public PersonEntity() {
 		super();
+		this.personGroup = PersonGroupEnums.USER;
 	}
 
 	public PersonEntity(String email, String password, String login) {
@@ -286,6 +299,31 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 		}
 	}
 
+	public boolean checkEqualsForWeb(PersonEntity entity) {
+		if(entity == null) {
+			return false;
+		}
+		if(!(entity instanceof PersonEntity)) {
+			return false;
+		}
+		if(this == entity) {
+			return true;
+		}
+		return new EqualsBuilder()
+			.append(this.getId(), entity.getId())
+			.append(this.getCreatedDate(), entity.getCreatedDate())
+			.append(this.getModifiedBy().getId(), entity.getModifiedBy().getId())
+			.append(this.getCreatedBy().getId(), entity.getCreatedBy().getId())
+			.append(this.firstname, entity.firstname)
+			.append(this.lastname, entity.lastname)
+			.append(this.email, entity.email)
+			.append(this.login, entity.login)
+			.append(this.isEnabled, entity.isEnabled)
+			.append(this.gender, entity.gender)
+			.append(this.personGroup, entity.personGroup)
+			.isEquals();
+	}
+	
 	@Override
 	public String toString() {
 		return "PersonEntity [getName()=" + getFirstname() + ", getSurname()="
@@ -297,4 +335,47 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 				+ ", getModifiedDate()=" + getModifiedDate() + "]";
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(17, 31)
+			.appendSuper(super.hashCode())
+			.append(firstname)
+			.append(lastname)
+			.append(email)
+			.append(login)
+			.append(password)
+			.append(isEnabled)
+			.append(gender)
+			.append(personGroup)
+			.append(personQuestionnaireEntities)
+			.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null) {
+			return false;
+		}
+		if(!(obj instanceof PersonEntity)) {
+			return false;
+		}
+		if(obj == this) {
+			return true;
+		}
+		PersonEntity entity = (PersonEntity) obj;
+		return new EqualsBuilder()
+			.appendSuper(super.equals(obj))
+			.append(firstname, entity.firstname)
+			.append(lastname, entity.lastname)
+			.append(email, entity.email)
+			.append(login, entity.login)
+			.append(password, entity.password)
+			.append(isEnabled, entity.isEnabled)
+			.append(gender, entity.gender)
+			.append(personGroup, entity.personGroup)
+			.append(personQuestionnaireEntities, entity.personQuestionnaireEntities)
+			.isEquals();
+	}
+	
+	
 }
