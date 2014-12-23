@@ -3,6 +3,7 @@ package org.dataart.qdump.entities.person;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.AttributeOverride;
@@ -15,6 +16,8 @@ import javax.persistence.FetchType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 import org.apache.commons.validator.routines.EmailValidator;
@@ -39,8 +42,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 	@NamedQuery(name = "PersonEntity.getPersonByLogin", query = "FROM PersonEntity p "
 			+ "WHERE p.login = ?1"),
 	@NamedQuery(name = "PersonEntity.getPersonByPersonGroup", query = "FROM PersonEntity p  "
-					+ "WHERE p.personGroup = ?1")		
-	 })
+			+ "WHERE p.personGroup = ?1"),
+	@NamedQuery(name = "PersonEntity.getPersonsNameLastname", query = "SELECT NEW "
+			+ "org.dataart.qdump.entities.person.PersonEntity(p.firstname, p.lastname, p.id) "
+			+ "FROM PersonEntity p"),
+	@NamedQuery(name = "PersonEntity.getPersonForAuthByLogin", query = "SELECT NEW "
+			+ "org.dataart.qdump.entities.person.PersonEntity(p.email, p.password, p.login) "
+			+ "FROM PersonEntity p WHERE p.login = ?1")
+})
 public class PersonEntity extends QuestionnaireBaseEntity implements Serializable {
 	private static final long serialVersionUID = -219526512840281300L;
 	private String firstname;
@@ -59,10 +68,18 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 		super();
 	}
 
-	public PersonEntity(String email, String password) {
+	public PersonEntity(String email, String password, String login) {
 		super();
 		this.email = email;
 		this.password = password;
+		this.login = login;
+	}
+	
+	public PersonEntity(String firstname, String lastname, long id) {
+		super();
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.id = id;
 	}
 
 	/**

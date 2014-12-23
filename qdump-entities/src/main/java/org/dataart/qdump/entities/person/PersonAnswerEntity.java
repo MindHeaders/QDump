@@ -35,7 +35,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class PersonAnswerEntity extends BaseEntity implements
 		Serializable {
 	private static final long serialVersionUID = 5266384349299279727L;
-	@JsonProperty("answer_entity")
 	@JsonSerialize(using = AnswerPersonSerializer.class)
 	private AnswerEntity answerEntity;
 	@JsonProperty("person_answer")
@@ -44,7 +43,7 @@ public class PersonAnswerEntity extends BaseEntity implements
 	@JsonBackReference
 	private PersonQuestionEntity personQuestionEntity;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_answer")
 	public AnswerEntity getAnswerEntity() {
 		return answerEntity;

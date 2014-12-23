@@ -83,9 +83,30 @@ public class ServiceImpl implements ServiceQdump{
 		return personCrudRepository.findOne(id);
 	}
 
+
+	@Override
+	public PersonEntity getPersonByEmail(String email) {
+		return personCrudRepository.getPersonByEmail(email);
+	}
+
+	@Override
+	public PersonEntity getPersonByLogin(String login) {
+		return personCrudRepository.getPersonByLogin(login);
+	}
+	
 	@Override
 	public List<PersonEntity> getPersonEntities() {
 		return (List<PersonEntity>) personCrudRepository.findAll();
+	}
+	
+	@Override
+	public List<PersonEntity> getPersonsNameLastname() {
+		return personCrudRepository.getPersonsNameLastname();
+	}
+	
+	@Override
+	public PersonEntity getPersonForAuthByLogin(String login) {
+		return personCrudRepository.getPersonForAuthByLogin(login);
 	}
 	
 	//PersonQuestionnaireEntity

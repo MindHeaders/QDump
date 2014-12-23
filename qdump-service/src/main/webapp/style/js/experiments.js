@@ -59,6 +59,7 @@ function selected(ans_type) {
     inp.setAttribute('type', "text");
     inp.setAttribute('size', "40");
     inp.setAttribute('class', "id1");
+    inp.setAttribute('maxlength', "100");
     inp.setAttribute('placeholder', "Input question here");
     p.appendChild(inp);
     el1.appendChild(p);

@@ -1,6 +1,3 @@
-//$(document).ready(fill_text());
-
-
 $(document).ready(function () {
 
     // if user clicked on button, the overlay layer or the dialogbox, close the dialog

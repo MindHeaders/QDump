@@ -11,6 +11,8 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.dataart.qdump.entities.enums.PersonGroupEnums;
 import org.dataart.qdump.entities.enums.QuestionTypeEnums;
@@ -21,6 +23,7 @@ import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
 import org.dataart.qdump.entities.questionnaire.AnswerEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,165 +33,23 @@ public class JpaTest {
 		EntityManagerFactory emf = Persistence
 				.createEntityManagerFactory("qdump-persistence");
 		EntityManager em = emf.createEntityManager();
-
-		File file = new File(
-				"/Users/artemvlasov/Documents/QDump Json Entities/NewQDumpEntities.txt");
-		FileOutputStream outputStream;
-
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-
-			// PersonEntity
-			PersonEntity personEntity1 = createPersonEntity("first@gmail.com",
-					"login1", "password1", "surname1", "name1", true, (byte) 1);
-			PersonEntity personEntity2 = createPersonEntity("second@gmail.com",
-					"login2", "password2", "surname2", "name2", true, (byte) 1);
-			// AnswerEntity
-			List<AnswerEntity> answerEntities1 = new ArrayList<AnswerEntity>();
-			answerEntities1.add(createAnswerEntity(
-					"first answer first question", true));
-			List<AnswerEntity> answerEntities2 = new ArrayList<AnswerEntity>();
-			answerEntities2.add(createAnswerEntity(
-					"first answer second question", true));
-			answerEntities2.add(createAnswerEntity(
-					"second answer second question", true));
-			List<AnswerEntity> answerEntities3 = new ArrayList<AnswerEntity>();
-			answerEntities3.add(createAnswerEntity(
-					"first answer third question", true));
-			answerEntities3.add(createAnswerEntity(
-					"second answer third question", true));
-			answerEntities3.add(createAnswerEntity(
-					"third answer third question", true));
-
-			// QuestionEntity
-			List<QuestionEntity> questionEntities1 = new ArrayList<QuestionEntity>();
-			questionEntities1.add(createQuestionEntity(answerEntities1,
-					"first question first questionnaire",
-					QuestionTypeEnums.CHECKBOX));
-			List<QuestionEntity> questionEntities2 = new ArrayList<QuestionEntity>();
-			questionEntities2.add(createQuestionEntity(answerEntities2,
-					"second question second questionnaire",
-					QuestionTypeEnums.RADIO));
-			List<QuestionEntity> questionEntities3 = new ArrayList<QuestionEntity>();
-			questionEntities3.add(createQuestionEntity(answerEntities3,
-					"third question third questionnaire",
-					QuestionTypeEnums.SELECT));
-
-			// QuestionnaireEntity
-			List<QuestionnaireEntity> questionnaireEntities1 = new ArrayList<QuestionnaireEntity>();
-			questionnaireEntities1.add(createQuestionnaireEntity(personEntity1,
-					questionEntities1, "first questionnaire", "first", true));
-			List<QuestionnaireEntity> questionnaireEntities2 = new ArrayList<QuestionnaireEntity>();
-			questionnaireEntities2.add(createQuestionnaireEntity(personEntity2,
-					questionEntities2, "second questionnaire", "second", true));
-			List<QuestionnaireEntity> questionnaireEntities3 = new ArrayList<QuestionnaireEntity>();
-			questionnaireEntities3.add(createQuestionnaireEntity(personEntity1,
-					questionEntities3, "third questionnaire", "third", false));
-
-			outputStream = new FileOutputStream(file, true);
-			outputStream.write("\n//Questionnaire Entity #1\n".getBytes());
-			outputStream.flush();
-			mapper.writeValue(outputStream, questionnaireEntities1.get(0));
-
-			outputStream = new FileOutputStream(file, true);
-			outputStream.write("\n//Questionnaire Entity #2\n".getBytes());
-			outputStream.flush();
-			mapper.writeValue(outputStream, questionnaireEntities2.get(0));
-
-			outputStream = new FileOutputStream(file, true);
-			outputStream.write("\n//Questionnaire Entity #3\n".getBytes());
-			outputStream.flush();
-			mapper.writeValue(outputStream, questionnaireEntities3.get(0));
-
-			// PersonAnswerEntity
-			List<PersonAnswerEntity> personAnswerEntities1 = new ArrayList<PersonAnswerEntity>();
-			personAnswerEntities1.add(createPersonAnswerEntity(
-					answerEntities1.get(0), "First PQuestion first PA", true));
-			List<PersonAnswerEntity> personAnswerEntities2 = new ArrayList<PersonAnswerEntity>();
-			personAnswerEntities2.add(createPersonAnswerEntity(
-					answerEntities2.get(0), "Second PQuestion first PA", true));
-			personAnswerEntities2
-					.add(createPersonAnswerEntity(answerEntities2.get(1),
-							"Second PQuestion second PA", false));
-			List<PersonAnswerEntity> personAnswerEntities3 = new ArrayList<PersonAnswerEntity>();
-			personAnswerEntities3.add(createPersonAnswerEntity(
-					answerEntities3.get(0), "Third PQuestion first PA", true));
-			personAnswerEntities3
-					.add(createPersonAnswerEntity(answerEntities3.get(1),
-							"Third PQuestion second PA", false));
-			personAnswerEntities3.add(createPersonAnswerEntity(
-					answerEntities3.get(2), "Third PQuestion third PA", true));
-
-			// PersonQuestionEntity
-			List<PersonQuestionEntity> personQuestionEntities1 = new ArrayList<PersonQuestionEntity>();
-			personQuestionEntities1.add(createPersonQuestionEntity(
-					personAnswerEntities1, questionEntities1.get(0)));
-			personQuestionEntities1.stream().forEach(
-					entity -> entity.checkQuestionIsCorrect());
-			List<PersonQuestionEntity> personQuestionEntities2 = new ArrayList<PersonQuestionEntity>();
-			personQuestionEntities2.add(createPersonQuestionEntity(
-					personAnswerEntities2, questionEntities2.get(0)));
-			personQuestionEntities2.stream().forEach(
-					entity -> entity.checkQuestionIsCorrect());
-			List<PersonQuestionEntity> personQuestionEntities3 = new ArrayList<PersonQuestionEntity>();
-			personQuestionEntities3.add(createPersonQuestionEntity(
-					personAnswerEntities3, questionEntities3.get(0)));
-			personQuestionEntities3.stream().forEach(
-					entity -> entity.checkQuestionIsCorrect());
-
-			// PersonQuestionnaireEntity
-			List<PersonQuestionnaireEntity> personQuestionnaireEntities1 = new ArrayList<PersonQuestionnaireEntity>();
-			personQuestionnaireEntities1.add(createPersonQuestionnaireEntity(
-					personQuestionEntities1, questionnaireEntities1.get(0),
-					personEntity1));
-			personQuestionnaireEntities1.stream().forEach(
-					entity -> entity.checkStatus());
-			List<PersonQuestionnaireEntity> personQuestionnaireEntities2 = new ArrayList<PersonQuestionnaireEntity>();
-			personQuestionnaireEntities2.add(createPersonQuestionnaireEntity(
-					personQuestionEntities2, questionnaireEntities2.get(0),
-					personEntity2));
-			personQuestionnaireEntities2.stream().forEach(
-					entity -> entity.checkStatus());
-			List<PersonQuestionnaireEntity> personQuestionnaireEntities3 = new ArrayList<PersonQuestionnaireEntity>();
-			personQuestionnaireEntities3.add(createPersonQuestionnaireEntity(
-					personQuestionEntities3, questionnaireEntities3.get(0),
-					personEntity1));
-			personQuestionnaireEntities3.stream().forEach(
-					entity -> entity.checkStatus());
-
-			outputStream = new FileOutputStream(file, true);
-			outputStream.write("\n//Person Questionnaire Entity #1\n"
-					.getBytes());
-			outputStream.flush();
-			mapper.writeValue(outputStream, personQuestionnaireEntities1.get(0));
-
-			outputStream = new FileOutputStream(file, true);
-			outputStream.write("\n//Person Entity #1\n".getBytes());
-			outputStream.flush();
-			mapper.writeValue(outputStream, personEntity1);
-
-			outputStream = new FileOutputStream(file, true);
-			outputStream.write("\n//Person Questionnaire Entity #2\n"
-					.getBytes());
-			outputStream.flush();
-			mapper.writeValue(outputStream, personQuestionnaireEntities2.get(0));
-
-			outputStream = new FileOutputStream(file, true);
-			outputStream.write("\n//Person Questionnaire Entity #3\n"
-					.getBytes());
-			outputStream.flush();
-			mapper.writeValue(outputStream, personQuestionnaireEntities3.get(0));
-
-			em.getTransaction().begin();
-			em.persist(personEntity1);
-			em.persist(personEntity2);
-			persistCollection(personQuestionnaireEntities1, em);
-			persistCollection(personQuestionnaireEntities2, em);
-			persistCollection(personQuestionnaireEntities3, em);
-			persistCollection(questionnaireEntities1, em);
-			persistCollection(questionnaireEntities2, em);
-			persistCollection(questionnaireEntities3, em);
 			
+			em.getTransaction().begin();
+			Query query = em.createNamedQuery("PersonEntity.getPersonForAuthByLogin");
+			query.setParameter(1, "testlogin3");
+			PersonEntity entity = (PersonEntity) query.getSingleResult();
+			System.out.println(BCrypt.checkpw("helloman", entity.getPassword()));
+			/*List<PersonEntity> entities = em.createNamedQuery(
+					"PersonEntity.getPersonsNameLastname", PersonEntity.class)
+					.getResultList();
+			entities.stream().forEach(
+					entity -> System.out.println(String.format(
+							"Firstname = %s, Lastname = %s, id = %d",
+							entity.getFirstname(), entity.getLastname(), entity.getId())));
+			entities.stream().forEach(
+					entity -> System.out.println(entity.toString()));*/
 			/*TypedQuery<AnswerEntity> query = em.createNamedQuery("AnswerEntity.getAnswerByQuestionId", AnswerEntity.class);
 			query.setParameter(1, 13l);
 			List<AnswerEntity> answerEntities = query.getResultList();

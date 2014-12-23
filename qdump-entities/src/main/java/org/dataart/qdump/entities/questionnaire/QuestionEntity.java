@@ -66,7 +66,7 @@ public class QuestionEntity extends BaseEntity implements Serializable {
 		this.type = type;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "questionEntity", fetch = FetchType.LAZY, targetEntity = AnswerEntity.class)
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "questionEntity", fetch = FetchType.EAGER, targetEntity = AnswerEntity.class)
 	public List<AnswerEntity> getAnswerEntities() {
 		return answerEntities;
 	}
@@ -75,7 +75,7 @@ public class QuestionEntity extends BaseEntity implements Serializable {
 		this.answerEntities = answerEntities;
 	}
 
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = QuestionnaireEntity.class)
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = QuestionnaireEntity.class)
 	@JoinColumn(name = "id_questionnaire", referencedColumnName = "id_questionnaire")
 	public QuestionnaireEntity getQuestionnaireEntity() {
 		return questionnaireEntity;
