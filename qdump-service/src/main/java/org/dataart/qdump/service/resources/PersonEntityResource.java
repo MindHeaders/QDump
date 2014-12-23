@@ -31,53 +31,60 @@ public class PersonEntityResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("get")
 	public Response getPersonEntity(@QueryParam("id") Long id) {
-		if(!serviceQdump.personEntityExists(id)) {
-			return Response.status(Status.NOT_FOUND).entity("There is no person with this id").build();
+		if (!serviceQdump.personEntityExists(id)) {
+			return Response.status(Status.NOT_FOUND)
+					.entity("There is no person with this id").build();
 		} else {
-			return Response.status(Status.OK).entity(serviceQdump.getPersonEntity(id)).build();
+			return Response.status(Status.OK)
+					.entity(serviceQdump.getPersonEntity(id)).build();
 		}
 	}
 
 	@POST
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("login")
-	public Response login(@FormParam("login") String login, @FormParam("password") String password) {
-		if(!serviceQdump.existsByLogin(login)) {
-			return Response.status(Status.NOT_FOUND).entity("Error in login or password").build();
-		} else if(!BCrypt.checkpw(password, serviceQdump.getPersonPasswordByLogin(login))) {
-			return Response.status(Status.NOT_FOUND).entity("Error in login or password").build();
+	public Response login(@FormParam("login") String login,
+			@FormParam("password") String password) {
+		if (!serviceQdump.personEntityExistsByLogin(login)) {
+			return Response.status(Status.NOT_FOUND)
+					.entity("Error in login or password").build();
+		} else if (!BCrypt.checkpw(password,
+				serviceQdump.getPersonPasswordByLogin(login))) {
+			return Response.status(Status.NOT_FOUND)
+					.entity("Error in login or password").build();
 		} else {
 			PersonEntity entity = serviceQdump.getPersonByLogin(login);
 			return Response.status(Status.OK).entity(entity).build();
 		}
 	}
-	
+
 	@POST
+	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("registration")
 	public Response registration(PersonEntity entity) {
 		serviceQdump.addPersonEntity(entity);
-		return Response.status(Status.CREATED).entity("User was created successful.").build();
+		return Response.status(Status.CREATED)
+				.entity("User was created successful.").build();
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("get/all")
 	public List<PersonEntity> getAll() {
 		return serviceQdump.getPersonEntities();
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("get/allmin")
 	public List<PersonEntity> getAllMin() {
 		return serviceQdump.getPersonEntitiesForAdminPanel();
 	}
-	
+
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("delete")
 	public Response deletePersonEntity(long id) {
 		if (!serviceQdump.personEntityExists(id)) {
@@ -91,39 +98,52 @@ public class PersonEntityResource {
 	}
 
 	@DELETE
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("delete/all")
 	public Response deleteAllPersonEntities() {
 		serviceQdump.deleteAllPersonEntities();
-		return Response.status(Status.OK).entity("Was delete all Person Entites").build();
+		return Response.status(Status.OK)
+				.entity("Was delete all Person Entites").build();
 	}
-	
+
 	@PUT
-	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("update")
 	public Response updatePersonEntity(PersonEntity entity) {
-		if(!serviceQdump.personEntityExists(entity.getId())) {
-			return Response.status(Status.NOT_FOUND).entity("Person with this id is not exists").build();
-		} 
-		PersonEntity source = serviceQdump.getPersonEntity(entity.getId());
-		if (source.checkEqualsForWeb(entity)){
-			return Response.status(Status.ACCEPTED).entity("There is nothing to change").build();
+		if (!serviceQdump.personEntityExists(entity.getId())) {
+			return Response.status(Status.NOT_FOUND)
+					.entity("Person with this id is not exists").build();
 		}
-		source.updatePersonEntity(entity);
-		return Response.status(Status.OK).entity("Person was successful updated").build();
-		
+		PersonEntity source = serviceQdump.getPersonEntity(entity.getId());
+		if (source.checkEqualsForWeb(entity)) {
+			return Response.status(Status.ACCEPTED)
+					.entity("There is nothing to change").build();
+		}
+		return Response.status(Status.OK)
+				.entity("Person was successful updated").build();
 	}
-	
+
 	@PUT
-	@GET
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("check/email")
 	public Response checkPersonEntityEmail(@QueryParam("email") String email) {
-		if(!serviceQdump.existsByEmail(email)) {
-			return Response.status(Status.FORBIDDEN).entity("This email is exists").build();
+		if (!serviceQdump.personEntityExistsByEmail(email)) {
+			return Response.status(Status.FORBIDDEN)
+					.entity("This email is alredy exists").build();
+		}
+		return Response.status(Status.OK).build();
+	}
+
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("check/login")
+	public Response checkPersonEntityLogin(@QueryParam("login") String login) {
+		if (!serviceQdump.personEntityExistsByLogin(login)) {
+			return Response.status(Status.FORBIDDEN)
+					.entity("This login is alredy exists").build();
 		}
 		return Response.status(Status.OK).build();
 	}

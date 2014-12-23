@@ -1,6 +1,5 @@
 package org.dataart.qdump.entities.person;
 
-import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -24,11 +23,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.dataart.qdump.entities.enums.PersonGroupEnums;
+import org.dataart.qdump.entities.helper.EntitiesUpdater;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireBaseEntity;
 import org.hibernate.validator.constraints.Email;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -274,29 +271,15 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 	}
 	
 	/**
-	 * Update all properties which is not equals to fields falue from database. Also this update is 
+	 * Update all properties which is not equals to fields value from database. Also this update is 
 	 * @param personEntity
 	 */
 	public void updatePersonEntity(PersonEntity personEntity) {
-		BeanWrapper trg = new BeanWrapperImpl(this);
-		BeanWrapper src = new BeanWrapperImpl(personEntity);
-		List<String> ignoredProperties = Arrays.asList("id", "createdDate",
-				"createdBy");
-		for (PropertyDescriptor descriptor : BeanUtils
-				.getPropertyDescriptors(PersonEntity.class)) {
-			String propName = descriptor.getName();
-			if (trg.getPropertyValue(propName) != src
-					.getPropertyValue(propName)
-					&& !ignoredProperties.contains(propName)) {
-				if (propName.equals("gender")
-						&& src.getPropertyValue(propName).equals(9)) {
-					continue;
-				} else {
-					trg.setPropertyValue(propName,
-							src.getPropertyValue(propName));
-				}
-			}
+		List<String> ignoredFields = Arrays.asList("gender", "personQuestionnaireEntities");
+		if(personEntity.gender != 9) {
+			this.gender = personEntity.gender;
 		}
+		EntitiesUpdater.updateEntity(personEntity, this, ignoredFields, PersonEntity.class);
 	}
 
 	public boolean checkEqualsForWeb(PersonEntity entity) {

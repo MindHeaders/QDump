@@ -1,6 +1,7 @@
 package org.dataart.qdump.entities.person;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.AttributeOverride;
@@ -10,14 +11,14 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.dataart.qdump.entities.helper.EntitiesUpdater;
 import org.dataart.qdump.entities.questionnaire.AnswerEntity;
 import org.dataart.qdump.entities.questionnaire.BaseEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionEntity;
@@ -35,14 +36,6 @@ import com.google.common.base.Preconditions;
 @AttributeOverride(name = "id", column = @Column(name = "id_person_question", insertable = false, updatable = false))
 @JsonAutoDetect
 @JsonIgnoreProperties({"createdDate", "modifiedDate"})
-@NamedQueries({
-		@NamedQuery(name = "PersonQuestionEntity.getCorrectQuestion", query = "FROM PersonQuestionEntity pq "
-				+ "WHERE pq.correct = ?1"),
-		@NamedQuery(name = "PersonQuestionEntity.getQuestionByPersonQuestionnaireId", query = "FROM PersonQuestionEntity pq "
-						+ "WHERE pq.personQuestionnaireEntity.id = ?1"),
-		@NamedQuery(name = "PersonQuestionEntity.deletePersonQuestionEntityByPersonQuestionnaireId", query = "DELETE FROM "
-				+ "PersonQuestionEntity p WHERE p.personQuestionnaireEntity.id = ?1")
-})
 public class PersonQuestionEntity extends BaseEntity implements
 		Serializable {
 	private static final long serialVersionUID = -6691017410211190245L;
@@ -142,6 +135,40 @@ public class PersonQuestionEntity extends BaseEntity implements
 		if(personAnswerEntity.getPersonQuestionEntity() != this) {
 			personAnswerEntity.setPersonQuestionEntity(this);
 		}
+	}
+	
+	public boolean checkIdForCreation() {
+		if(id != 0 || questionEntity.getId() == 0) {
+			return false;
+		}
+		for(PersonAnswerEntity entity : personAnswerEntities) {
+			if(!entity.checkIdForCreation()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public void updateEntity(Object obj) {
+		PersonQuestionEntity entity = (PersonQuestionEntity) obj;
+		List<String> ignoredFields = Arrays.asList("personQuestionnaireEntity",
+				"questionEntity", "personAnswerEntities");
+		EntitiesUpdater.updateEntity(entity, this, ignoredFields, PersonQuestionEntity.class);
+		EntitiesUpdater.updateEntities(entity.personAnswerEntities, personAnswerEntities, PersonAnswerEntity.class);
+	}
+	
+	public boolean entitiesIsEquals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		PersonQuestionEntity entity = (PersonQuestionEntity) obj;
+		return new EqualsBuilder()
+				.append(this.id, entity.id)
+				.append(correct, entity.correct)
+				.isEquals();
 	}
 	
 	@PrePersist

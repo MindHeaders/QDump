@@ -96,12 +96,12 @@ public class ServiceImpl implements ServiceQdump{
 	}
 	
 	@Override
-	public boolean existsByLogin(String login) {
+	public boolean personEntityExistsByLogin(String login) {
 		return personCrudRepository.existsByLogin(login);
 	}
 	
 	@Override
-	public boolean existsByEmail(String email) {
+	public boolean personEntityExistsByEmail(String email) {
 		return personCrudRepository.existsByEmail(email);
 	}
 	
@@ -139,6 +139,11 @@ public class ServiceImpl implements ServiceQdump{
 	}
 
 	@Override
+	public List<PersonQuestionnaireEntity> findByOwnById(Long id) {
+		return personQuestionnaireCrudRepository.findByOwnById(id);
+	}
+	
+	@Override
 	public List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities() {
 		return (List<PersonQuestionnaireEntity>) 
 				personQuestionnaireCrudRepository.findAll();
@@ -166,11 +171,6 @@ public class ServiceImpl implements ServiceQdump{
 	public void deletePersonQuestionEntity(long id) {
 		personQuestionCrudRepository.delete(id);
 	}
-
-	@Override
-	public void deletePersonQuestionEntityByPersonQuestionnaireId(long id) {
-		personQuestionCrudRepository.deletePersonQuestionEntityByPersonQuestionnaireId(id);;
-	}
 	
 	@Override
 	public void deleteAllPersonQuestionEntity() {
@@ -186,19 +186,6 @@ public class ServiceImpl implements ServiceQdump{
 	public List<PersonQuestionEntity> getPersonQuestionEntities() {
 		return (List<PersonQuestionEntity>) 
 				personQuestionCrudRepository.findAll();
-	}
-	
-	@Override
-	public List<PersonQuestionEntity> getCorrectQuestion(boolean correct) {
-		return (List<PersonQuestionEntity>) personQuestionCrudRepository
-				.getCorrectQuestion(correct);
-	}
-	
-	@Override
-	public List<PersonQuestionEntity> getQuestionByPersonQuestionnaireId(
-			long personQuestionnaireId) {
-		return (List<PersonQuestionEntity>) personQuestionCrudRepository
-				.getQuestionByPersonQuestionnaireId(personQuestionnaireId);
 	}
 	
 	@Override
@@ -345,16 +332,6 @@ public class ServiceImpl implements ServiceQdump{
 	@Override
 	public List<AnswerEntity> getAnswerEntities() {
 		return (List<AnswerEntity>) answerCrudRepository.findAll();
-	}
-
-	@Override
-	public List<AnswerEntity> getAnswerByQuestionId(Long questionId) {
-		return answerCrudRepository.getAnswerByQuestionId(questionId);
-	}
-
-	@Override
-	public List<AnswerEntity> getAnswerByQuestionnaireId(Long questionnaireId) {
-		return answerCrudRepository.getAnswerByQuestionnaireId(questionnaireId);
 	}
 
 	@Override

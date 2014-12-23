@@ -86,5 +86,9 @@ public abstract class BaseEntity implements Serializable {
 				.append(modifiedDate, entity.modifiedDate).isEquals();
 	}
 	
+	public boolean entitiesIsEquals(Object obj) {
+		return true;
+	}
 	
+	public void updateEntity(Object obj) {}
 }

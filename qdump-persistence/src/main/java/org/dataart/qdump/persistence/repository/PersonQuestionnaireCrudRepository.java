@@ -2,7 +2,6 @@ package org.dataart.qdump.persistence.repository;
 
 import java.util.List;
 
-import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
 import org.springframework.data.repository.CrudRepository;
 
@@ -23,8 +22,7 @@ public interface PersonQuestionnaireCrudRepository extends
 	 *            {@link PersonQuestionnaireEntity#getOwnBy()}
 	 * @return
 	 */
-	List<PersonQuestionnaireEntity> findByOwnBy(
-			PersonEntity ownBy);
+	List<PersonQuestionnaireEntity> findByOwnById(Long id);
 
 	/**
 	 * This method return PersonQuestionnaire by status.

@@ -1,8 +1,6 @@
 package org.dataart.qdump.persistence;
 
 import java.beans.IntrospectionException;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +10,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
 import org.dataart.qdump.entities.enums.PersonGroupEnums;
 import org.dataart.qdump.entities.enums.QuestionTypeEnums;

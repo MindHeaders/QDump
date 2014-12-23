@@ -24,8 +24,8 @@ public interface ServiceQdump {
 	PersonEntity getPersonByLoginForAuth(String login);
 	boolean personEntityExists(long id);
 	long personEntitiesCount();
-	boolean existsByLogin(String login);
-	boolean existsByEmail(String email);
+	boolean personEntityExistsByLogin(String login);
+	boolean personEntityExistsByEmail(String email);
 	String getPersonPasswordByLogin(String login);
 	
 	//PersonQuestionnaireEntity
@@ -35,18 +35,16 @@ public interface ServiceQdump {
 	void deleteAllPersonQuestionnaireEntities();
 	PersonQuestionnaireEntity getPersonQuestionnaireEntity(long id);
 	List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities();
+	List<PersonQuestionnaireEntity> findByOwnById(Long id);
 	boolean personQuestionnaireEntityExists(long id);
 	long personQuestionnaireEntitiesCount();
 	
 	//PersonQuestionEntity
 	void addPersonQuestionEntity(PersonQuestionEntity personQuestionEntity);
 	void deletePersonQuestionEntity(long id);
-	void deletePersonQuestionEntityByPersonQuestionnaireId(long id);
 	void deleteAllPersonQuestionEntity();
 	PersonQuestionEntity getPersonQuestionEntity(long id);
 	List<PersonQuestionEntity> getPersonQuestionEntities();
-	List<PersonQuestionEntity> getCorrectQuestion(boolean correct);
-	List<PersonQuestionEntity> getQuestionByPersonQuestionnaireId(long personQuestionnaireId);
 	boolean personQuestionEntityExists(long id);
 	long personQuestionEntitiesCount();
 	
@@ -83,8 +81,6 @@ public interface ServiceQdump {
 	void deleteAllAnswerEntity();
 	AnswerEntity getAnswerEntity(long id);
 	List<AnswerEntity> getAnswerEntities();
-	List<AnswerEntity> getAnswerByQuestionId(Long questionId);
-	List<AnswerEntity> getAnswerByQuestionnaireId(Long questionnaireId);
 	boolean answerEntityExists(long id);
 	long answerEntitiesCount();
 	

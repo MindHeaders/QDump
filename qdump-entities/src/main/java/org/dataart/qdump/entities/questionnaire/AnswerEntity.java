@@ -1,6 +1,8 @@
 package org.dataart.qdump.entities.questionnaire;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -10,9 +12,10 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.dataart.qdump.entities.helper.EntitiesUpdater;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -24,11 +27,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 		@AttributeOverride(name = "id", column = @Column(name = "id_answer", insertable = false, updatable = false))})
 @JsonAutoDetect
 @JsonIgnoreProperties({"createdDate", "modifiedDate"})
-@NamedQueries({
-		@NamedQuery(name = "AnswerEntity.getAnswerByQuestionId", query = "FROM AnswerEntity a "
-				+ "WHERE a.questionEntity.id = ?1"),
-		@NamedQuery(name = "AnswerEntity.getAnswerByQuestionnaireId", query = "FROM AnswerEntity a  "
-				+ "WHERE a.questionEntity.questionnaireEntity.id = ?1") })
 public class AnswerEntity extends BaseEntity implements Serializable{
 	private static final long serialVersionUID = -5973094404031746982L;
 	private String answer;
@@ -71,10 +69,25 @@ public class AnswerEntity extends BaseEntity implements Serializable{
 		}
 	}
 	
-	public void updateAnswerEntity(AnswerEntity entity) {
-		if(this.getAnswer() != entity.getAnswer() && entity.getAnswer() != null) {
-			this.setAnswer(entity.getAnswer());
+	public void updateEntity(Object obj) {
+		AnswerEntity entity = (AnswerEntity) obj;
+		List<String> ignoredFields = Arrays.asList("questionEntity");
+		EntitiesUpdater.updateEntity(entity, this, ignoredFields, AnswerEntity.class);
+	}
+	
+	public boolean entitiesIsEquals(Object obj) {
+		if (obj == null) {
+			return false;
 		}
+		if (obj == this) {
+			return true;
+		}
+		AnswerEntity entity = (AnswerEntity) obj;
+		return new EqualsBuilder()
+				.append(this.id, entity.id)
+				.append(answer, entity.answer)
+				.append(correct, entity.correct)
+				.isEquals();
 	}
 
 	@Override
@@ -84,5 +97,6 @@ public class AnswerEntity extends BaseEntity implements Serializable{
 				+ ", getCreatedDate()=" + getCreatedDate()
 				+ ", getModifiedDate()=" + getModifiedDate() + "]";
 	}
+
 }
 

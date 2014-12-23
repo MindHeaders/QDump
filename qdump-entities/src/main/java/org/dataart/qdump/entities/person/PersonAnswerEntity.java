@@ -1,6 +1,8 @@
 package org.dataart.qdump.entities.person;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
@@ -8,11 +10,11 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.dataart.qdump.entities.helper.EntitiesUpdater;
 import org.dataart.qdump.entities.questionnaire.AnswerEntity;
 import org.dataart.qdump.entities.questionnaire.BaseEntity;
 import org.dataart.qdump.entities.serializer.AnswerPersonSerializer;
@@ -28,10 +30,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @AttributeOverride(name = "id", column = @Column(name = "id_person_answer", insertable = false, updatable = false))
 @JsonAutoDetect
 @JsonIgnoreProperties({"createdDate", "modifiedDate"})
-@NamedQueries({
-	@NamedQuery(name = "PersonAnswerEntity.getPersonAnswerByPersonQuestionId", query = "FROM PersonAnswerEntity pa "
-			+ "WHERE pa.personQuestionEntity.id = ?1")	
-	 })
 public class PersonAnswerEntity extends BaseEntity implements
 		Serializable {
 	private static final long serialVersionUID = 5266384349299279727L;
@@ -87,6 +85,34 @@ public class PersonAnswerEntity extends BaseEntity implements
 		if(!personQuestionEntity.getPersonAnswerEntities().contains(this)) {
 			personQuestionEntity.getPersonAnswerEntities().add(this);
 		}
+	}
+
+	public boolean checkIdForCreation() {
+		if(id != 0 || answerEntity.getId() == 0) {
+			return false;
+		}
+		return true;
+	}
+	
+	public void updateEntity(Object obj) {
+		PersonAnswerEntity entity = (PersonAnswerEntity) obj;
+		List<String> ignoredFields = Arrays.asList("personQuestionEntity", "answerEntity");
+		EntitiesUpdater.updateEntity(entity, this, ignoredFields, PersonAnswerEntity.class);
+	}
+	
+	public boolean entitiesIsEquals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		PersonAnswerEntity entity = (PersonAnswerEntity) obj;
+		return new EqualsBuilder()
+				.append(this.id, entity.id)
+				.append(personAnswer, entity.personAnswer)
+				.append(marked, entity.marked)
+				.isEquals();
 	}
 
 	@Override

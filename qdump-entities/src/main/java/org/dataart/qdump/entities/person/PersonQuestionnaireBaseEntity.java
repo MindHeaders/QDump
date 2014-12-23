@@ -11,7 +11,6 @@ import javax.persistence.MappedSuperclass;
 import org.dataart.qdump.entities.questionnaire.BaseEntity;
 import org.dataart.qdump.entities.serializer.PersonEntitySerializer;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @MappedSuperclass

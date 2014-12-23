@@ -1,7 +1,7 @@
 package org.dataart.qdump.entities.questionnaire;
 
 import java.io.Serializable;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.AttributeOverride;
@@ -15,8 +15,10 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.dataart.qdump.entities.helper.EntitiesUpdater;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
@@ -84,45 +86,39 @@ public class QuestionnaireEntity extends QuestionnaireBaseEntity implements
 		}
 	}
 	
-	/**
-	 * Update existing {@link QuestionnaireEntity} object in database
-	 * Field published should be update separately
-	 */
-	public void updateQuestionnaireEntity(QuestionnaireEntity entity) {
-		Comparator<QuestionEntity> comparator = new Comparator<QuestionEntity>() {
-			@Override
-			public int compare(QuestionEntity o1, QuestionEntity o2) {
-				long questionId1 = o1.getId();
-				long questionId2 = o2.getId();
-				return (int) (questionId1 - questionId2);
-			}
-		};
-		if (entity.getDescription() != this.getDescription()
-				&& entity.getDescription() != null) {
-			this.setDescription(entity.getDescription());
+	public boolean checkIdForCreation() {
+		if(id > 0) {
+			return false;
 		}
-		if (entity.getName() != this.getName() && entity.getName() != null) {
-			this.setName(entity.getName());
-		}
-		if (entity.getModifiedBy() != null) {
-			this.setModifiedBy(entity.getModifiedBy());
-		}
-		if (this.questionEntities != null && entity.questionEntities != null) {
-			this.questionEntities.sort(comparator);
-			entity.questionEntities.sort(comparator);
-			if (this.questionEntities.size() != entity.questionEntities.size()) {
-				throw new RuntimeException(
-						"Target Answer Entities size is not equals to Source Answer Entities");
-			} else {
-				for (int i = 0; i < this.questionEntities.size(); i++) {
-					if (entity.questionEntities.get(i).getId() == this.questionEntities
-							.get(i).getId()) {
-						this.questionEntities.get(i).updateQuestionEntity(
-								entity.questionEntities.get(i));
-					}
-				}
+		for(QuestionEntity entity : questionEntities) {
+			if(entity.id > 0 || !entity.checkIdForCreation()) {
+				return false;
 			}
 		}
+		return true;
+	}
+	
+	public boolean entitiesIsEquals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		QuestionnaireEntity entity = (QuestionnaireEntity) obj;
+		return new EqualsBuilder()
+				.append(this.id, entity.id)
+				.append(name, entity.name)
+				.append(description, entity.description)
+				.append(published, entity.published)
+				.isEquals();
+	}
+	
+	public void updateEntity(Object obj) {
+		QuestionnaireEntity entity = (QuestionnaireEntity) obj;
+		List<String> ignoredFields = Arrays.asList("questionEntities");
+		EntitiesUpdater.updateEntity(entity, this, ignoredFields, QuestionnaireEntity.class);
+		EntitiesUpdater.updateEntities(entity.questionEntities, questionEntities, QuestionEntity.class);
 	}
 
 	@Override

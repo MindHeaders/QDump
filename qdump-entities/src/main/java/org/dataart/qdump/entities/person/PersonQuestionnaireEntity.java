@@ -1,6 +1,7 @@
 package org.dataart.qdump.entities.person;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.AttributeOverride;
@@ -17,8 +18,10 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.dataart.qdump.entities.enums.QuestionTypeEnums;
 import org.dataart.qdump.entities.enums.QuestionnaireStatusEnums;
+import org.dataart.qdump.entities.helper.EntitiesUpdater;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
 import org.dataart.qdump.entities.serializer.QuestionnairePersonSerializer;
 
@@ -32,8 +35,8 @@ import com.google.common.base.Preconditions;
 @AttributeOverride(name = "id", column = @Column(name = "id_person_questionnaire", insertable = false, updatable = false))
 @JsonAutoDetect
 @NamedQueries({
-		@NamedQuery(name = "PersonQuestionnaireEntity.findByOwnBy", query = "FROM PersonQuestionnaireEntity pinq "
-				+ "WHERE pinq.ownBy = ?1"),
+		@NamedQuery(name = "PersonQuestionnaireEntity.findByOwnById", query = "FROM PersonQuestionnaireEntity p "
+				+ "WHERE p.ownBy.id = ?1"),
 		@NamedQuery(name = "PersonQuestionnaireEntity.getPersonQuestionnaireByStatus", query = "FROM PersonQuestionnaireEntity pinq "
 				+ "WHERE pinq.status = ?1"),
 		@NamedQuery(name = "PersonQuestionnaireEntity.getPersonQuestionnaireByQuestionnaireName", query = "FROM PersonQuestionnaireEntity pinq "
@@ -144,6 +147,18 @@ public class PersonQuestionnaireEntity extends PersonQuestionnaireBaseEntity
 		}
 	}
 	
+	public boolean checkIdForCreation() {
+		if(id != 0 || questionnaireEntity.getId() == 0) {
+			return false;
+		}
+		for(PersonQuestionEntity entity : personQuestionEntities) {
+			if(!entity.checkIdForCreation()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * Update {@link PersonQuestionEntity} that is associated with this {@link PersonQuestionnaireEntity}. 
 	 * This update is performed before persist current object to dataBase and before update.
@@ -158,12 +173,26 @@ public class PersonQuestionnaireEntity extends PersonQuestionnaireBaseEntity
 		}
 	}
 	
-	/**
-	 * Update information for existing {@link PersonQuestionnaireEntity} in database.
-	 * @param entity
-	 */
-	public void updatePersonQuestionnaireEntity(PersonQuestionnaireEntity entity) {
-		
+	public void updateEntity(Object obj) {
+		PersonQuestionnaireEntity entity = (PersonQuestionnaireEntity) obj;
+		List<String> ignoredFields = Arrays.asList("questionnaireEntity",
+				"personQuestionEntities");
+		EntitiesUpdater.updateEntity(entity, this, ignoredFields, PersonQuestionnaireEntity.class);
+		EntitiesUpdater.updateEntities(entity.personQuestionEntities, personQuestionEntities, PersonQuestionEntity.class);
+	}
+	
+	public boolean entitiesIsEquals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		PersonQuestionnaireEntity entity = (PersonQuestionnaireEntity) obj;
+		return new EqualsBuilder()
+				.append(this.id, entity.id)
+				.append(status, entity.status)
+				.isEquals();
 	}
 	
 	@Override
