@@ -45,7 +45,6 @@ public class PersonQuestionEntity extends BaseEntity implements
 	private static final long serialVersionUID = -6691017410211190245L;
 	@JsonBackReference
 	private PersonQuestionnaireEntity personQuestionnaireEntity;
-	@JsonProperty("question_entity")
 	@JsonSerialize(using = QuestionPersonSerializer.class)
 	private QuestionEntity questionEntity;
 	@JsonProperty("correct")
@@ -64,7 +63,7 @@ public class PersonQuestionEntity extends BaseEntity implements
 		this.personQuestionnaireEntity = personQuestionnaireEntity;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_question", referencedColumnName = "id_question")
 	public QuestionEntity getQuestionEntity() {
 		return questionEntity;

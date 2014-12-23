@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -48,5 +50,13 @@ public abstract class BaseEntity implements Serializable {
 		this.modifiedDate = modifiedDate;
 	}
 	
+	@PrePersist
+	public void putCreatedDate() {
+		this.createdDate = new Date();
+	}
 	
+	@PreUpdate
+	public void putModifiedDate() {
+		this.modifiedDate = new Date();
+	}
 }

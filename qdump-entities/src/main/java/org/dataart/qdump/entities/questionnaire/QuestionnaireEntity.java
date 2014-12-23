@@ -16,6 +16,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
@@ -29,7 +30,6 @@ public class QuestionnaireEntity extends QuestionnaireBaseEntity implements
 	private static final long serialVersionUID = 8952388499186170808L;
 	private String name;
 	private String description;
-	@JsonProperty("published")
 	private boolean published;
 	@JsonProperty("question_entities")
 	private List<QuestionEntity> questionEntities;
