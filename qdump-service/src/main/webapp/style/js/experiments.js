@@ -44,8 +44,11 @@ function ajaxRequest() {
         return false;
 }
 
-
 function selected(ans_type) {
+    if (window.quest_count === undefined)
+    {
+        window.quest_count =0;
+    }
     //alert(ans_type);
     var el = document.getElementById('questions');
     //alert(el);
@@ -73,6 +76,12 @@ function selected(ans_type) {
 
     el1.appendChild(p1);
     el.appendChild(el1);
+
+    window.quest_count++;
+
+    if (window.quest_count>=5){
+        document.getElementById('quest_add_button').parentNode.removeChild(document.getElementById('quest_add_button'));
+    }
 
     return false;
 }

@@ -8,7 +8,6 @@ services.factory('AuthFactory', function($resource) {
 	return $resource('/rest/person/login', {}, {
 		auth: {
 			method: 'POST',
-			method: 'GET',
 			isArray: false,
 			headers: {'Content-Type':'application/x-www-form-urlencoded'}
 		}

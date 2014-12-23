@@ -7,11 +7,11 @@ app.controller('AuthCtrl', ['$scope','AuthFactory',
 				login : $scope.user.login,
 				password : $scope.user.password
 			}), function(data, status, headers, config) {
-				console.log('You log in')
-				console.log(data)
-				console.log(status)
-				console.log(headers)
-				console.log(config)
+				console.log('You log in');
+				console.log(data);
+				console.log(status);
+				console.log(headers);
+				console.log(config);
 			}, function() {
 				console.log('There is a problem with login or password')
 			});
