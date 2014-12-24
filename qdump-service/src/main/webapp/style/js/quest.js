@@ -1,22 +1,21 @@
-
 function parse(elements, offset) {
-    if (offset === undefined){
+    if (offset === undefined) {
         offset = 0;
     }
-    ansver_coll = [];
-    for (counter = offset; counter < elements.length; counter += 3) {
-        answer = {};
-        text = elements[counter + 1].value;
+    var answer_coll = [];
+    for (var counter = offset; counter < elements.length; counter += 3) {
+        var answer = {};
+        var text = elements[counter + 1].value;
         if (text !== undefined && text !== '' && text !== null) {
             answer.answer = text;
             answer.correct = elements[counter].checked;
-            ansver_coll.push(answer);
+            answer_coll.push(answer);
         }
     }
-    return ansver_coll;
+    return answer_coll;
 }
 
-function get_user_id(){
+function get_user_id() {
     return 'adb243534affcc'
 }
 
@@ -34,22 +33,22 @@ function create_object() {
         var question = questions_obj.children[i];
         var obj_quest = {};
         var answers = [];
-        quest_type = question.getAttribute('type');
-        obj_quest.question_type =quest_type;
+        var quest_type = question.getAttribute('type');
+        obj_quest.question_type = quest_type;
 
         for (m = 0; m < question.children.length; m++) {
             if (question.children[m].getAttribute('id') == 'answers') {
                 answers_obj = question.children[m].children;
                 switch (quest_type) {
                     case 'text':
-                        answer = {};
+                        var answer = {};
                         answer.answer = answers_obj[0].value;
                         answers.push(answer);
                         break;
 
                     case 'select':
-                        answers = parse(answers_obj,2);
-                    break;
+                        answers = parse(answers_obj, 2);
+                        break;
 
                     default:
                         answers = parse(answers_obj);
@@ -57,7 +56,7 @@ function create_object() {
                 }
                 obj_quest.answer_entities = answers;
             }
-            if (question.children[m].getAttribute('name') == 'true'){
+            if (question.children[m].getAttribute('name') == 'true') {
                 obj_quest.question = question.children[m].children[0].value;
             }
         }

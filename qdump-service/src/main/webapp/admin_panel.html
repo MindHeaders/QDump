@@ -147,14 +147,14 @@
             $(window).resize(function () {
 
                 //only do it if the dialog box is not hidden
-                if (!$('#dialog-box').is(':hidden')) editUser();
+                if (!$('#dialog-box').is(':hidden')) popup();
             });
 
 
         });
 
         //Popup dialog
-        function editUser(message) {
+        function popup(message) {
 
             // get the screen height and width
             var maskHeight = $(window).height();
@@ -276,7 +276,7 @@
                             <td>{{ x.created_by.login }}</td>
                             <td>{{ x.modified_by.login }}</td>
                             <td>{{ x.published }}</td>
-                            <td><a ng-click="editUser(user.id)" class="btn btn-small btn-primary">edit</a></td>
+                            <td><a ng-click="popup(user.id)" class="btn btn-small btn-primary">edit</a></td>
                             <td><a ng-click="deleteUser(user.id)" class="btn btn-small btn-danger">delete</a></td>
                         </tr>
                     </table>
@@ -299,7 +299,7 @@
 <script>
     function get_users_and_tests($scope) {
 
-        $scope.editUser = editUser;
+        $scope.editUser = popup;
 
         var m_names = ["Jan", "Feb", "Mar",
             "Apr", "May", "Jun", "Jul", "Aug", "Sep",

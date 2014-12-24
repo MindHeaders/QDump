@@ -1,3 +1,31 @@
+function send_json(json_str, pageadres) {
+    // 0 - unsynchronized (replace given element)
+    // 1 - synchronized (return given element)
+    var mygetrequest = new ajaxRequest();
+    var res = undefined;
+    mygetrequest.onreadystatechange = function () {
+        if (mygetrequest.readyState == 4) {
+            if (mygetrequest.status == 200 || window.location.href.indexOf("http") == -1) {
+                if (target_el !== undefined) {
+                    document.getElementById(target_el).innerHTML = mygetrequest.responseText;
+                }
+                else {
+                    resp = mygetrequest.responseText;
+                }
+            }
+            else {
+                alert("An error has occured making the request");
+            }
+        }
+    };
+    mygetrequest.open("POST", pageadres, true);
+    mygetrequest.send(json_str);
+    return(resp);
+    //
+
+}
+
+
 function ajaxget(pageadres, target_el) {
     // 0 - unsynchronized (replace given element)
     // 1 - synchronized (return given element)
@@ -69,7 +97,7 @@ function selected(ans_type) {
 
    var p1 = document.createElement('p');
     p1.setAttribute('id', 'answers');
-    body = ajaxget(ans_type + '.html');
+    var body = ajaxget(ans_type + '.html');
     p1.innerHTML = body;
     //alert(el1.innerHTML);
 
@@ -112,8 +140,8 @@ function check_reg() {
         gender: document.forms["regform"]["gender"].value
     };
 
-    json = JSON.stringify(frm);
-    alert(json)
+    json_str = JSON.stringify(frm);
+    send_json(json_str, '/rest/person/registration')
 
 }
 
