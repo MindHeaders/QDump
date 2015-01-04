@@ -9,7 +9,7 @@
     <script type="text/javascript" src="style/js/jquery-2.1.1.js"></script>
     <script type="text/javascript" src="style/js/experiments.js"></script>
     <script type="text/javascript" src="style/js/quest.js"></script>
-
+    <script type="text/javascript" src="style/js/maxlength.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
     <style type="text/css">
@@ -192,25 +192,25 @@
                 <div style="display: block;" class="types-list">
                     <ul class="box" id="add-question">
                         <li onclick="selected('radio')">
-                            <img src="style/images/questions/1answ.png" alt="Icon: uzavrena-one" class="icon-small"
+                            <img src="style/images/questions/1answ.png" alt="Icon: radio" class="icon-small"
                                  data-type="uzavrena-one" height="64">
 
                             <div style="" class="tit">Single selection</div>
                         </li>
                         <li onclick="selected('checkbox')">
-                            <img src="style/images/questions/m answ.png" alt="Icon: uzavrena-multiple"
+                            <img src="style/images/questions/m answ.png" alt="Icon: checkbox"
                                  class="icon-small" data-type="uzavrena-multiple" height="64">
 
                             <div style="" class="tit">Multiple choice</div>
                         </li>
                         <li onclick="selected('text')">
-                            <img src="style/images/questions/field.png" alt="Icon: otevrena" class="icon-small"
+                            <img src="style/images/questions/field.png" alt="Icon: textarea" class="icon-small"
                                  data-type="otevrena" height="64">
 
                             <div style="" class="tit">Single-line text box</div>
                         </li>
                         <li onclick="selected('select')">
-                            <img src="style/images/questions/select.png" alt="Icon: otevrena" class="icon-small"
+                            <img src="style/images/questions/select.png" alt="Icon: select" class="icon-small"
                                  data-type="otevrena" height="64">
 
                             <div style="" class="tit">Dropdown</div>
@@ -258,28 +258,28 @@
 
                     <p id="testdescription" class="descr1">Input your questionnaire's name</p>
 
-                    <p><input type="text" id="testname" class="id1" placeholder="Input your questionnaire's name" size="40"></p>
+                    <p><input type="text" id="testname" class="id1" placeholder="Input your questionnaire's name" size="40" maxlength="50"></p>
 
                     <p class="descr">Input questionnaire's description</p>
-                    <textarea class="descrarea" name="comment" cols="40" rows="3"></textarea>
+                    <textarea class="descrarea" name="comment" cols="40" rows="3" maxlength="450" onkeypress="return isNotMax(this)"></textarea>
 
-                    <p name="true"><input type="text" class="id1" placeholder="Input question here" size="40">
+                    <p name="true"><input type="text" class="id1" placeholder="Input question here" size="100" maxlength="45">
                     </p>
 
                     <p id="answers">
                         <input type="radio" name="one" value="0">
-                        <input type="text" class="id1" placeholder=" input answer 1" size="40"><br>
+                        <input type="text" class="id1" placeholder=" input answer 1" size="40" maxlength="45"><br>
                         <input type="radio" name="one" value="1">
-                        <input type="text" class="id1" placeholder=" input answer 2" size="40"><br>
+                        <input type="text" class="id1" placeholder=" input answer 2" size="40" maxlength="45"><br>
                         <input type="radio" name="one" value="2">
-                        <input type="text" class="id1" placeholder=" input answer 3" size="40"><br>
+                        <input type="text" class="id1" placeholder=" input answer 3" size="40" maxlength="45"><br>
                         <input type="radio" name="one" value="3">
-                        <input type="text" class="id1" placeholder=" input answer 4" size="40"><br>
+                        <input type="text" class="id1" placeholder=" input answer 4" size="40" maxlength="45"><br>
                     </p>
                 </div>
             </form>
             <br>
-            <a href="#" class="btn btn-small btn-success" onclick="popup()">Add new question</a>
+            <a href="#" class="btn btn-small btn-success" id="quest_add_button" onclick="popup()">Add new question</a>
             <a href="#" class="btn btn-small btn-info" onclick="create_object()">Save new questionnaire</a><br><br>
         </div>
     </div>

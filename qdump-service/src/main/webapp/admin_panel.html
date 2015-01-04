@@ -5,16 +5,204 @@
     <title>QDump My account</title>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="shortcut icon" type="image/QDump" href="style/images/favicon.png"/>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style/css/ui.css" media="all"/>
     <script type="text/javascript" src="style/js/jquery-2.1.1.js"></script>
     <script type="text/javascript" src="style/js/jquery.placeholder.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
-    <script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <noscript>Javascript is disabled in your browser!<br>Turn Javascript on.<br>Have no idea how? Look this -->
         <a href=" http://www.wikihow.com/Turn-on-Javascript-in-Internet-Browsers">dasf</a></noscript>
+
+    <style type="text/css">
+
+        #dialog-overlay2 {
+
+            /* transparency for different browsers */
+            filter: alpha(opacity=50);
+            -moz-opacity: 0.5;
+            -khtml-opacity: 0.5;
+            opacity: 0.5;
+            height: 100%;
+            background: #000;
+
+            /* make sure it appear behind the dialog box but above everything else */
+            position: fixed;
+            z-index: 3000;
+
+            /* hide it by default */
+            display: none;
+        }
+
+        #dialog-box {
+
+            /* css3 drop shadow */
+            -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+
+            /* css3 border radius */
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+
+            background: #eee;
+            /* styling of the dialog box, i have a fixed dimension for this demo */
+            width: 328px;
+
+            /* make sure it has the highest z-index */
+            position: absolute;
+            z-index: 5000;
+
+            /* hide it by default */
+            display: none;
+        }
+
+        #dialog-box .dialog-content {
+            /* style the content */
+            text-align: left;
+            padding: 10px;
+            margin: 13px;
+            color: #666;
+            font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 11px;
+        }
+
+        a.button {
+            /* styles for button */
+            margin: 10px auto 0 auto;
+            text-align: center;
+            background-color: #e33100;
+            display: block;
+            width: 50px;
+            padding: 5px 10px 6px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            line-height: 1;
+
+            /* css3 implementation :) */
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+            position: relative;
+            cursor: pointer;
+
+        }
+
+        a.button:hover {
+            background-color: #c33100;
+        }
+
+        /* extra styling */
+        #dialog-box .dialog-content p {
+            font-weight: 700;
+            margin: 0;
+        }
+
+        #dialog-box .dialog-content ul {
+            margin: 10px 0 10px 20px;
+            padding: 0;
+            height: 50px;
+        }
+
+        .tit {
+            position: relative;
+            display: inline;
+        }
+
+        .descr {
+            font-size: 14px;
+            font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        .descrarea {
+            position: relative;
+
+            margin: auto;
+            left : 5%;
+            width: 40%;
+        }
+
+        .descr1 {
+            font-size: 14px;
+            font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-weight: bold;
+            margin-bottom: -30px;
+        }
+    </style>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            // if user clicked on button, the overlay layer or the dialogbox, close the dialog
+            //$('a.btn-ok, #dialog-overlay2, #dialog-box').click(function () {
+            //    $('#dialog-overlay2, #dialog-box').hide();
+             //   return false;
+            //});
+
+            // if user resize the window, call the same function again
+            // to make sure the overlay fills the screen and dialogbox aligned to center
+            $(window).resize(function () {
+
+                //only do it if the dialog box is not hidden
+                if (!$('#dialog-box').is(':hidden')) popup();
+            });
+
+
+        });
+
+        //Popup dialog
+        function popup(message) {
+
+            // get the screen height and width
+            var maskHeight = $(window).height();
+            var maskWidth = $(window).width();
+            var dialog_box = $('#dialog-box');
+
+            // calculate the values for center alignment
+            var dialogTop = (maskHeight / 1.35) - (dialog_box.height());
+            var dialogLeft = (maskWidth / 2) - (dialog_box.width() / 2);
+
+            // assign values to the overlay and dialog box
+            $('#dialog-overlay2').css({height: maskHeight, width: maskWidth}).show();
+            dialog_box.css({top: dialogTop, left: dialogLeft}).show();
+
+            // display the message
+            //$('#dialog-message').html(message);
+
+        }
+
+    </script>
 </head>
 <body>
+
+<div id="dialog-overlay2"></div>
+<div id="dialog-box">
+    <div class="dialog-content">
+        <div id="dialog-message">
+
+            <div class="newitem-ui">
+                <h2 style="display: block;">Add question</h2>
+
+                <br style="clear:left;">
+
+                <div style="display: block;" class="types-list">
+                    <ul class="box" id="add-question">
+                        <li onclick="selected('radio')">
+                            <input type="checkbox" name="admin" value="admin">Admin<br/>
+                        </li>
+                        <a href="#" onclick="$('#dialog-overlay2, #dialog-box').hide();" class="close close-types-list">x<span></span></a>
+                        <span class="border"></span>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
 
 <div class="ui-bg">
     <div class="main">
@@ -63,7 +251,7 @@
                             <td>{{ x.login }}</td>
                             <td>{{ x.email }}</td>
                             <td>{{ x.person_group }}</td>
-                            <td><a ng-click="editUser(user.id)" class="btn btn-small btn-primary">edit</a></td>
+                            <td><a ng-click="editUser(x.login)" class="btn btn-small btn-primary">edit</a></td>
                             <td><a ng-click="deleteUser(user.id)" class="btn btn-small btn-danger">delete</a></td>
                         </tr>
                     </table>
@@ -88,12 +276,12 @@
                             <td>{{ x.created_by.login }}</td>
                             <td>{{ x.modified_by.login }}</td>
                             <td>{{ x.published }}</td>
-                            <td><a ng-click="editUser(user.id)" class="btn btn-small btn-primary">edit</a></td>
+                            <td><a ng-click="popup(user.id)" class="btn btn-small btn-primary">edit</a></td>
                             <td><a ng-click="deleteUser(user.id)" class="btn btn-small btn-danger">delete</a></td>
                         </tr>
                     </table>
                     <br>
-                    <a ng-click="createNew(Test)" class="btn btn-small btn-info ">create new test</a>
+                    <a href="quester.html" class="btn btn-small btn-info ">create new test</a>
                 </div>
                 <br>
             </div>
@@ -110,6 +298,8 @@
 <!-- тут должно быть получение тестов с сервера-->
 <script>
     function get_users_and_tests($scope) {
+
+        $scope.editUser = popup;
 
         var m_names = ["Jan", "Feb", "Mar",
             "Apr", "May", "Jun", "Jul", "Aug", "Sep",
