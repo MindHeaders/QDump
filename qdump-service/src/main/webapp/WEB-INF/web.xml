@@ -50,13 +50,15 @@
 
 	<security-constraint>
 		<web-resource-collection>
-			<web-resource-name>Resteasy</web-resource-name>
-			<url-pattern>/security</url-pattern>
+			<web-resource-name>Answer Entity</web-resource-name>
+			<url-pattern>/rest/answers/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>admin</role-name>
-			<role-name>user</role-name>
 		</auth-constraint>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
 	</security-constraint>
 
 	<login-config>

@@ -1,33 +1,20 @@
-package org.dataart.qdump.service.resources;
+package org.dataart.qdump.service.resourceImpl;
 
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.dataart.qdump.entities.person.PersonQuestionEntity;
 import org.dataart.qdump.service.ServiceQdump;
+import org.dataart.qdump.service.resource.PersonQuestionEntityResource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-@Component
-@Path("/person/question")
-public class PersonQuestionEntityResource {
+public class PersonQuestionEntityResourceBean implements PersonQuestionEntityResource{
 	@Autowired
 	private ServiceQdump serviceQdump;
-	
-	@POST
-	@Path("create")
+
 	public Response addPersonQuestionEntity(PersonQuestionEntity entity) {
 		if(entity.getId() > 0) {
 			return Response
@@ -49,9 +36,7 @@ public class PersonQuestionEntityResource {
 					.build();
 		}
 	}
-	
-	@DELETE
-	@Path("delete/{id}")
+
 	public Response deletePersonQuestionEntity(@PathParam("id") long id) {
 		if(!serviceQdump.personQuestionEntityExists(id)) {
 			return Response
@@ -65,15 +50,11 @@ public class PersonQuestionEntityResource {
 				.entity(String.format("Person question with id = %d was deleted", id))
 				.build();
 	}
-	
-	@DELETE
-	@Path("delete/all")
+
 	public void deleteAllPersonQuestionEntity() {
 		serviceQdump.deleteAllPersonQuestionEntity();
 	}
-	
-	@GET
-	@Path("get/{id}")
+
 	public Response getPersonQuestionEntity(@PathParam("id") long id) {
 		if(!serviceQdump.personQuestionEntityExists(id)) {
 			return Response
@@ -85,9 +66,7 @@ public class PersonQuestionEntityResource {
 				.ok(serviceQdump.getPersonQuestionEntity(id)).build();
 		
 	}
-	
-	@GET
-	@Path("get/all")
+
 	public List<PersonQuestionEntity> getPersonQuestionEntities() {
 		return serviceQdump.getPersonQuestionEntities();
 	}

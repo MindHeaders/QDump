@@ -1,4 +1,4 @@
-package org.dataart.qdump.service.resources;
+package org.dataart.qdump.service.resourceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class TestResource {
 	@GET
 	@Path("get/persons")
 	public List<PersonEntity> getPersons() {
-		List<PersonEntity> entities = new ArrayList<PersonEntity>();
+		List<PersonEntity> entities = new ArrayList<>();
 		PersonEntity entity1 = new PersonEntity();
 		entity1.setFirstname("firstname1");
 		entity1.setLastname("lastname1");
