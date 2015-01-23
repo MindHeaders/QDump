@@ -1,5 +1,6 @@
 package org.dataart.qdump.service.resourceImpl;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,8 +9,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.service.ServiceQdump;
@@ -63,5 +63,4 @@ public class TestResource {
 		entities.add(entity2);
 		return entities;
 	}
-	
 }

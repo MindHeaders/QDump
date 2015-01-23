@@ -3,6 +3,7 @@ package org.dataart.qdump.service.resourceImpl;
 import java.util.List;
 
 import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -18,8 +19,7 @@ public class AnswerEntityResourceBean implements AnswerEntityResource{
 
 	public Response addAnswerEntity(AnswerEntity answerEntity) {
 		if (answerEntity.getId() > 0) {
-			return Response.status(Status.CONFLICT)
-					.entity("Answer id cannot be greater than 0").build();
+			throw new WebApplicationException("Answer id cannot be greater than 0", Status.CONFLICT);
 		} else {
 			serviceQdump.addAnswerEntity(answerEntity);
 			return Response.status(Status.CREATED).build();
@@ -28,10 +28,8 @@ public class AnswerEntityResourceBean implements AnswerEntityResource{
 
 	public Response deleteAnswerEntity(@PathParam("id") long id) {
 		if (!serviceQdump.answerEntityExists(id)) {
-			return Response
-					.status(Status.NOT_FOUND)
-					.entity(String.format("Answer with id = %d is not exists",
-							id)).build();
+			throw new WebApplicationException(String.format("Answer with id = %d is not exists",
+					id), Status.NOT_FOUND);
 		} else {
 			serviceQdump.deleteAnswerEntity(id);
 			return Response
@@ -48,10 +46,8 @@ public class AnswerEntityResourceBean implements AnswerEntityResource{
 
 	public Response getAnswerEntity(@PathParam("id") long id) {
 		if (!serviceQdump.answerEntityExists(id)) {
-			return Response
-					.status(Status.NOT_FOUND)
-					.entity(String.format("Answer with id = %d is not exists",
-							id)).build();
+			throw new WebApplicationException(String.format("Answer with id = %d is not exists",
+					id), Status.NOT_FOUND);
 		} else {
 			return Response.status(Status.OK)
 					.entity(serviceQdump.getAnswerEntity(id)).build();
