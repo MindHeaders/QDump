@@ -49,7 +49,7 @@ public class PersonEntityResource {
 	public Response login(@FormParam("login") String login, @FormParam("password") String password) {
 		PersonEntity entity = serviceQdump.getPersonForAuthByLogin(login);
 		if(entity == null) {
-			return Response.status(404).entity("Error in login or password").build();
+			return Response.status(404).entity("Error in login hello or password").build();
 		} else if(!BCrypt.checkpw(password, entity.getPassword())) {
 			return Response.status(404).entity("Error in login or password").build();
 		} else {
