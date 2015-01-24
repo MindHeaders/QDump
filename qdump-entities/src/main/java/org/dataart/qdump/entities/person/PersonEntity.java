@@ -15,9 +15,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -25,7 +22,6 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.dataart.qdump.entities.enums.PersonGroupEnums;
 import org.dataart.qdump.entities.helper.EntitiesUpdater;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireBaseEntity;
-import org.hibernate.validator.constraints.Email;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -62,17 +58,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 })
 public class PersonEntity extends QuestionnaireBaseEntity implements Serializable {
 	private static final long serialVersionUID = -219526512840281300L;
-	@Size(min = 2, max = 35) 
-	@Pattern(regexp = "[A-Z][a-zA-Z]*")
 	private String firstname;
-	@Size(min = 2, max = 35)
-	@Pattern(regexp = "[a-zA-z]+([ '-][a-zA-Z]+)*")
 	private String lastname;
-	@Email
 	private String email;
-	@NotNull
 	private String login;
-	@NotNull
 	private String password;
 	@JsonProperty("enabled")
 	private boolean isEnabled;

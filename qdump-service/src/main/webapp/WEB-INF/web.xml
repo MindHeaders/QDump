@@ -50,26 +50,41 @@
 
 	<security-constraint>
 		<web-resource-collection>
-			<web-resource-name>Answer Entity</web-resource-name>
-			<url-pattern>/rest/answers/*</url-pattern>
+			<web-resource-name>Admins</web-resource-name>
+			<url-pattern>/admin/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>admin</role-name>
+			<role-name>ADMIN</role-name>
 		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Customers</web-resource-name>
+			<url-pattern>/customers/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>USER</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<web-resource-collection>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
 		</user-data-constraint>
 	</security-constraint>
 
 	<login-config>
-		<auth-method>BASIC</auth-method>
-		<realm-name>Test</realm-name>
+		<auth-method>KEYCLOAK</auth-method>
+		<realm-name>this is ignored currently/realm-name>
 	</login-config>
 
 	<security-role>
-		<role-name>admin</role-name>
+		<role-name>ADMIN</role-name>
 	</security-role>
 	<security-role>
-		<role-name>user</role-name>
+		<role-name>USER</role-name>
 	</security-role>
 </web-app>
