@@ -22,7 +22,6 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.dataart.qdump.entities.enums.PersonGroupEnums;
 import org.dataart.qdump.entities.helper.EntitiesUpdater;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireBaseEntity;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -138,7 +137,8 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 
 	@JsonProperty("password")
 	public void setPassword(String password) {
-		this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+//		this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+		this.password = password;
 	}
 
 	/**
@@ -241,17 +241,12 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 				|| lastname.length() > 35) {
 			throw new RuntimeException(
 					"Invalid input lastname, max length - 35 characters, should contains"
-							+ "only A-Z, a-z, , ', - symbols (example valid - M`gain, invalid - 1Smith");
+							+ "only A-Z, a-z, , ', - symbols (example valid - M`gain, invalid - 1Smith)");
 		} else {
 			return lastname;
 		}
 	}
 
-	/**
-	 * Validate email with help of Apache Commons Validator
-	 * 
-	 * @param email
-	 */
 	public static String validateEmail(String email) {
 		if (!EmailValidator.getInstance().isValid(email)) {
 			throw new RuntimeException("You enter invalid email address");

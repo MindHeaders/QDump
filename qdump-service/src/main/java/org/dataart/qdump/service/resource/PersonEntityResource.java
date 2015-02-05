@@ -1,9 +1,20 @@
 package org.dataart.qdump.service.resource;
 
+import org.apache.shiro.authz.annotation.RequiresGuest;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -22,25 +33,31 @@ public interface PersonEntityResource {
     public Response getPersonEntity(@PathParam("id") long id);
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("login")
-    public Response login(@FormParam("login") String login,
+    @Path("auth")
+    public Response auth(@FormParam("login") String login,
                           @FormParam("password") String password);
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("registration")
+    @RequiresGuest
     public Response registration(PersonEntity entity);
+
+    @GET
+    @Path("logout")
+    public void logout();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("get")
+    @RequiresRoles("ADMIN")
     public List<PersonEntity> getAll();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("get/min")
+    @RequiresRoles("ADMIN")
     public List<PersonEntity> getAllMin();
 
     @DELETE
@@ -60,13 +77,13 @@ public interface PersonEntityResource {
     @Path("update")
     public Response updatePersonEntity(PersonEntity entity);
 
-    @PUT
+    @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("check/email")
     public Response checkPersonEntityEmail(@QueryParam("email") String email);
 
-    @PUT
+    @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("check/login")

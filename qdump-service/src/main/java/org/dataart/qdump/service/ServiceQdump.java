@@ -9,7 +9,6 @@ import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
 import org.dataart.qdump.entities.questionnaire.AnswerEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
-import org.springframework.stereotype.Service;
 
 public interface ServiceQdump {
 	//PersonEntity

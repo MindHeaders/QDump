@@ -1,0 +1,32 @@
+div.col-md-4.col-md-offset-4.errors {
+    font-style: italic;
+    font-size: large;
+    color: red;
+}
+a.navbar-link {
+    color: deepskyblue;
+}
+body {
+    padding-top: 70px;
+}
+.my-messages {
+    transition: 1s linear all;
+}
+.my-messages.ng-active {
+
+}
+.my-messages.ng-inactive {
+
+}
+.test.ng-enter {
+    -webkit-transition: enter_sequence 1s linear;
+    animation: enter_sequence 1s linear;
+}
+@-webkit-keyframes enter_sequence {
+    form { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes enter_sequence {
+    from { opacity: 0; }
+    to { opacity: 1;}
+}

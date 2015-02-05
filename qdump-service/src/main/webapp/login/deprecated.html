@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>QDump</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/qdump-style.css">
+    <!-- <base href="/"> -->
+</head>
+
+<body ng-app="qdumpApp">
+<div class="row">
+    <div class="col-lg-12">
+        <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group" role="group">
+                <a href="deprecated.html" type="button" class="btn btn-default">Home</a>
+                <a href="#/reg" type="button" class="btn btn-default">Sign Up</a>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                        Menu
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#/user-list">Get all users</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="btn-group" ng-controller="getAuth" ng-hide="!isAuth">Wellcome, {{login}}</div>
+            <div class="btn-group pull-right" role="group" ng-controller="getAuth">
+                <div type="submit" class="btn btn-default btn-group" role="group" ng-controller="LogOutCtrl" ng-click="logout()" ng-hide="!isAuth">Log Out</div>
+                <a href="" type="button" class="btn btn-default" ng-hide="!isAuth">Account</a>
+            </div>
+            <div class="btn-group pull-right" role="group" ng-controller="getAuth">
+                <a href="#/auth" type="button" class="btn btn-default" ng-hide="isAuth">Log In</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container" ng-view="">
+</div>
+
+<script src="js/jquery-2.1.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/angular.js"></script>
+<script src="js/angular-resource.min.js"></script>
+<script src="js/angular-route.js"></script>
+<script src="scripts/app.js"></script>
+<script src="scripts/services/services.js"></script>
+<script src="scripts/controllers/controllers.js"></script>
+<script src="js/angular-cookies.min.js"></script>
+<script>
+    function getAuth($scope, $cookieStore) {
+        $scope.login = $cookieStore.get('login')
+        if($scope.login == null) {
+            $scope.isAuth = false
+        } else {
+            $scope.isAuth = true
+        }
+    }
+</script>
+</body>
+
+</html>

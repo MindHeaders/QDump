@@ -1,16 +1,6 @@
 package org.dataart.qdump.persistence;
 
-import java.beans.IntrospectionException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.dataart.qdump.entities.enums.PersonGroupEnums;
 import org.dataart.qdump.entities.enums.QuestionTypeEnums;
 import org.dataart.qdump.entities.person.PersonAnswerEntity;
@@ -22,7 +12,15 @@ import org.dataart.qdump.entities.questionnaire.QuestionEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+import java.beans.IntrospectionException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JpaTest {
 	public static void main(String[] args) throws IOException, IntrospectionException, NamingException {
@@ -34,10 +32,20 @@ public class JpaTest {
 		try {
 			
 			em.getTransaction().begin();
-			Query query = em.createNamedQuery("PersonEntity.getPersonForAuthByLogin");
-			query.setParameter(1, "testlogin3");
-			PersonEntity entity = (PersonEntity) query.getSingleResult();
-			System.out.println(BCrypt.checkpw("helloman", entity.getPassword()));
+			PersonEntity entity = new PersonEntity();
+			entity.setEmail("testadminemail@mail.com");
+			entity.setEnabled(true);
+			entity.setFirstname("testadminfirstname");
+			entity.setGender((byte) 1);
+			entity.setLastname("testadminlastname");
+			entity.setLogin("testadminlogin");
+			entity.setPassword(BCrypt.hashpw("testadminpassword", BCrypt.gensalt()));
+			entity.setPersonGroup(PersonGroupEnums.ADMIN);
+			em.persist(entity);
+			Query query = em.createNamedQuery("PersonEntity.getPersonByLogin");
+			query.setParameter(1, "testadminlogin");
+			PersonEntity entity2 = (PersonEntity) query.getSingleResult();
+			System.out.println(BCrypt.checkpw("testadminpassword", entity2.getPassword()));
 			/*List<PersonEntity> entities = em.createNamedQuery(
 					"PersonEntity.getPersonsNameLastname", PersonEntity.class)
 					.getResultList();

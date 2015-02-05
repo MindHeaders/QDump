@@ -1,48 +1,72 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+<head lang="en">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>QDump</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-    <!-- <base href="/"> -->
+    <base href="/">
+    <link rel="stylesheet" type="text/css" href="/login/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/login/css/qdump-style.css">
 </head>
-
 <body ng-app="qdumpApp">
-    <div class="row">
-        <div class="col-md-3"></div>
-        <div class="col-md-3">
-            <div class="dropdown">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                    Menu
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#/reg">Registration</a>
-                    </li>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#/auth">Authorization</a>
-                    </li>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#/user-list">Get all users</a>
-                    </li>
-                </ul>
-            </div>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Home</a>
         </div>
-        <div class="col-md-3"></div>
-        <div class="col-md-3"></div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="/reg">Sign Up</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Menu <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="/user-list">Get all users</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right" ng-controller="BasicCtrl" ng-hide="!isAuth">
+                <p class="navbar-text">
+                    Wellcome, {{login}}
+                </p>
+                <li>
+                    <a href="">Account</a>
+                </li>
+                <li>
+                    <button ng-click="logout()" class="btn btn-default navbar-btn" ng-controller="LogOutCtrl">Log out</button>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right" ng-controller="BasicCtrl" ng-hide="isAuth">
+                <li>
+                    <p class="navbar-btn">
+                        <a href="/auth" class="btn btn-default">Log In</a>
+                    </p>
+                </li>
+            </ul>
+        </div>
     </div>
-    <div class="container" ng-view=""></div>
+</nav>
+<div class="container" ng-view="">
+</div>
 
-    <script src="js/jquery-2.1.1.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/angular.js"></script>
-    <script src="js/angular-resource.min.js"></script>
-    <script src="js/angular-route.js"></script>
-    <script src="scripts/app.js"></script>
-    <script src="scripts/services/services.js"></script>
-    <script src="scripts/controllers/controllers.js"></script>
+<script src="login/js/jquery-2.1.1.min.js"></script>
+<script src="login/js/bootstrap.min.js"></script>
+<script src="login/js/angular.min.js"></script>
+<script src="login/js/angular-resource.min.js"></script>
+<script src="login/js/angular-route.min.js"></script>
+<script src="login/js/angular-cookies.min.js"></script>
+<script src="login/js/angular-messages.min.js"></script>
+<script src="login/js/angular-animate.min.js"></script>
+<script src="login/scripts/app.js"></script>
+<script src="login/scripts/services/services.js"></script>
+<script src="login/scripts/controllers/controllers.js"></script>
+<script src="login/scripts/directives/directives.js"></script>
 </body>
-
 </html>

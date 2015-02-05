@@ -1,24 +1,29 @@
-angular.module('qdumpApp', ['ngRoute', 'qdumpApp.services', 'qdumpApp.controllers']).
-config(function($routeProvider, $locationProvider) {
-    /*$locationProvider.html5Mode(true)*/
-    $routeProvider.
-    when('/user-list', {
-        templateUrl: 'user-list.html',
-        controller: 'UserListCtrl'
+module = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ngAnimate',
+    'qdumpApp.services', 'qdumpApp.controllers', 'qdumpApp.directives']).
+    config(function($routeProvider, $locationProvider) {
+        $locationProvider.html5Mode(true);
+        $routeProvider.
+            when('/user-list', {
+                templateUrl: 'login/user-list.html',
+                controller: 'UserListCtrl'
+            }).
+            when('/auth', {
+                templateUrl: 'login/auth.html',
+                controller: 'AuthCtrl'
+            }).
+            when('/reg', {
+                templateUrl: 'login/registration.html',
+                controller: 'RegCtrl'
+            }).
+            when('/welcome', {
+                templateUrl: 'login/welcome.html'
+            }).
+            when('/account', {
+                templateUrl: 'login/account.html',
+                controller: 'AccountCtrl'
+            })
+            .otherwise({
+                redirectTo: '/'
+            });
     });
-    $routeProvider.
-    when('/auth', {
-        templateUrl: 'auth.html',
-        controller: 'AuthCtrl'
-    });
-    $routeProvider.
-    when('/reg', {
-        templateUrl: 'reg.html',
-        controller: 'RegCtrl'
-    });
-    $routeProvider.
-    when('/welcome', {
-        templateUrl: 'welcome.html',
-        controller: 'AuthCtrl'
-    });
-});
+

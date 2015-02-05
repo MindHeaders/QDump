@@ -1,17 +1,27 @@
 package org.dataart.qdump.service.resourceImpl;
 
-import java.util.List;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.util.JsonGeneratorDelegate;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.service.ServiceQdump;
 import org.dataart.qdump.service.resource.PersonEntityResource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.stereotype.Component;
 
+import javax.ws.rs.FormParam;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.IOException;
+import java.util.List;
+
+@Component
 public class PersonEntityResourceBean implements PersonEntityResource{
 	@Autowired
 	private ServiceQdump serviceQdump;
@@ -26,19 +36,20 @@ public class PersonEntityResourceBean implements PersonEntityResource{
 		}
 	}
 
-	public Response login(@FormParam("login") String login,
+
+	public Response auth(@FormParam("login") String login,
 			@FormParam("password") String password) {
-		if (!serviceQdump.personEntityExistsByLogin(login)) {
+		UsernamePasswordToken token = new UsernamePasswordToken();
+		token.setUsername(login);
+		token.setPassword(password.toCharArray());
+		token.setRememberMe(false);
+		try {
+			SecurityUtils.getSubject().login(token);
+		} catch (AuthenticationException e) {
 			return Response.status(Status.NOT_FOUND)
-					.entity("Error in login or password").build();
-		} else if (!BCrypt.checkpw(password,
-				serviceQdump.getPersonPasswordByLogin(login))) {
-			return Response.status(Status.NOT_FOUND)
-					.entity("Error in login or password").build();
-		} else {
-			PersonEntity entity = serviceQdump.getPersonByLogin(login);
-			return Response.status(Status.OK).entity(entity).build();
+					.entity("Error with login, email or password").build();
 		}
+		return Response.status(Status.OK).build();
 	}
 
 	public Response registration(PersonEntity entity) {
@@ -46,6 +57,15 @@ public class PersonEntityResourceBean implements PersonEntityResource{
 		return Response.status(Status.CREATED)
 				.entity("User was created successful.").build();
 	}
+
+    public void logout() {
+        if(SecurityUtils.getSubject().isAuthenticated()) {
+            System.out.println("User successfully logout");
+            SecurityUtils.getSubject().logout();
+        } else {
+            return;
+        }
+    }
 
 	public List<PersonEntity> getAll() {
 		return serviceQdump.getPersonEntities();
@@ -86,19 +106,22 @@ public class PersonEntityResourceBean implements PersonEntityResource{
 				.entity("Person was successful updated").build();
 	}
 
-	public Response checkPersonEntityEmail(@QueryParam("email") String email) {
-		if (!serviceQdump.personEntityExistsByEmail(email)) {
+	public Response checkPersonEntityEmail(@QueryParam("email") String email){
+        boolean isValid = serviceQdump.personEntityExistsByEmail(email);
+        String object = String.format("{\"isValid\" : %b }", isValid);
+        if (isValid) {
 			return Response.status(Status.FORBIDDEN)
-					.entity("This email is alredy exists").build();
+					.entity(object).build();
 		}
-		return Response.status(Status.OK).build();
+		return Response.status(Status.OK).entity(object).build();
 	}
 
 	public Response checkPersonEntityLogin(@QueryParam("login") String login) {
-		if (!serviceQdump.personEntityExistsByLogin(login)) {
-			return Response.status(Status.FORBIDDEN)
-					.entity("This login is alredy exists").build();
+        boolean isValid = serviceQdump.personEntityExistsByLogin(login);
+        String object = String.format("{\"isValid\" : %b }", !isValid);
+        if (isValid) {
+			return Response.status(Status.FORBIDDEN).entity(object).build();
 		}
-		return Response.status(Status.OK).build();
+        return Response.status(Status.OK).entity(object).build();
 	}
 }

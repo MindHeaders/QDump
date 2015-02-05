@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ServiceImpl implements ServiceQdump{
+public class ServiceImpl implements ServiceQdump {
 	
 	@Autowired
 	AnswerCrudRepository answerCrudRepository;

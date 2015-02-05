@@ -1,22 +1,26 @@
 var services = angular.module('qdumpApp.services', ['ngResource']);
 
 services.factory('AuthFactory', function($resource) {
-    return $resource('/rest/person/login', {}, {
+    return $resource('/rest/persons/auth', {}, {
         auth: {
             method: 'POST',
             isArray: false,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
-        },
-        log: {
-            method: 'GET'
         }
-    })
+    });
+});
+services.factory('LogoutFactory', function($resource){
+   return $resource('/rest/persons/logout',{},{
+       logout: {
+           method: 'GET'
+       }
+   })
 });
 
 services.factory('RegFactory', function($resource) {
-    return $resource('/rest/person/registration', {}, {
+    return $resource('/rest/persons/registration', {}, {
         reg: {
             method: 'POST'
         }
@@ -24,7 +28,7 @@ services.factory('RegFactory', function($resource) {
 });
 
 services.factory('UsersFactory', function($resource) {
-    return $resource('/rest/person/getAllMin', {}, {
+    return $resource('/rest/persons/get/min', {}, {
         query: {
             method: 'GET',
             isArray: true

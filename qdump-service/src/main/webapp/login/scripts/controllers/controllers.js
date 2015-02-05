@@ -1,39 +1,67 @@
-var app = angular.module('qdumpApp.controllers', []);
+var app = angular.module('qdumpApp.controllers', ['ngCookies']);
 
-app.controller('AuthCtrl', ['$scope', '$location', 'AuthFactory',
-    function($scope, $location, AuthFactory) {
-    	$scope.login = "Hello";
+app.controller('AuthCtrl', ['$scope', '$cookieStore', '$location', '$window', 'AuthFactory',
+    function($scope, $cookieStore, $location, $window, AuthFactory) {
+        $scope.isFormSubmitted = false
         $scope.auth = function() {
-        	login = {
-            	message: "Welcome, " + $scope.user.login
-        	}
+            $scope.isFormSubmitted = true
             AuthFactory.auth($.param({
                 login: $scope.user.login,
                 password: $scope.user.password
             }), function() {
-                $location.url('/welcome')
-                console.log(login.message)
-            }, function() {
-                console.log(AuthFactory.log())
+                $window.location.assign('index.html')
+                $cookieStore.put('login', $scope.user.login)
+            }, function(data) {
+                $scope.errorData = data.data
+                $scope.user.password = ''
+                console.log(data)
             });
         }
     }
 ]);
+app.controller('LogOutCtrl', ['$scope', '$cookieStore', '$window', 'LogoutFactory',
+    function($scope, $cookieStore, $window, LogoutFactory) {
+        $scope.logout = function() {
+            LogoutFactory.logout()
+            $cookieStore.remove('login')
+            $window.location.reload()
+        }
+    }
+])
 app.controller('RegCtrl', ['$scope', 'RegFactory',
     function($scope, RegFactory) {
+        $scope.firstnamePattern = /^[A-Z][a-zA-Z]*/i;
+        $scope.lastnamePattern = /[a-zA-z]+([ '-][a-zA-Z]+)*/i;
+        $scope.submitted = false;
         $scope.reg = function() {
-            RegFactory.reg($scope.user,
-                function(data) {
-                    console.log(data)
-                },
-                function(data) {
-                    console.log(data)
-                });
+            $scope.submitted = true;
+            RegFactory.reg($scope.user);
+        }
+        $scope.passwordSize = function() {
+            console.log($scope.user.password.length)
+            return $scope.user.password.length
         }
     }
 ]);
 app.controller('UserListCtrl', ['$scope', 'UsersFactory',
     function($scope, UsersFactory) {
-        $scope.users = UsersFactory.query();
+        $scope.users = UsersFactory.query(
+            function(data) {
+                console.log(data);
+            },
+            function(data) {
+                console.log(data);
+            }
+        );
     }
 ]);
+app.controller('BasicCtrl', ['$scope', '$cookieStore',
+    function ($scope, $cookieStore) {
+        $scope.login = $cookieStore.get('login')
+        if($scope.login == null) {
+            $scope.isAuth = false
+        } else {
+            $scope.isAuth = true
+        }
+    }
+])

@@ -18,6 +18,7 @@
 		<spring.version>4.1.1.RELEASE</spring.version>
 		<hibernate.version>4.3.7.Final</hibernate.version>
 		<jersey.version>2.13</jersey.version>
+		<shiro.version>1.2.3</shiro.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -141,6 +142,23 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<version>1.7.7</version>
+		</dependency>
+
+		<!-- Apache Shiro-->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-core</artifactId>
+			<version>${shiro.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-web</artifactId>
+			<version>${shiro.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-spring</artifactId>
+			<version>${shiro.version}</version>
 		</dependency>
 	</dependencies>
 	<build>

@@ -1,10 +1,5 @@
 package org.dataart.qdump.persistence.config;
 
-import java.util.Properties;
-
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +15,10 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+import java.util.Properties;
+
 @Configuration
 @PropertySource("classpath:application.properties")
 @EnableTransactionManagement
@@ -33,16 +32,12 @@ public class AppConfig {
 
 	@Bean
 	public BasicDataSource dataSource() {
-		/*final JndiDataSourceLookup dsLookup = new JndiDataSourceLookup();
-		dsLookup.setResourceRef(true);
-		DataSource dataSource = dsLookup.getDataSource("java:jboss/datasource/qdump");*/
 		BasicDataSource basicDataSource = new BasicDataSource(); 
 		basicDataSource.setUrl(env.getProperty("db.url"));
 		basicDataSource.setUsername(env.getProperty("db.user"));
 		basicDataSource.setPassword(env.getProperty("db.password"));
 		basicDataSource.setDriverClassName(env.getProperty("db.driver"));
 		return basicDataSource;
-		/*return dataSource;*/
 	}
 
 	@Bean
