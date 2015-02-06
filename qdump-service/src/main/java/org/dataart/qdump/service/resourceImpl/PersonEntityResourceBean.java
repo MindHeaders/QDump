@@ -1,16 +1,13 @@
 package org.dataart.qdump.service.resourceImpl;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.util.JsonGeneratorDelegate;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.service.ServiceQdump;
 import org.dataart.qdump.service.resource.PersonEntityResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.FormParam;
@@ -18,7 +15,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.io.IOException;
 import java.util.List;
 
 @Component
@@ -47,12 +43,16 @@ public class PersonEntityResourceBean implements PersonEntityResource{
 			SecurityUtils.getSubject().login(token);
 		} catch (AuthenticationException e) {
 			return Response.status(Status.NOT_FOUND)
-					.entity("Error with login, email or password").build();
+                    .entity(new String("{\"error\" : \"Error with login, email or password\"}"))
+                    .build();
 		}
 		return Response.status(Status.OK).build();
 	}
 
 	public Response registration(PersonEntity entity) {
+        String password = entity.getPassword();
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        entity.setPassword(hashedPassword);
 		serviceQdump.addPersonEntity(entity);
 		return Response.status(Status.CREATED)
 				.entity("User was created successful.").build();
@@ -62,8 +62,6 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         if(SecurityUtils.getSubject().isAuthenticated()) {
             System.out.println("User successfully logout");
             SecurityUtils.getSubject().logout();
-        } else {
-            return;
         }
     }
 

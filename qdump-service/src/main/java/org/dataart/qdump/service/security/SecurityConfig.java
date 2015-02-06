@@ -62,8 +62,8 @@ public class SecurityConfig {
     public ShiroFilterFactoryBean shiroFilter() {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager());
-        shiroFilterFactoryBean.setLoginUrl("/login/deprecated.html#/auth");
-        shiroFilterFactoryBean.setSuccessUrl("/deprecated.html");
+        shiroFilterFactoryBean.setLoginUrl("/auth");
+        shiroFilterFactoryBean.setSuccessUrl("/");
 ////		shiroFilterFactoryBean.setFilterChainDefinitions("" +
 ////				"/answers = authc, roles[ADMIN]" +
 ////				"/persons/** = authc, roles[ADMIN, USER]" +

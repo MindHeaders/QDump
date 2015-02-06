@@ -9,12 +9,11 @@ app.controller('AuthCtrl', ['$scope', '$cookieStore', '$location', '$window', 'A
                 login: $scope.user.login,
                 password: $scope.user.password
             }), function() {
-                $window.location.assign('index.html')
+                $window.location.assign('login/index.html')
                 $cookieStore.put('login', $scope.user.login)
             }, function(data) {
-                $scope.errorData = data.data
-                $scope.user.password = ''
-                console.log(data)
+                $scope.errorData = data.data.error;
+                $scope.user.password = '';
             });
         }
     }
