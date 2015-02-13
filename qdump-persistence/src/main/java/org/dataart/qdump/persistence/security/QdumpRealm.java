@@ -1,5 +1,6 @@
 package org.dataart.qdump.persistence.security;
 
+import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -48,7 +49,13 @@ public class QdumpRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
         UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
-        PersonEntity person = personCrudRepository.getPersonByLogin(token.getUsername());
+        PersonEntity person = null;
+        String tokenUsername = token.getUsername();
+        if(EmailValidator.getInstance().isValid(tokenUsername)) {
+            person = personCrudRepository.getPersonByEmail(tokenUsername);
+        } else {
+            person = personCrudRepository.getPersonByLogin(token.getUsername());
+        }
         if(person != null) {
             return new SimpleAuthenticationInfo(person.getId(), person.getPassword(), getName());
         } else {

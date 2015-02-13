@@ -1,0 +1,19 @@
+<div class="container" ng-cloak>
+    <div class="col-md-9">
+        <table class="table table-striped">
+            <thead>
+                <tr class="completed table-width">
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Change</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="completedQ in completedQs">
+                    <td ng-bind="completeQ"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-3" ng-include="template.menu"></div>
+</div>

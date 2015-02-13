@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="/login/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/login/css/qdump-style.css">
 </head>
-<body ng-app="qdumpApp">
+<body ng-app="qdumpApp" ng-cloak>
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -32,19 +32,17 @@
                     </ul>
                 </li>
             </ul>
-            <ul class="nav navbar-nav navbar-right" ng-controller="BasicCtrl" ng-hide="!isAuth">
-                <p class="navbar-text">
-                    Wellcome, {{login}}
-                </p>
-                <li>
+            <ul class="nav navbar-nav navbar-right"></ul>
+            <ul class="nav navbar-nav navbar-right" ng-controller="BasicCtrl">
+                <li ng-hide="!userAuth">
                     <a href="/account">Account</a>
                 </li>
-                <li>
-                    <button ng-click="logout()" class="btn btn-default navbar-btn" ng-controller="LogOutCtrl">Log out</button>
+                <li ng-hide="!userAuth">
+                    <p class="navbar-btn">
+                        <button ng-click="logout()" class="btn btn-default" ng-controller="LogOutCtrl">Log out</button>
+                    </p>
                 </li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right" ng-controller="BasicCtrl" ng-hide="isAuth">
-                <li>
+                <li ng-hide="userAuth">
                     <p class="navbar-btn">
                         <a href="/auth" class="btn btn-default">Log In</a>
                     </p>

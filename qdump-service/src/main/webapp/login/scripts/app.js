@@ -21,8 +21,29 @@ module = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ngAnimate',
             when('/account', {
                 templateUrl: 'login/account.html',
                 controller: 'AccountCtrl'
-            })
-            .otherwise({
+            }).
+            when('/error', {
+                templateUrl: 'login/error.html'
+            }).
+            when('/verify', {
+                templateUrl: 'login/success.html'
+            }).
+            when('/success', {
+                templateUrl: 'login/success.html'
+            }).
+            when('/account/personal', {
+                templateUrl: 'login/personal-page.html',
+                controller: 'AccountCtrl'
+            }).
+            when('/account/change', {
+                templateUrl: 'login/change-personal.html',
+                controller: 'AccountCtrl'
+            }).
+            when('/account/completed', {
+                templateUrl: 'login/completed.html',
+                controller: 'AccountCtrl'
+            }).
+            otherwise({
                 redirectTo: '/'
             });
     });

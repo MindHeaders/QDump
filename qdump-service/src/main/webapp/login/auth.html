@@ -8,7 +8,7 @@
     <form name="login_form" class="form-horizontal col-md-4 col-md-offset-4">
         <div class="form-group">
             <div>
-                <input type="login" class="form-control" id="login" placeholder="Login" ng-model="user.login">
+                <input type="text" class="form-control" id="login" placeholder="Login or Email" ng-model="user.login_or_email">
             </div>
         </div>
         <div class="form-group">
@@ -20,7 +20,7 @@
             <div class="checkbox">
                 <div class="form-inline">
                     <label>
-                        <input type="checkbox" value="Remember me" name="remember">Remember Me
+                        <input type="checkbox" name="rememberMe" ng-model="rememberMe" value="true">Remember Me
                     </label>
                     <a class="pull-right disabled">Forgot password?</a>
                 </div>

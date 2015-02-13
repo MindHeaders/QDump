@@ -10,7 +10,6 @@ import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
 import org.dataart.qdump.entities.questionnaire.AnswerEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
@@ -23,29 +22,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JpaTest {
+
 	public static void main(String[] args) throws IOException, IntrospectionException, NamingException {
-		
-		EntityManagerFactory emf = Persistence
-				.createEntityManagerFactory("qdump-persistence");
-		EntityManager em = emf.createEntityManager();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("qdump-persistence");
+        EntityManager em = emf.createEntityManager();
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			
-			em.getTransaction().begin();
-			PersonEntity entity = new PersonEntity();
-			entity.setEmail("testadminemail@mail.com");
-			entity.setEnabled(true);
-			entity.setFirstname("testadminfirstname");
-			entity.setGender((byte) 1);
-			entity.setLastname("testadminlastname");
-			entity.setLogin("testadminlogin");
-			entity.setPassword(BCrypt.hashpw("testadminpassword", BCrypt.gensalt()));
-			entity.setPersonGroup(PersonGroupEnums.ADMIN);
-			em.persist(entity);
-			Query query = em.createNamedQuery("PersonEntity.getPersonByLogin");
-			query.setParameter(1, "testadminlogin");
-			PersonEntity entity2 = (PersonEntity) query.getSingleResult();
-			System.out.println(BCrypt.checkpw("testadminpassword", entity2.getPassword()));
+            em.getTransaction().begin();
+			Query query = em.createNamedQuery("PersonEntity.isEnabledByEmail");
+			query.setParameter(1, "vlasovartem22@gmail.com");
+            boolean enabled = (boolean) query.getSingleResult();
+            System.out.println(enabled);
+//            VerificationTokenEntity verificationTokenEntity = (VerificationTokenEntity) query.getSingleResult();
+//            BeanWrapper wrapper = new BeanWrapperImpl(verificationTokenEntity);
+//            for(PropertyDescriptor descriptor : wrapper.getPropertyDescriptors()) {
+//                String propName = descriptor.getName();
+//                System.out.println("propName : " + propName + "\nValue : " + wrapper.getPropertyValue(propName));
+//            }
+//            VerificationTokenEntity tokenEntity2 = em.find(VerificationTokenEntity.class, 2l);
+//            wrapper = new BeanWrapperImpl(tokenEntity2);
+//            for(PropertyDescriptor descriptor : wrapper.getPropertyDescriptors()) {
+//                String propName = descriptor.getName();
+//                System.out.println("propName : " + propName + "\nValue : " + wrapper.getPropertyValue(propName));
+//            }
 			/*List<PersonEntity> entities = em.createNamedQuery(
 					"PersonEntity.getPersonsNameLastname", PersonEntity.class)
 					.getResultList();
@@ -64,7 +63,7 @@ public class JpaTest {
 			if (em.isOpen()) {
 				em.close();
 			}
-			emf.close();
+            emf.close();
 		}
 	}
 

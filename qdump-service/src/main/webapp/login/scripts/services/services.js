@@ -35,3 +35,35 @@ services.factory('UsersFactory', function($resource) {
         }
     })
 });
+services.factory('VerificationFactory', function($resource) {
+   return $resource('/rest/persons/verify', {}, {
+       verify : {
+           method: 'GET'
+       }
+   })
+});
+services.factory('AccountFactory', function($resource) {
+    return $resource('/rest/persons/personal', {}, {
+        page : {
+            method: 'GET'
+        }
+    })
+});
+services.factory('UpdateFactory', function($resource) {
+    return $resource('/rest/persons/update', {}, {
+        update : {
+            method: 'PUT',
+            isArray: false,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }
+    })
+});
+services.factory('ResetPasswordFactory', function($resource) {
+   return $resource('/rest/person/reset/password', {}, {
+       resetPassword : {
+           method: 'PUT'
+       }
+   })
+});

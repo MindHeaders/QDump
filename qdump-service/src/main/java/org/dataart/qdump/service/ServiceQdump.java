@@ -1,7 +1,5 @@
 package org.dataart.qdump.service;
 
-import java.util.List;
-
 import org.dataart.qdump.entities.person.PersonAnswerEntity;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.person.PersonQuestionEntity;
@@ -9,6 +7,9 @@ import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
 import org.dataart.qdump.entities.questionnaire.AnswerEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
+import org.dataart.qdump.entities.security.VerificationTokenEntity;
+
+import java.util.List;
 
 public interface ServiceQdump {
 	//PersonEntity
@@ -26,7 +27,9 @@ public interface ServiceQdump {
 	boolean personEntityExistsByLogin(String login);
 	boolean personEntityExistsByEmail(String email);
 	String getPersonPasswordByLogin(String login);
-	
+    boolean personEntityIsEnabledByLogin(String login);
+    boolean personEntityIsEnabledByEmail(String email);
+
 	//PersonQuestionnaireEntity
 	void addPersonQuestionnaireEntity(PersonQuestionnaireEntity personQuestionnaireEntity);
 	void deletePersonQuestionnaireEntity(long id);
@@ -82,11 +85,18 @@ public interface ServiceQdump {
 	List<AnswerEntity> getAnswerEntities();
 	boolean answerEntityExists(long id);
 	long answerEntitiesCount();
-	
 
-	
-	
-	
-	
-	
+    //VerificationTokenEntity
+    void addVerificationTokenEntity(VerificationTokenEntity verificationTokenEntity);
+    void deleteVerificationTokenEntity(long id);
+    void deleteAllVerificationTokenEntity();
+    void deleteExpired();
+    void deleteVerified();
+    boolean verificationTokenEntityExists(String token);
+    VerificationTokenEntity getTokenByPersonEntityEmail(String email);
+    VerificationTokenEntity getTokenByPersonEntityEmailConstructor(String email);
+    VerificationTokenEntity getVerificationTokenByToken(String token);
+    VerificationTokenEntity getVerificationTokenEntity(long id);
+    List<VerificationTokenEntity> getVerificationTokenEntities();
+
 }

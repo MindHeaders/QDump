@@ -30,3 +30,19 @@ body {
     from { opacity: 0; }
     to { opacity: 1;}
 }
+article {
+    display: block;
+}
+.fixToTop {
+    position: fixed;
+    top: 50px;
+}
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}
+tr th:first-child {
+    width: 60%;
+}
+/*tr.table-width:nth-child(1n+1) {*/
+    /*width: 15%;*/
+/*}*/

@@ -62,8 +62,7 @@ public class SecurityConfig {
     public ShiroFilterFactoryBean shiroFilter() {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager());
-        shiroFilterFactoryBean.setLoginUrl("/auth");
-        shiroFilterFactoryBean.setSuccessUrl("/");
+        shiroFilterFactoryBean.setLoginUrl("/login/auth.html");
 ////		shiroFilterFactoryBean.setFilterChainDefinitions("" +
 ////				"/answers = authc, roles[ADMIN]" +
 ////				"/persons/** = authc, roles[ADMIN, USER]" +

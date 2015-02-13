@@ -32,7 +32,7 @@ public class AppConfig {
 
 	@Bean
 	public BasicDataSource dataSource() {
-		BasicDataSource basicDataSource = new BasicDataSource(); 
+		BasicDataSource basicDataSource = new BasicDataSource();
 		basicDataSource.setUrl(env.getProperty("db.url"));
 		basicDataSource.setUsername(env.getProperty("db.user"));
 		basicDataSource.setPassword(env.getProperty("db.password"));
@@ -51,6 +51,7 @@ public class AppConfig {
 		LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
 		bean.setPackagesToScan("org.dataart.qdump");
 		bean.setDataSource(dataSource);
+//        bean.setPersistenceXmlLocation("META-INF/persistence.xml");
 		Properties properties = new Properties();
 		properties.put("hibernate.dialect",
 				env.getProperty("hibernate.dialect"));

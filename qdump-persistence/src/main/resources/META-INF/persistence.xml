@@ -14,6 +14,8 @@
 		<class>org.dataart.qdump.entities.person.PersonEntity</class>
 		<class>org.dataart.qdump.entities.person.PersonQuestionEntity</class>
 		<class>org.dataart.qdump.entities.person.PersonQuestionnaireEntity</class>
+        <class>org.dataart.qdump.entities.security.VerificationTokenEntity</class>
+        <class>org.dataart.qdump.entities.converters.LocalDateTimePersistenceConverter</class>
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 			<property name="hibernate.hbm2ddl.auto" value="update" />

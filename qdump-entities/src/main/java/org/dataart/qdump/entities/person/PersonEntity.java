@@ -1,8 +1,14 @@
 package org.dataart.qdump.entities.person;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.validator.routines.EmailValidator;
+import org.dataart.qdump.entities.enums.PersonGroupEnums;
+import org.dataart.qdump.entities.helper.EntitiesUpdater;
+import org.dataart.qdump.entities.questionnaire.QuestionnaireBaseEntity;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -15,45 +21,41 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.validator.routines.EmailValidator;
-import org.dataart.qdump.entities.enums.PersonGroupEnums;
-import org.dataart.qdump.entities.helper.EntitiesUpdater;
-import org.dataart.qdump.entities.questionnaire.QuestionnaireBaseEntity;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Table(name = "persons")
 @AttributeOverride(name = "id", column = @Column(name = "id_person", insertable = false, updatable = false))
 @JsonAutoDetect
 @NamedQueries({
-	@NamedQuery(name = "PersonEntity.getPersonByEmail", query = "FROM PersonEntity p "
-			+ "WHERE p.email = ?1"),
-	@NamedQuery(name = "PersonEntity.getPersonByLogin", query = "FROM PersonEntity p "
-			+ "WHERE p.login = ?1"),
-	@NamedQuery(name = "PersonEntity.getPersonByPersonGroup", query = "FROM PersonEntity p  "
-			+ "WHERE p.personGroup = ?1"),
-	@NamedQuery(name = "PersonEntity.getPersonEntitiesForAdminPanel", query = "SELECT NEW "
-			+ "org.dataart.qdump.entities.person.PersonEntity(p.firstname, p.lastname, p.id) "
-			+ "FROM PersonEntity p"),
-	@NamedQuery(name = "PersonEntity.getPersonByLoginForAuth", query = "SELECT NEW "
-			+ "org.dataart.qdump.entities.person.PersonEntity(p.email, p.password, p.login) "
-			+ "FROM PersonEntity p WHERE p.login = ?1"),
-	@NamedQuery(name = "PersonEntity.deletePersonEntityByEmail", query = "DELETE FROM "
-			+ "PersonEntity p WHERE p.email = ?1"),
-	@NamedQuery(name = "PersonEntity.deletePersonEntityByLogin", query = "DELETE FROM "
-			+ "PersonEntity p WHERE p.login = ?1"),
-	@NamedQuery(name = "PersonEntity.existsByLogin", query = "SELECT CASE WHEN "
-			+ "COUNT(p) > 0 THEN 'true' ELSE 'false' END FROM PersonEntity p WHERE p.login = ?1"),
-	@NamedQuery(name = "PersonEntity.existsByEmail", query = "SELECT CASE WHEN "
-			+ "COUNT(p) > 0 THEN 'true' ELSE 'false' END FROM PersonEntity p WHERE p.email = ?1"),			
-	@NamedQuery(name = "PersonEntity.getPersonPasswordByLogin", query = "SELECT p.password "
-			+ "FROM PersonEntity p WHERE p.login = ?1")
+        @NamedQuery(name = "PersonEntity.getPersonByEmail", query = "FROM PersonEntity p "
+                + "WHERE p.email = ?1"),
+        @NamedQuery(name = "PersonEntity.getPersonByLogin", query = "FROM PersonEntity p "
+                + "WHERE p.login = ?1"),
+        @NamedQuery(name = "PersonEntity.getPersonByPersonGroup", query = "FROM PersonEntity p  "
+                + "WHERE p.personGroup = ?1"),
+        @NamedQuery(name = "PersonEntity.getPersonEntitiesForAdminPanel", query = "SELECT NEW "
+                + "org.dataart.qdump.entities.person.PersonEntity(p.firstname, p.lastname, p.id) "
+                + "FROM PersonEntity p"),
+        @NamedQuery(name = "PersonEntity.getPersonByLoginForAuth", query = "SELECT NEW "
+                + "org.dataart.qdump.entities.person.PersonEntity(p.email, p.password, p.login) "
+                + "FROM PersonEntity p WHERE p.login = ?1"),
+        @NamedQuery(name = "PersonEntity.deletePersonEntityByEmail", query = "DELETE FROM "
+                + "PersonEntity p WHERE p.email = ?1"),
+        @NamedQuery(name = "PersonEntity.deletePersonEntityByLogin", query = "DELETE FROM "
+                + "PersonEntity p WHERE p.login = ?1"),
+        @NamedQuery(name = "PersonEntity.existsByLogin", query = "SELECT CASE WHEN "
+                + "(COUNT(p) > 0) THEN true ELSE false END FROM PersonEntity p WHERE p.login = ?1"),
+        @NamedQuery(name = "PersonEntity.existsByEmail", query = "SELECT CASE WHEN "
+                + "(COUNT(p) > 0) THEN true ELSE false END FROM PersonEntity p WHERE p.email = ?1"),
+        @NamedQuery(name = "PersonEntity.getPersonPasswordByLogin", query = "SELECT p.password "
+                + "FROM PersonEntity p WHERE p.login = ?1"),
+        @NamedQuery(name = "PersonEntity.isEnabledByLogin", query = "SELECT CASE WHEN " +
+                "(p.enabled = true) THEN true ELSE false END FROM PersonEntity p WHERE p.login = ?1"),
+        @NamedQuery(name = "PersonEntity.isEnabledByEmail", query = "SELECT CASE WHEN " +
+                "(p.enabled = true) THEN true ELSE false END FROM PersonEntity p WHERE p.email = ?1")
 })
 public class PersonEntity extends QuestionnaireBaseEntity implements Serializable {
 	private static final long serialVersionUID = -219526512840281300L;
@@ -62,8 +64,7 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 	private String email;
 	private String login;
 	private String password;
-	@JsonProperty("enabled")
-	private boolean isEnabled;
+	private boolean enabled;
 	private byte gender;
 	@JsonProperty("person_group")
 	private PersonGroupEnums personGroup;
@@ -145,15 +146,15 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 	 * Set true if this use is verified by ADMIN {@link PersonGroupEnums} after
 	 * email confirmation
 	 * 
-	 * @param isEnabled
+	 * @param enabled
 	 */
 	@Column(name = "enabled", nullable = false, columnDefinition = "BIT(1) DEFAULT 0")
 	public boolean isEnabled() {
-		return isEnabled;
+		return enabled;
 	}
 
-	public void setEnabled(boolean isEnabled) {
-		this.isEnabled = isEnabled;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	/**
@@ -207,7 +208,7 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 		this.personQuestionnaireEntities = personQuestionnaireEntities;
 	}
 
-	/**
+    /**
 	 * Name validator, persisted name should contains only letters from A to Z .
 	 * Max length 35
 	 * 
@@ -285,7 +286,7 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 			.append(this.lastname, entity.lastname)
 			.append(this.email, entity.email)
 			.append(this.login, entity.login)
-			.append(this.isEnabled, entity.isEnabled)
+			.append(this.enabled, entity.enabled)
 			.append(this.gender, entity.gender)
 			.append(this.personGroup, entity.personGroup)
 			.isEquals();
@@ -311,7 +312,7 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 			.append(email)
 			.append(login)
 			.append(password)
-			.append(isEnabled)
+			.append(enabled)
 			.append(gender)
 			.append(personGroup)
 			.append(personQuestionnaireEntities)
@@ -337,7 +338,7 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 			.append(email, entity.email)
 			.append(login, entity.login)
 			.append(password, entity.password)
-			.append(isEnabled, entity.isEnabled)
+			.append(enabled, entity.enabled)
 			.append(gender, entity.gender)
 			.append(personGroup, entity.personGroup)
 			.append(personQuestionnaireEntities, entity.personQuestionnaireEntities)

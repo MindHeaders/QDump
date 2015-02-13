@@ -1,7 +1,5 @@
 package org.dataart.qdump.service.impl;
 
-import java.util.List;
-
 import org.dataart.qdump.entities.person.PersonAnswerEntity;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.person.PersonQuestionEntity;
@@ -9,6 +7,7 @@ import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
 import org.dataart.qdump.entities.questionnaire.AnswerEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
+import org.dataart.qdump.entities.security.VerificationTokenEntity;
 import org.dataart.qdump.persistence.repository.AnswerCrudRepository;
 import org.dataart.qdump.persistence.repository.PersonAnswerCrudRepository;
 import org.dataart.qdump.persistence.repository.PersonCrudRepository;
@@ -16,30 +15,37 @@ import org.dataart.qdump.persistence.repository.PersonQuestionCrudRepository;
 import org.dataart.qdump.persistence.repository.PersonQuestionnaireCrudRepository;
 import org.dataart.qdump.persistence.repository.QuestionCrudRepository;
 import org.dataart.qdump.persistence.repository.QuestionnaireCrudRepository;
+import org.dataart.qdump.persistence.repository.VerificationTokenCrudRepository;
 import org.dataart.qdump.service.ServiceQdump;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ServiceImpl implements ServiceQdump {
 	
 	@Autowired
-	AnswerCrudRepository answerCrudRepository;
+	private AnswerCrudRepository answerCrudRepository;
 	@Autowired
-	PersonAnswerCrudRepository personAnswerCrudRepository;
+    private PersonAnswerCrudRepository personAnswerCrudRepository;
 	@Autowired
-	PersonCrudRepository personCrudRepository;
+    private PersonQuestionCrudRepository personQuestionCrudRepository;
 	@Autowired
-	PersonQuestionCrudRepository personQuestionCrudRepository;
+    private PersonQuestionnaireCrudRepository personQuestionnaireCrudRepository;
 	@Autowired
-	PersonQuestionnaireCrudRepository personQuestionnaireCrudRepository;
+    private QuestionCrudRepository questionCrudRepository;
 	@Autowired
-	QuestionCrudRepository questionCrudRepository;
-	@Autowired
-	QuestionnaireCrudRepository questionnaireCrudRepository;
+    private QuestionnaireCrudRepository questionnaireCrudRepository;
+    @Qualifier("verificationTokenCrudRepository")
+    @Autowired
+    private VerificationTokenCrudRepository verificationTokenCrudRepository;
+    @Qualifier("personCrudRepository")
+    @Autowired
+    private PersonCrudRepository personCrudRepository;
 
-	
-	//PersonEntity
+    //PersonEntity
 	@Override
 	public void addPersonEntity(PersonEntity personEntity) {
 		personCrudRepository.save(personEntity);
@@ -109,8 +115,18 @@ public class ServiceImpl implements ServiceQdump {
 	public String getPersonPasswordByLogin(String login) {
 		return personCrudRepository.getPersonPasswordByLogin(login);
 	}
-	
-	//PersonQuestionnaireEntity
+
+    @Override
+    public boolean personEntityIsEnabledByLogin(String login) {
+        return personCrudRepository.isEnabledByLogin(login);
+    }
+
+    @Override
+    public boolean personEntityIsEnabledByEmail(String email) {
+        return personCrudRepository.isEnabledByEmail(email);
+    }
+
+    //PersonQuestionnaireEntity
 	@Override
 	public void addPersonQuestionnaireEntity(
 			PersonQuestionnaireEntity personQuestionnaireEntity) {
@@ -344,6 +360,61 @@ public class ServiceImpl implements ServiceQdump {
 		return answerCrudRepository.count();
 	}
 
-	
+    //VerificationTokenEntity
 
+
+    @Override
+    public void addVerificationTokenEntity(VerificationTokenEntity verificationTokenEntity) {
+        verificationTokenCrudRepository.save(verificationTokenEntity);
+    }
+
+    @Override
+    public void deleteVerificationTokenEntity(long id) {
+        verificationTokenCrudRepository.delete(id);
+    }
+
+    @Override
+    public void deleteAllVerificationTokenEntity() {
+        verificationTokenCrudRepository.deleteAll();
+    }
+
+    @Override
+    public VerificationTokenEntity getVerificationTokenEntity(long id) {
+        return verificationTokenCrudRepository.findOne(id);
+    }
+
+    @Override
+    public List<VerificationTokenEntity> getVerificationTokenEntities() {
+        return (List<VerificationTokenEntity>)verificationTokenCrudRepository.findAll();
+    }
+
+    @Override
+    public boolean verificationTokenEntityExists(String token) {
+        return verificationTokenCrudRepository.exists(token);
+    }
+
+    @Override
+    public VerificationTokenEntity getTokenByPersonEntityEmail(String email) {
+        return verificationTokenCrudRepository.findByPersonEntityEmail(email);
+    }
+
+    @Override
+    public void deleteExpired() {
+        verificationTokenCrudRepository.deleteExpired();
+    }
+
+    @Override
+    public void deleteVerified() {
+        verificationTokenCrudRepository.deleteVerified();
+    }
+
+    @Override
+    public VerificationTokenEntity getVerificationTokenByToken(String token) {
+        return verificationTokenCrudRepository.findByToken(token);
+    }
+
+    @Override
+    public VerificationTokenEntity getTokenByPersonEntityEmailConstructor(String email) {
+        return verificationTokenCrudRepository.findByPersonEntityEmailConstructor(email);
+    }
 }
