@@ -4,6 +4,7 @@ import org.dataart.qdump.entities.questionnaire.AnswerEntity;
 import org.dataart.qdump.service.ServiceQdump;
 import org.dataart.qdump.service.resource.AnswerEntityResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
@@ -11,6 +12,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
+@Component
 public class AnswerEntityResourceBean implements AnswerEntityResource{
 
 	@Autowired

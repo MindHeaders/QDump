@@ -24,9 +24,11 @@ public class QdumpConfigurationProvider extends HttpConfigurationProvider {
                 .addRule(Join.path("/error").to(BASE_URI))
                 .addRule(Join.path("/success").to(BASE_URI))
                 .addRule(Join.path("/account").to(BASE_URI))
+                .addRule(Join.path("/questionnaires").to(BASE_URI))
                 .addRule(Join.path("/account/personal").to("/account").withChaining())
                 .addRule(Join.path("/account/change").to("/account").withChaining())
-                .addRule(Join.path("/account/completed").to("/account").withChaining());
+                .addRule(Join.path("/account/completed").to("/account").withChaining())
+                .addRule(Join.path("/questionnaires/create").to("/questionnaires").withChaining());
     }
 
     @Override

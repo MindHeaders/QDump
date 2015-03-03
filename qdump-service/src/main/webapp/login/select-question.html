@@ -1,0 +1,27 @@
+<div class="form-inline" ng-hide="$parent.$parent.questionnaire.question_entities[$parent.$parent.formQuestion.id].answer_entities == null">
+    <table>
+        <tr>
+            <th class="col-md-9" style="width: 95%">Answers:</th>
+            <th class="col-md-1" style="width: 5%">Correct</th>
+            <th class="col-md-2"></th>
+        </tr>
+        <tr ng-repeat="formAnswer in $parent.$parent.formQuestion.answers" ng-show="formAnswer.id == $parent.$parent.$parent.formQuestion.answers.length - 1">
+            <td>
+                <input type="text" name="{{formAnswer.idAnswer}}" placeholder="Input answer..."
+                       class="form-control"
+                       style="width: 100%"
+                       ng-model="$parent.$parent.$parent.questionnaire.question_entities[$parent.$parent.$parent.formQuestion.id].answer_entities[$index]['answer']"
+                       autocomplete="off"/>
+            </td>
+            <td align="center">
+                <input type="checkbox" class="form-control"
+                       ng-model="$parent.$parent.$parent.questionnaire.question_entities[$parent.$parent.$parent.formQuestion.id].answer_entities[$index]['correct']"
+                       name="{{formAnswer.idAnswer}}"
+                       ng-click="$parent.$parent.$parent.changeRadioAnswers(formAnswer.id, $parent.$parent.$parent.formQuestion.id)"/>
+            </td>
+            <td>
+                <button class="btn btn-danger btn-xs" ng-click="$parent.$parent.$parent.deleteAnswer(formAnswer.id, $parent.$parent.$parent.formQuestion.id)">Delete</button>
+            </td>
+        </tr>
+    </table>
+</div>

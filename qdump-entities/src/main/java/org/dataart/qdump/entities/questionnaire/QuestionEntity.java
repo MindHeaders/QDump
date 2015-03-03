@@ -1,8 +1,12 @@
 package org.dataart.qdump.entities.questionnaire;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.dataart.qdump.entities.enums.QuestionTypeEnums;
+import org.dataart.qdump.entities.helper.EntitiesUpdater;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -17,21 +21,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.dataart.qdump.entities.enums.QuestionTypeEnums;
-import org.dataart.qdump.entities.helper.EntitiesUpdater;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Table(name = "questions")
 @AttributeOverride(name = "id", column = @Column(name = "id_question", insertable = false, updatable = false))
 @JsonAutoDetect
-@JsonIgnoreProperties({ "createdDate", "modifiedDate" })
+@JsonIgnoreProperties({ "createdDate", "modifiedDate", "question_id" })
 public class QuestionEntity extends BaseEntity implements Serializable {
 	private static final long serialVersionUID = 7827573669263895832L;
 	private String question;
@@ -42,7 +40,7 @@ public class QuestionEntity extends BaseEntity implements Serializable {
 	@JsonBackReference
 	private QuestionnaireEntity questionnaireEntity;
 
-	@Column(name = "question", nullable = false, length = 1500)
+	@Column(name = "question", nullable = false, length = 250)
 	public String getQuestion() {
 		return question;
 	}

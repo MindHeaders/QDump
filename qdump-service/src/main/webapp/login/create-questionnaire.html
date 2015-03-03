@@ -1,0 +1,167 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4"
+             align="center">
+            <h2>Create Questionnaire</h2>
+        </div>
+    </div>
+    <div>
+        <form class="form-horizontal"
+              name="createQForm"
+              id="createQForm"
+              novalidate role="form">
+            <!--Questionnaire name-->
+
+            <div class="form-group has-feedback"
+                 ng-class="{'has-success' : check(createQForm.name, 'dirtyValid'), 'has-error' : check(createQForm.name, 'dirtyInvalid')}"
+                 ng-controller="CheckerCtrl">
+                <div class="col-md-offset-3 col-md-6">
+                    <label for="name">Questionnaire name:</label>
+                    <input type="text"
+                           name="name"
+                           placeholder="Input questionnaire name..."
+                           class="form-control"
+                           autocomplete="off"
+                           ng-model="questionnaire.name"
+                           id="name"
+                           ng-minlength="10"
+                           ng-maxlength="250"
+                           required/>
+                    <div validation-messages
+                         model-controller="createQForm.name"
+                         required-error="Questionnaire name is required"
+                         minlength-error="Questionnaire name is too short"
+                         maxlength-error="Questionnaire name is too long">
+                    </div>
+                    <span class="glyphicon glyphicon-remove form-control-feedback"
+                          ng-if="check(createQForm.name, 'dirtyInvalid')"></span>
+                    <span class="glyphicon glyphicon-ok form-control-feedback"
+                          ng-if="check(createQForm.name, 'dirtyValid')">
+                    </span>
+                </div>
+            </div>
+            <!--Questionnaire description-->
+            <div class="form-group has-feedback"
+                 ng-class="{'has-success' : check(createQForm.description, 'dirtyValid'), 'has-error' : check(createQForm.description, 'dirtyInvalid')}"
+                 ng-controller="CheckerCtrl">
+                <div class="col-md-offset-3 col-md-6">
+                    <label for="description">Questionnaire description:</label>
+                    <textarea form="createQForm"
+                              name="description"
+                              id="description"
+                              cols="40"
+                              rows="3"
+                              ng-model="questionnaire.description"
+                              class="form-control"
+                              placeholder="Input questionnaire description..."
+                              ng-minlength="20"
+                              ng-maxlength="500">
+
+                    </textarea>
+                    <div validation-messages
+                         model-controller="createQForm.description"
+                         minlength-error="Questionnaire description is too short"
+                         maxlength-error="Questionnaire description is too long">
+                    </div>
+                    <span class="glyphicon glyphicon-remove form-control-feedback" ng-if="check(createQForm.description, 'dirtyInvalid')"></span>
+                    <span class="glyphicon glyphicon-ok form-control-feedback" ng-if="check(createQForm.description, 'dirtyValid')"></span>
+                </div>
+            </div>
+            <!--Question creater-->
+            <div ng-repeat="formQuestion in formQuestions">
+                <div class="form-group has-feedback"
+                     ng-class="{'has-success' : check(createQForm[formQuestion.idQuestion], 'dirtyValid'), 'has-error' : check(createQForm[formQuestion.idQuestion], 'dirtyInvalid')}"
+                     ng-controller="CheckerCtrl">
+                    <div class="form-inline">
+                        <div class="col-md-offset-3 col-md-5">
+
+                            <lable for="{{formQuestion.idQuestion}}"
+                                   ng-bind="formQuestion.counter + '.'"></lable>
+                            <input type="text" id="{{formQuestion.idQuestion}}"
+                                   placeholder="Input question..."
+                                   class="form-control"
+                                   style="width: 95%"
+                                   name={{formQuestion.idQuestion}}
+                                   ng-model="questionnaire.question_entities[formQuestion.id]['question']"
+                                   ng-minlength="10"
+                                   ng-maxlength="250"
+                                   required
+                                   autocomplete="off"/>
+                            <span validation-messages
+                                  model-controller="createQForm[formQuestion.idQuestion]"
+                                  required-error="Question is required"
+                                  minlength-error="Question is too short"
+                                  maxlength-error="Question is too long">
+                            </span>
+                            <span class="glyphicon glyphicon-remove form-control-feedback" ng-if="check(createQForm[formQuestion.idQuestion], 'dirtyInvalid')"></span>
+                            <span class="glyphicon glyphicon-ok form-control-feedback" ng-if="check(createQForm[formQuestion.idQuestion], 'dirtyValid')"></span>
+                        </div>
+                        <button class="btn btn-danger" ng-click="deleteQuestion(formQuestion.id)">Delete</button>
+                    </div>
+                </div>
+                <div class="form-group"
+                     ng-hide="questionnaire.question_entities[formQuestion.id].answer_entities.length >= answersLimit
+                     || (formQuestion.idType.indexOf('TEXTARE') > -1
+                     && questionnaire.question_entities[formQuestion.id].answer_entities.length >= 1)">
+                    <div class="col-md-offset-3 col-md-4">
+                        <div data-toggle="tooltip"
+                             tooltip="You need to input question first"
+                             tooltip-placement="right"
+                             style="display: inline-block"
+                             tooltip-trigger="{{{true : 'mouseenter', false : 'never'}[(questionnaire.question_entities[formQuestion.id]['question'] == null)]}}">
+                            <input type="button" class="btn btn-primary"
+                                   id="answerButton"
+                                   ng-disabled="questionnaire.question_entities[formQuestion.id]['question'] == null || questionnaire.question_entities[formQuestion.id]['question'] == ''"
+                                   value="Add answer"
+                                   ng-click="addAnswer(formQuestion.id)"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <put-answer template="{{formQuestion.questionAddress}}"></put-answer>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-4 col-md-4" align="center">
+                    <div ng-hide="questionsLimit == questionnaire.question_entities.length">
+                        <label for="questionType">Add new question:</label>
+                        <div class="form-inline">
+                            <select class="form-control"
+                                    id="questionType"
+                                    ng-model="type"
+                                    ng-options="opt as opt.label for opt in options">
+                            </select>
+                            <button class="btn btn-primary btn-sm"
+                                    ng-click="addAllInputs();"
+                                    ng-disabled="!type || questionsLimit == questionnaire.question_entities.length || type.value == ''">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" ng-show="questionnaire.question_entities.length > 0 && checkQuestionnaire()">
+                <div class="col-md-offset-3 col-md-6" align="center">
+                    <input type="checkbox" ng-model="questionnaire['published']" id="publish"/><label
+                        for="publish">&nbsp;Mark if you want to publish your Questionnaire.</label>
+                    <br><small>(Only published questionnaire will be seen by others users)</small>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-3 col-md-6">
+                    <div class="btn-group btn-group-justified">
+                        <div class="btn-group">
+                            <button class="btn btn-success"
+                                    ng-click="createQ()"
+                                    ng-disabled="!checkQuestionnaire()">Save</button>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-primary"
+                                    disabled>Preview</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <p><input type="button" ng-click="toConsole()" value="To Console"/></p>
+        </form>
+    </div>
+</div>

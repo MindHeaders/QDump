@@ -29,6 +29,15 @@ public class JpaTest {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
             em.getTransaction().begin();
+            for(int i = 0; i < 100; i++) {
+                String name = "Name #" + i;
+                String description = "Description #" + i;
+                QuestionnaireEntity questionnaireEntity = new QuestionnaireEntity();
+                questionnaireEntity.setPublished(true);
+                questionnaireEntity.setName(name);
+                questionnaireEntity.setDescription(description);
+                em.persist(questionnaireEntity);
+            }
 			Query query = em.createNamedQuery("PersonEntity.isEnabledByEmail");
 			query.setParameter(1, "vlasovartem22@gmail.com");
             boolean enabled = (boolean) query.getSingleResult();

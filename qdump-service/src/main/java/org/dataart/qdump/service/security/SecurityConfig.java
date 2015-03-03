@@ -63,11 +63,9 @@ public class SecurityConfig {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager());
         shiroFilterFactoryBean.setLoginUrl("/login/auth.html");
-////		shiroFilterFactoryBean.setFilterChainDefinitions("" +
-////				"/answers = authc, roles[ADMIN]" +
-////				"/persons/** = authc, roles[ADMIN, USER]" +
-////				"/questionnaires = authc, roles[ADMIN]" +
-////				"/question = authc, roles[ADMIN]");
+		shiroFilterFactoryBean.setFilterChainDefinitions("" +
+				"/answers = authc, roles[ADMIN]" +
+				"/questions = authc, roles[ADMIN]");
 //        Map<String, String> chainDefinitionMap = new HashMap<>();
 //        chainDefinitionMap.put("/rest/persons/get/min", "authc, roles[ADMIN]");
 //        shiroFilterFactoryBean.setFilterChainDefinitionMap(chainDefinitionMap);

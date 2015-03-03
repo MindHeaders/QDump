@@ -9,7 +9,9 @@ import org.dataart.qdump.entities.person.PersonAnswerEntity;
 import org.dataart.qdump.service.ServiceQdump;
 import org.dataart.qdump.service.resource.PersonAnswerEntityResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PersonAnswerEntityResourceBean implements PersonAnswerEntityResource{
 	
 	@Autowired

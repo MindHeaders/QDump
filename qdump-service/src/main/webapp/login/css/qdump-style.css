@@ -6,9 +6,10 @@ div.col-md-4.col-md-offset-4.errors {
 a.navbar-link {
     color: deepskyblue;
 }
-body {
-    padding-top: 70px;
-}
+/*body {*/
+    /*padding-top: 70px;*/
+    /*padding-bottom: 70px;*/
+/*}*/
 .my-messages {
     transition: 1s linear all;
 }
@@ -43,6 +44,70 @@ article {
 tr th:first-child {
     width: 60%;
 }
+.navbar .divider-vertical {
+    height: 32px;
+    margin: 0 9px;
+    border-right: 1px solid #ffffff;
+    border-left: 1px solid #f2f2f2;
+}
+
+.navbar-inverse .divider-vertical {
+    border-right-color: #222222;
+    border-left-color: #111111;
+}
+
+@media (max-width: 767px) {
+    .navbar-collapse .nav > .divider-vertical {
+        display: none;
+    }
+}
 /*tr.table-width:nth-child(1n+1) {*/
     /*width: 15%;*/
 /*}*/
+.navbar-fixed-bottom .navbar-nav > li > a {padding-top:5px !important; padding-bottom:5px !important;}
+.navbar-fixed-bottom .navbar-text {margin-bottom: 5px !important; margin-top: 5px !important;}
+.navbar {min-height:32px !important}
+.createStyle {
+    display: inline;
+}
+input[name^=answer].form-control {
+    height: 26px !important;
+    font-size: 12px !important;
+}
+.my-pagination {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+.pagination-table > td {
+    vertical-align: middle !important;
+}
+footer {
+    margin-top: 20px;
+    margin-bottom: -100px;
+}
+html,
+body {
+    margin:0;
+    padding:0;
+    height:100%;
+}
+#wrapper {
+    min-height:100%;
+    position:relative;
+}
+#header {
+    padding:10px;
+    background:#5ee;
+}
+#content {
+    padding-top: 60px;
+    padding-bottom: 60px; /* Height of the footer element */
+}
+#footer {
+    width:100%;
+    height:50px;
+    position:absolute;
+    bottom:0;
+    left:0;
+}

@@ -1,16 +1,25 @@
 package org.dataart.qdump.service.resourceImpl;
 
-import java.util.List;
-
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
 import org.dataart.qdump.service.ServiceQdump;
 import org.dataart.qdump.service.resource.PersonQuestionnaireEntityResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
 
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.List;
+
+@Component
 public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnaireEntityResource{
 	@Autowired
 	private ServiceQdump serviceQdump;
@@ -107,4 +116,16 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
 					.build();
 		}
 	}
+
+    @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
+    public Page<PersonQuestionnaireEntity> paginationPersonQuestionnaire(
+            @DefaultValue("1") int page,
+            @DefaultValue("15") int size,
+            @DefaultValue("ASC") String direction,
+            @DefaultValue("modifiedDate") String sortBy) {
+        Pageable pageable = new PageRequest(page, size, Sort.Direction.fromString(direction), sortBy);
+        long id = (long) SecurityUtils.getSubject().getPrincipal();
+        Page<PersonQuestionnaireEntity> resultPage = serviceQdump.personQuestionnairePagination(id, pageable);
+        return resultPage;
+    }
 }

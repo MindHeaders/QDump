@@ -1,20 +1,21 @@
 package org.dataart.qdump.service.resourceImpl;
 
-import java.util.List;
-
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import org.dataart.qdump.entities.questionnaire.QuestionEntity;
 import org.dataart.qdump.service.ServiceQdump;
 import org.dataart.qdump.service.resource.QuestionEntityResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.List;
 
+@Component
 public class QuestionEntityResourceBean implements QuestionEntityResource{
 
 	@Autowired
+    @SuppressWarnings("SpringJavaAutowiringInspection")
 	private ServiceQdump serviceQdump;
 
 	public Response addQuestionEntity(QuestionEntity questionEntity) {

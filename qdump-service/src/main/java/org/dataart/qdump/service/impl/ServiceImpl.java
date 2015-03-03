@@ -19,6 +19,8 @@ import org.dataart.qdump.persistence.repository.VerificationTokenCrudRepository;
 import org.dataart.qdump.service.ServiceQdump;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -175,7 +177,12 @@ public class ServiceImpl implements ServiceQdump {
 		return personQuestionnaireCrudRepository.count();
 	}
 
-	//PersonQuestionEntity
+    @Override
+    public Page<PersonQuestionnaireEntity> personQuestionnairePagination(long id, Pageable pageable) {
+        return personQuestionnaireCrudRepository.findByOwnById(id, pageable);
+    }
+
+    //PersonQuestionEntity
 	@Override
 	public void addPersonQuestionEntity(
 			PersonQuestionEntity personQuestionEntity) {
@@ -287,8 +294,18 @@ public class ServiceImpl implements ServiceQdump {
 	public long questionnaireEntitiesCount() {
 		return questionnaireCrudRepository.count();
 	}
-	
-	//QuestionEntity
+
+    @Override
+    public Page<QuestionnaireEntity> questionnairesPagination(Pageable pageable) {
+        return questionnaireCrudRepository.getPublishedQuestionnaires(pageable);
+    }
+
+    @Override
+    public long countPublishedQuestionnaires() {
+        return questionnaireCrudRepository.countPublishedQuestionnaires();
+    }
+
+    //QuestionEntity
 	@Override
 	public void addQuestionEntity(QuestionEntity questionEntity) {
 		questionCrudRepository.save(questionEntity);

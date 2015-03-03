@@ -67,3 +67,43 @@ services.factory('ResetPasswordFactory', function($resource) {
        }
    })
 });
+services.factory('CompletedFactory', function($resource) {
+   return $resource('/rest/persons/questionnaires/pagination?page=:page&size=:size&direction=:direction&sort=:sort',
+       {page: '@page', size: '@size', direction: '@direction', sort: '@sort'})
+});
+services.factory('CreateQuestionnaireFactory', function($resource) {
+    return $resource('/rest/questionnaires/create');
+});
+services.factory('QuestionnaireFactory', function($resource) {
+    return $resource('/rest/questionnaires/:pagination/:get/:id', {
+            pagination: '@pagination',
+            get: '@get',
+            id: '@id'
+        },
+        {
+            query: {
+                method: 'GET',
+                params: {
+                    pagination: 'pagination'
+                },
+                isArray: true
+            },
+            get: {
+                method: 'GET'
+            }
+        }
+    )
+});
+services.factory('PersonalQuestionnaireFactory', function() {
+    var questionnaire = {
+        id: ''
+    };
+    return {
+        getQuestionnaireId: function() {
+            return questionnaire.id;
+        },
+        setQuestionnaireId: function(questionnaireId) {
+            questionnaire.id = questionnaireId;
+        }
+    }
+});

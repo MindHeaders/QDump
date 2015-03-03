@@ -8,6 +8,8 @@ import org.dataart.qdump.entities.questionnaire.AnswerEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
 import org.dataart.qdump.entities.security.VerificationTokenEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -40,6 +42,7 @@ public interface ServiceQdump {
 	List<PersonQuestionnaireEntity> findByOwnById(Long id);
 	boolean personQuestionnaireEntityExists(long id);
 	long personQuestionnaireEntitiesCount();
+    Page<PersonQuestionnaireEntity> personQuestionnairePagination(long id, Pageable pageable);
 	
 	//PersonQuestionEntity
 	void addPersonQuestionEntity(PersonQuestionEntity personQuestionEntity);
@@ -67,6 +70,8 @@ public interface ServiceQdump {
 	List<QuestionnaireEntity> getQuestionnaireEntities();
 	boolean questionnaireEntityExists(long id);
 	long questionnaireEntitiesCount();
+    Page<QuestionnaireEntity> questionnairesPagination(Pageable pageable);
+    long countPublishedQuestionnaires();
 	
 	//QuestionEntity
 	void addQuestionEntity(QuestionEntity questionEntity);

@@ -1,8 +1,9 @@
 package org.dataart.qdump.entities.questionnaire;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.dataart.qdump.entities.helper.EntitiesUpdater;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -10,16 +11,15 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.dataart.qdump.entities.helper.EntitiesUpdater;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Table(name = "questionnaires")
@@ -27,6 +27,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 		@AttributeOverride(name = "id", column = @Column(name = "id_questionnaire", insertable = false, updatable = false)),
 		@AttributeOverride(name = "created_by", column = @Column(name = "created_by", insertable = false, updatable = false, nullable = false)) })
 @JsonAutoDetect
+@NamedQueries({
+        @NamedQuery(name = "QuestionnaireEntity.findPublishedQuestionnaires", query = "SELECT NEW org.dataart.qdump.entities.questionnaire.QuestionnaireEntity(q.id, q.name, q.description) FROM QuestionnaireEntity q WHERE q.published = true"),
+        @NamedQuery(name = "QuestionnaireEntity.countPublishedQuestionnaires", query = "SELECT count(q) FROM QuestionnaireEntity q WHERE q.published = true")
+})
 public class QuestionnaireEntity extends QuestionnaireBaseEntity implements
 		Serializable {
 	private static final long serialVersionUID = 8952388499186170808L;
@@ -36,7 +40,17 @@ public class QuestionnaireEntity extends QuestionnaireBaseEntity implements
 	@JsonProperty("question_entities")
 	private List<QuestionEntity> questionEntities;
 
-	@Column(name = "name", nullable = false, length = 1000)
+    public QuestionnaireEntity(){
+        super();
+    }
+    public QuestionnaireEntity(Long id, String name, String description) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
+    @Column(name = "name", nullable = false, length = 250)
 	public String getName() {
 		return name;
 	}
@@ -45,7 +59,7 @@ public class QuestionnaireEntity extends QuestionnaireBaseEntity implements
 		this.name = name;
 	}
 
-	@Column(name = "description", length = 4500)
+	@Column(name = "description", length = 500)
 	public String getDescription() {
 		return description;
 	}

@@ -105,4 +105,17 @@ app.directive('validationMessages', function () {
         },
         template: '<div><small class="help-block test" ng-repeat="message in errorMessages" ng-show= "!modelController.$pristine && $first" class="warning">{{message}}</small></div>'
     }
-})
+});
+app.directive('putAnswer', function() {
+    return {
+        restrict: 'E',
+        scope: {template : '@'},
+        replace: true,
+        template: '<div ng-include="template"></div>'
+    }
+});
+app.directive('bsTooltip', function() {
+    return function(scope, element, attrs) {
+        element.find('[data-toggle="tooltip"]').tooltip();
+    }
+});

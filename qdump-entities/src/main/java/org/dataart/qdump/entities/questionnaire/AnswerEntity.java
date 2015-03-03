@@ -1,8 +1,10 @@
 package org.dataart.qdump.entities.questionnaire;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.dataart.qdump.entities.helper.EntitiesUpdater;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -13,20 +15,16 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.dataart.qdump.entities.helper.EntitiesUpdater;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Table(name = "answers")
 @AttributeOverrides(value = { 
 		@AttributeOverride(name = "id", column = @Column(name = "id_answer", insertable = false, updatable = false))})
 @JsonAutoDetect
-@JsonIgnoreProperties({"createdDate", "modifiedDate"})
+@JsonIgnoreProperties({"createdDate", "modifiedDate", "answer_id"})
 public class AnswerEntity extends BaseEntity implements Serializable{
 	private static final long serialVersionUID = -5973094404031746982L;
 	private String answer;
@@ -34,7 +32,7 @@ public class AnswerEntity extends BaseEntity implements Serializable{
 	@JsonBackReference
 	private QuestionEntity questionEntity;
 
-	@Column(name = "answer", length = 500)
+	@Column(name = "answer", length = 100)
 	public String getAnswer() {
 		return answer;
 	}
