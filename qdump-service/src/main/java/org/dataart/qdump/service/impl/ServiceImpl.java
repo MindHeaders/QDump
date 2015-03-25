@@ -69,13 +69,13 @@ public class ServiceImpl implements ServiceQdump {
 	}
 
 	@Override
-	public PersonEntity getPersonByEmail(String email) {
-		return personCrudRepository.getPersonByEmail(email);
+	public PersonEntity getPersonEntityByEmail(String email) {
+		return personCrudRepository.findPersonByEmail(email);
 	}
 
 	@Override
-	public PersonEntity getPersonByLogin(String login) {
-		return personCrudRepository.getPersonByLogin(login);
+	public PersonEntity getPersonEntityByLogin(String login) {
+		return personCrudRepository.findPersonByLogin(login);
 	}
 	
 	@Override
@@ -85,12 +85,12 @@ public class ServiceImpl implements ServiceQdump {
 	
 	@Override
 	public List<PersonEntity> getPersonEntitiesForAdminPanel() {
-		return personCrudRepository.getPersonEntitiesForAdminPanel();
+		return personCrudRepository.findPersonsForAdminPanel();
 	}
 	
 	@Override
-	public PersonEntity getPersonByLoginForAuth(String login) {
-		return personCrudRepository.getPersonByLoginForAuth(login);
+	public PersonEntity getPersonEntityAuthorization(String login) {
+		return personCrudRepository.findPersonByLoginForAuth(login);
 	}
 	
 	@Override
@@ -105,33 +105,37 @@ public class ServiceImpl implements ServiceQdump {
 	
 	@Override
 	public boolean personEntityExistsByLogin(String login) {
-		return personCrudRepository.existsByLogin(login);
+		return personCrudRepository.personExistsByLogin(login);
 	}
 	
 	@Override
 	public boolean personEntityExistsByEmail(String email) {
-		return personCrudRepository.existsByEmail(email);
+		return personCrudRepository.personExistsByEmail(email);
 	}
 	
 	@Override
-	public String getPersonPasswordByLogin(String login) {
-		return personCrudRepository.getPersonPasswordByLogin(login);
+	public String getPersonEntityPasswordByLogin(String login) {
+		return personCrudRepository.findPersonPasswordByLogin(login);
 	}
 
     @Override
     public boolean personEntityIsEnabledByLogin(String login) {
-        return personCrudRepository.isEnabledByLogin(login);
+        return personCrudRepository.personEnabledByLogin(login);
     }
 
     @Override
     public boolean personEntityIsEnabledByEmail(String email) {
-        return personCrudRepository.isEnabledByEmail(email);
+        return personCrudRepository.personEnabledByEmail(email);
+    }
+
+    @Override
+    public String getPersonEntityRole(long id) {
+        return personCrudRepository.findPersonRole(id);
     }
 
     //PersonQuestionnaireEntity
 	@Override
-	public void addPersonQuestionnaireEntity(
-			PersonQuestionnaireEntity personQuestionnaireEntity) {
+	public void addPersonQuestionnaireEntity(PersonQuestionnaireEntity personQuestionnaireEntity) {
 		personQuestionnaireCrudRepository.save(personQuestionnaireEntity);
 	}
 
@@ -140,31 +144,20 @@ public class ServiceImpl implements ServiceQdump {
 		personQuestionnaireCrudRepository.delete(id);		
 	}
 
-	@Override
-	public void deletePersonQuestionnaireEntityByOwnById(long id) {
-		personQuestionnaireCrudRepository.deletePersonQuestionnaireEntityByOwnById(id);
-	}
 
 	@Override
 	public void deleteAllPersonQuestionnaireEntities() {
 		personQuestionnaireCrudRepository.deleteAll();
-		
 	}
 
 	@Override
 	public PersonQuestionnaireEntity getPersonQuestionnaireEntity(long id) {
 		return personQuestionnaireCrudRepository.findOne(id);
 	}
-
-	@Override
-	public List<PersonQuestionnaireEntity> findByOwnById(Long id) {
-		return personQuestionnaireCrudRepository.findByOwnById(id);
-	}
 	
 	@Override
 	public List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities() {
-		return (List<PersonQuestionnaireEntity>) 
-				personQuestionnaireCrudRepository.findAll();
+		return (List<PersonQuestionnaireEntity>) personQuestionnaireCrudRepository.findAll();
 	}
 	
 	@Override
@@ -178,8 +171,28 @@ public class ServiceImpl implements ServiceQdump {
 	}
 
     @Override
-    public Page<PersonQuestionnaireEntity> personQuestionnairePagination(long id, Pageable pageable) {
-        return personQuestionnaireCrudRepository.findByOwnById(id, pageable);
+    public PersonQuestionnaireEntity getPersonQuestionnaireEntity(long personQuestionnaireId, long personId) {
+        return personQuestionnaireCrudRepository.findPersonQuestionnaireByPersonId(personQuestionnaireId, personId);
+    }
+
+    @Override
+    public Page<PersonQuestionnaireEntity> getCompletedPersonQuestionnaireEntities(long id, Pageable pageable) {
+        return personQuestionnaireCrudRepository.findCompletedPersonQuestionnairesByPersonId(id, pageable);
+    }
+
+    @Override
+    public Page<PersonQuestionnaireEntity> getStartedPersonQuestionnaireEntities(long id, Pageable pageable) {
+        return personQuestionnaireCrudRepository.findStartedPersonQuestionnairesByPersonId(id, pageable);
+    }
+
+    @Override
+    public long countCompletedPersonQuestionnaireEntities(long id) {
+        return personQuestionnaireCrudRepository.countCompletedPersonQuestionnairesByPersonId(id);
+    }
+
+    @Override
+    public long countStartedPersonQuestionnaireEntities(long id) {
+        return personQuestionnaireCrudRepository.countStartedPersonQuestionnairesByPersonId(id);
     }
 
     //PersonQuestionEntity
@@ -276,13 +289,12 @@ public class ServiceImpl implements ServiceQdump {
 
 	@Override
 	public QuestionnaireEntity getQuestionnaireEntity(long id) {
-		return questionnaireCrudRepository.findOne(id);
+        return questionnaireCrudRepository.findQuestionnaireById(id);
 	}
 
 	@Override
 	public List<QuestionnaireEntity> getQuestionnaireEntities() {
-		return (List<QuestionnaireEntity>) questionnaireCrudRepository
-				.findAll();
+		return (List<QuestionnaireEntity>) questionnaireCrudRepository.findAll();
 	}
 	
 	@Override
@@ -296,13 +308,23 @@ public class ServiceImpl implements ServiceQdump {
 	}
 
     @Override
-    public Page<QuestionnaireEntity> questionnairesPagination(Pageable pageable) {
-        return questionnaireCrudRepository.getPublishedQuestionnaires(pageable);
+    public Page<QuestionnaireEntity> getPublishedQuestionnaireEntities(Pageable pageable) {
+        return questionnaireCrudRepository.findPublishedQuestionnaires(pageable);
     }
 
     @Override
-    public long countPublishedQuestionnaires() {
+    public long countPublishedQuestionnaireEntities() {
         return questionnaireCrudRepository.countPublishedQuestionnaires();
+    }
+
+    @Override
+    public QuestionnaireEntity getPublishedQuestionnaireEntities(long id) {
+        return questionnaireCrudRepository.findPublishedQuestionnairesById(id);
+    }
+
+    @Override
+    public Page<QuestionnaireEntity> getAllQuestionnaireEntities(Pageable pageable) {
+        return questionnaireCrudRepository.findAllQuestionnaires(pageable);
     }
 
     //QuestionEntity
@@ -411,7 +433,7 @@ public class ServiceImpl implements ServiceQdump {
     }
 
     @Override
-    public VerificationTokenEntity getTokenByPersonEntityEmail(String email) {
+    public VerificationTokenEntity getVerificationTokenEntity(String email) {
         return verificationTokenCrudRepository.findByPersonEntityEmail(email);
     }
 
@@ -426,12 +448,12 @@ public class ServiceImpl implements ServiceQdump {
     }
 
     @Override
-    public VerificationTokenEntity getVerificationTokenByToken(String token) {
+    public VerificationTokenEntity getVerificationTokenEntityByToken(String token) {
         return verificationTokenCrudRepository.findByToken(token);
     }
 
     @Override
-    public VerificationTokenEntity getTokenByPersonEntityEmailConstructor(String email) {
+    public VerificationTokenEntity getVerificationTokenEntityConstructor(String email) {
         return verificationTokenCrudRepository.findByPersonEntityEmailConstructor(email);
     }
 }

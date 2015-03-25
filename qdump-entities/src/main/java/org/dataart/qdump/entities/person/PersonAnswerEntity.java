@@ -1,29 +1,25 @@
 package org.dataart.qdump.entities.person;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.dataart.qdump.entities.helper.EntitiesUpdater;
 import org.dataart.qdump.entities.questionnaire.AnswerEntity;
 import org.dataart.qdump.entities.questionnaire.BaseEntity;
 import org.dataart.qdump.entities.serializer.AnswerPersonSerializer;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Table(name = "person_answers")
@@ -33,13 +29,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class PersonAnswerEntity extends BaseEntity implements
 		Serializable {
 	private static final long serialVersionUID = 5266384349299279727L;
+    @JsonProperty("answer_entity")
 	@JsonSerialize(using = AnswerPersonSerializer.class)
 	private AnswerEntity answerEntity;
 	@JsonProperty("person_answer")
 	private String personAnswer;
 	private boolean marked;
-	@JsonBackReference
-	private PersonQuestionEntity personQuestionEntity;
 
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_answer")
@@ -67,24 +62,6 @@ public class PersonAnswerEntity extends BaseEntity implements
 
 	public void setMarked(boolean marked) {
 		this.marked = marked;
-	}
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id_person_question", referencedColumnName = "id_person_question")
-	public PersonQuestionEntity getPersonQuestionEntity() {
-		return personQuestionEntity;
-	}
-
-	public void setPersonQuestionEntity(
-			PersonQuestionEntity personQuestionEntity) {
-		this.personQuestionEntity = personQuestionEntity;
-	}
-	
-	public void addPersonQuestionEntity(PersonQuestionEntity personQuestionEntity) {
-		this.personQuestionEntity = personQuestionEntity;
-		if(!personQuestionEntity.getPersonAnswerEntities().contains(this)) {
-			personQuestionEntity.getPersonAnswerEntities().add(this);
-		}
 	}
 
 	public boolean checkIdForCreation() {

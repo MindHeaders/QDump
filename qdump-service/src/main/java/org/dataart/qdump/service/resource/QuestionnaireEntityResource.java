@@ -1,6 +1,8 @@
 package org.dataart.qdump.service.resource;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
+import org.dataart.qdump.entities.serializer.View;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.Consumes;
@@ -48,13 +50,31 @@ public interface QuestionnaireEntityResource {
     public List<QuestionnaireEntity> getQuestionnaireEntities();
 
     @GET
-    @Path("pagination")
-    public List<QuestionnaireEntity> paginationQuestionnaire(
+    @Path("get/published")
+    public List<QuestionnaireEntity> getPublishedQuestionnaireEntities(
             @DefaultValue("0") @QueryParam("page") int page,
             @DefaultValue("15") @QueryParam("size") int size,
-            @DefaultValue("ASC") @QueryParam("direction") String direction,
+            @DefaultValue("DESC") @QueryParam("direction") String direction,
             @DefaultValue("createdDate") @QueryParam("sort") String sort);
     @GET
-    @Path("pagination/count")
-    public Response countPaginationQuestionnaires();
+    @Path("get/published/count")
+    public Response countPublishedQuestionnaireEntities();
+
+    @GET
+    @Path("get/all")
+    public List<QuestionnaireEntity> getAllQuestionnaireEntities(
+            @DefaultValue("0") @QueryParam("page") int page,
+            @DefaultValue("15") @QueryParam("size") int size,
+            @DefaultValue("DESC") @QueryParam("direction") String direction,
+            @DefaultValue("createdDate") @QueryParam("sort") String sort);
+
+    @GET
+    @Path("get/all/count")
+    public Response countAllQuestionnaireEntities();
+
+    @GET
+    @Path("personal/{id}")
+    @JsonView(View.Public.class)
+    public QuestionnaireEntity getQuestionnairePersonal(@PathParam("id") long id);
+
 }

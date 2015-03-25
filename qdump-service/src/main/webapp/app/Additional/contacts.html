@@ -1,0 +1,33 @@
+<h2 style="text-align: center">Developers & Testers</h2>
+<div class="col-md-6" ng-repeat="developer in contactsDevelopers">
+    <div class="contact-case">
+        <address style="margin-bottom: 0px; position: relative; height: 100%">
+                <p><span ng-hide="checkField('name', $index) && checkField('surname', $index)"><strong>Name:</strong> <span ng-hide="checkField('surname', $index)"> {{developer.surname}}</span><span ng-hide="checkField('name', $index)">,</span><span ng-hide="checkField('name', $index)"> {{developer.name}}</span></span></p>
+                <p><span ng-hide="checkField('development', $index)"><strong>Development:</strong> {{developer.development}}</span></p>
+                <p><span ng-hide="checkField('languages', $index)"><strong>Languages:</strong> {{developer.languages}}</span></p>
+                <p><span ng-hide="checkField('email', $index)"><strong>Email:</strong> <a href="mailto:#">{{developer.email}}</a></span></p>
+                <p><span ng-hide="checkField('skype', $index)"><strong>Skype:</strong> {{developer.skype}}</span></p>
+                <div class="row" style="width: 100%; position: absolute; bottom: 0px">
+                <div class="col-md-2">
+                    <a ng-hide="checkField('linkedin', $index)" href="{{developer.linkedin}}" target="_blank"><img
+                            src="/style/icons/linkedin.png"
+                            alt="LinkedIn"
+                            class="img-circle" style="width: 50px; height: 50px;"/></a>
+                </div>
+                <div class="col-md-2" style="padding-left: 0px !important;">
+                    <a ng-hide="checkField('github', $index)" href="{{developer.github}}" target="_blank"><img
+                            src="/style/icons/github.png"
+                            alt="LinkedIn"
+                            class="img-circle" style="width: 50px; height: 50px"/></a>
+                </div>
+                <div class="col-md-offset-4 col-md-4">
+                    <img
+                            ng-hide="checkField('icon', $index)"
+                            ng-src="{{developer.icon}}"
+                            alt="{{developer.name}}"
+                            class="img-circle" style="width: 80px; height: 80px; float: right"/>
+                </div>
+            </div>
+        </address>
+    </div>
+</div>

@@ -1,12 +1,13 @@
 package org.dataart.qdump.entities.questionnaire;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.dataart.qdump.entities.enums.QuestionTypeEnums;
 import org.dataart.qdump.entities.helper.EntitiesUpdater;
+import org.dataart.qdump.entities.serializer.AnswerPersonSerializer;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -16,10 +17,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -37,8 +35,6 @@ public class QuestionEntity extends BaseEntity implements Serializable {
 	private QuestionTypeEnums type;
 	@JsonProperty("answer_entities")
 	private List<AnswerEntity> answerEntities;
-	@JsonBackReference
-	private QuestionnaireEntity questionnaireEntity;
 
 	@Column(name = "question", nullable = false, length = 250)
 	public String getQuestion() {
@@ -59,7 +55,8 @@ public class QuestionEntity extends BaseEntity implements Serializable {
 		this.type = type;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "questionEntity", fetch = FetchType.EAGER, targetEntity = AnswerEntity.class)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = AnswerEntity.class)
+    @JoinColumn(name = "id_question", referencedColumnName = "id_question", nullable = false)
 	public List<AnswerEntity> getAnswerEntities() {
 		return answerEntities;
 	}
@@ -67,37 +64,14 @@ public class QuestionEntity extends BaseEntity implements Serializable {
 	public void setAnswerEntities(List<AnswerEntity> answerEntities) {
 		this.answerEntities = answerEntities;
 	}
-
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = QuestionnaireEntity.class)
-	@JoinColumn(name = "id_questionnaire", referencedColumnName = "id_questionnaire")
-	public QuestionnaireEntity getQuestionnaireEntity() {
-		return questionnaireEntity;
-	}
-
-	public void setQuestionnaireEntity(QuestionnaireEntity questionnaireEntity) {
-		this.questionnaireEntity = questionnaireEntity;
-	}
-
-	public void addQuestionnaireEntity(QuestionnaireEntity questionnaireEntity) {
-		this.questionnaireEntity = questionnaireEntity;
-		if (!questionnaireEntity.getQuestionEntities().contains(this)) {
-			questionnaireEntity.getQuestionEntities().add(this);
-		}
-	}
-	
-	@PrePersist
-	@PreUpdate
-	public void setAnswerEntities() {
-		if (answerEntities != null) {
-			answerEntities.stream().forEach(
-					entity -> entity.addQuestionEntity(this));
-		}
-	}
 	
 	public boolean checkIdForCreation() {
 		if(id > 0) {
 			return false;
 		}
+        if(type == QuestionTypeEnums.TEXTAREA) {
+            return true;
+        }
 		for(AnswerEntity entity : answerEntities) {
 			if(entity.id > 0) {
 				return false;

@@ -1,18 +1,16 @@
 package org.dataart.qdump.entities.questionnaire;
 
-import java.io.Serializable;
-
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToOne;
-
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.serializer.PersonEntitySerializer;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
+import java.io.Serializable;
 
 @MappedSuperclass
 public abstract class QuestionnaireBaseEntity extends BaseEntity implements
@@ -23,7 +21,11 @@ public abstract class QuestionnaireBaseEntity extends BaseEntity implements
 	@JsonSerialize(using = PersonEntitySerializer.class)
 	private PersonEntity modifiedBy;
 
-	@OneToOne(fetch = FetchType.EAGER)
+    public QuestionnaireBaseEntity() {
+        super();
+    }
+
+    @OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "created_by", referencedColumnName = "id_person", nullable = true, updatable = false)
 	public PersonEntity getCreatedBy() {
 		return createdBy;

@@ -17,6 +17,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -30,32 +31,34 @@ import java.util.List;
 @AttributeOverride(name = "id", column = @Column(name = "id_person", insertable = false, updatable = false))
 @JsonAutoDetect
 @NamedQueries({
-        @NamedQuery(name = "PersonEntity.getPersonByEmail", query = "FROM PersonEntity p "
+        @NamedQuery(name = "PersonEntity.findPersonByEmail", query = "FROM PersonEntity p "
                 + "WHERE p.email = ?1"),
-        @NamedQuery(name = "PersonEntity.getPersonByLogin", query = "FROM PersonEntity p "
+        @NamedQuery(name = "PersonEntity.findPersonByLogin", query = "FROM PersonEntity p "
                 + "WHERE p.login = ?1"),
-        @NamedQuery(name = "PersonEntity.getPersonByPersonGroup", query = "FROM PersonEntity p  "
+        @NamedQuery(name = "PersonEntity.findPersonByPersonGroup", query = "FROM PersonEntity p  "
                 + "WHERE p.personGroup = ?1"),
-        @NamedQuery(name = "PersonEntity.getPersonEntitiesForAdminPanel", query = "SELECT NEW "
+        @NamedQuery(name = "PersonEntity.findPersonsForAdminPanel", query = "SELECT NEW "
                 + "org.dataart.qdump.entities.person.PersonEntity(p.firstname, p.lastname, p.id) "
                 + "FROM PersonEntity p"),
-        @NamedQuery(name = "PersonEntity.getPersonByLoginForAuth", query = "SELECT NEW "
+        @NamedQuery(name = "PersonEntity.findPersonByLoginForAuth", query = "SELECT NEW "
                 + "org.dataart.qdump.entities.person.PersonEntity(p.email, p.password, p.login) "
                 + "FROM PersonEntity p WHERE p.login = ?1"),
-        @NamedQuery(name = "PersonEntity.deletePersonEntityByEmail", query = "DELETE FROM "
+        @NamedQuery(name = "PersonEntity.deletePersonByEmail", query = "DELETE FROM "
                 + "PersonEntity p WHERE p.email = ?1"),
-        @NamedQuery(name = "PersonEntity.deletePersonEntityByLogin", query = "DELETE FROM "
+        @NamedQuery(name = "PersonEntity.deletePersonByLogin", query = "DELETE FROM "
                 + "PersonEntity p WHERE p.login = ?1"),
-        @NamedQuery(name = "PersonEntity.existsByLogin", query = "SELECT CASE WHEN "
+        @NamedQuery(name = "PersonEntity.personExistsByLogin", query = "SELECT CASE WHEN "
                 + "(COUNT(p) > 0) THEN true ELSE false END FROM PersonEntity p WHERE p.login = ?1"),
-        @NamedQuery(name = "PersonEntity.existsByEmail", query = "SELECT CASE WHEN "
+        @NamedQuery(name = "PersonEntity.personExistsByEmail", query = "SELECT CASE WHEN "
                 + "(COUNT(p) > 0) THEN true ELSE false END FROM PersonEntity p WHERE p.email = ?1"),
         @NamedQuery(name = "PersonEntity.getPersonPasswordByLogin", query = "SELECT p.password "
                 + "FROM PersonEntity p WHERE p.login = ?1"),
-        @NamedQuery(name = "PersonEntity.isEnabledByLogin", query = "SELECT CASE WHEN " +
+        @NamedQuery(name = "PersonEntity.personEnabledByLogin", query = "SELECT CASE WHEN " +
                 "(p.enabled = true) THEN true ELSE false END FROM PersonEntity p WHERE p.login = ?1"),
-        @NamedQuery(name = "PersonEntity.isEnabledByEmail", query = "SELECT CASE WHEN " +
-                "(p.enabled = true) THEN true ELSE false END FROM PersonEntity p WHERE p.email = ?1")
+        @NamedQuery(name = "PersonEntity.personEnabledByEmail", query = "SELECT CASE WHEN " +
+                "(p.enabled = true) THEN true ELSE false END FROM PersonEntity p WHERE p.email = ?1"),
+        @NamedQuery(name = "PersonEntity.findPersonRole", query = "SELECT p.personGroup FROM PersonEntity p " +
+                "WHERE p.id = ?1")
 })
 public class PersonEntity extends QuestionnaireBaseEntity implements Serializable {
 	private static final long serialVersionUID = -219526512840281300L;
@@ -68,6 +71,7 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 	private byte gender;
 	@JsonProperty("person_group")
 	private PersonGroupEnums personGroup;
+    @JsonProperty("person_questionnaire_entities")
 	private List<PersonQuestionnaireEntity> personQuestionnaireEntities;
 
 	public PersonEntity() {
@@ -196,8 +200,8 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 		}
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "ownBy", orphanRemoval = true)
-	@JsonProperty("person_questionnaires")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = PersonQuestionnaireEntity.class, orphanRemoval = true)
+    @JoinColumn(name = "id_person", referencedColumnName = "id_person", nullable = false)
 	public List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities() {
 		return personQuestionnaireEntities;
 	}

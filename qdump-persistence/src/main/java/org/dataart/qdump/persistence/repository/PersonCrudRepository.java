@@ -9,15 +9,16 @@ import java.util.List;
 public interface PersonCrudRepository extends
         CrudRepository<PersonEntity, Long> {
 
-    PersonEntity getPersonByEmail(String email);
-    PersonEntity getPersonByLogin(String login);
-    List<PersonEntity> getPersonByPersonGroup(
+    PersonEntity findPersonByEmail(String email);
+    PersonEntity findPersonByLogin(String login);
+    List<PersonEntity> findPersonByPersonGroup(
             PersonGroupEnums persongroup);
-    List<PersonEntity> getPersonEntitiesForAdminPanel();
-    PersonEntity getPersonByLoginForAuth(String login);
-    boolean existsByLogin(String login);
-    boolean existsByEmail(String email);
-    String getPersonPasswordByLogin(String login);
-    boolean isEnabledByLogin(String login);
-    boolean isEnabledByEmail(String email);
+    List<PersonEntity> findPersonsForAdminPanel();
+    PersonEntity findPersonByLoginForAuth(String login);
+    boolean personExistsByLogin(String login);
+    boolean personExistsByEmail(String email);
+    String findPersonPasswordByLogin(String login);
+    boolean personEnabledByLogin(String login);
+    boolean personEnabledByEmail(String email);
+    String findPersonRole(long id);
 }

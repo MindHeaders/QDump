@@ -12,11 +12,13 @@ public interface QuestionnaireCrudRepository extends
 		CrudRepository<QuestionnaireEntity, Long> {
 
 	List<QuestionnaireEntity> findByName(String name);
-    Page<QuestionnaireEntity> findByPublished(boolean published, Pageable pageable);
-
-    @Query(name = "QuestionnaireEntity.findPublishedQuestionnaires", countName = "QuestionnaireEntity.countPublishedQuestionnaires")
-    Page<QuestionnaireEntity> getPublishedQuestionnaires(Pageable pageable);
-
+    @Query(value = "SELECT NEW org.dataart.qdump.entities.questionnaire.QuestionnaireEntity(q.id, q.name, q.description, q.createdDate, q.modifiedDate) FROM QuestionnaireEntity q WHERE q.published = true",
+            countQuery = "SELECT count(q) FROM QuestionnaireEntity q WHERE q.published = true")
+    Page<QuestionnaireEntity> findPublishedQuestionnaires(Pageable pageable);
+    @Query(value = "SELECT NEW org.dataart.qdump.entities.questionnaire.QuestionnaireEntity(q.id, q.name, q.description, q.createdDate, q.modifiedDate) FROM QuestionnaireEntity q", countQuery = "SELECT count(q) FROM QuestionnaireEntity q")
+    Page<QuestionnaireEntity> findAllQuestionnaires(Pageable pageable);
     long countPublishedQuestionnaires();
+    QuestionnaireEntity findPublishedQuestionnairesById(long id);
+    QuestionnaireEntity findQuestionnaireById(long id);
 
 }

@@ -52,9 +52,9 @@ public class QdumpRealm extends AuthorizingRealm {
         PersonEntity person = null;
         String tokenUsername = token.getUsername();
         if(EmailValidator.getInstance().isValid(tokenUsername)) {
-            person = personCrudRepository.getPersonByEmail(tokenUsername);
+            person = personCrudRepository.findPersonByEmail(tokenUsername);
         } else {
-            person = personCrudRepository.getPersonByLogin(token.getUsername());
+            person = personCrudRepository.findPersonByLogin(token.getUsername());
         }
         if(person != null) {
             return new SimpleAuthenticationInfo(person.getId(), person.getPassword(), getName());

@@ -29,19 +29,9 @@ public class JpaTest {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
             em.getTransaction().begin();
-            for(int i = 0; i < 100; i++) {
-                String name = "Name #" + i;
-                String description = "Description #" + i;
-                QuestionnaireEntity questionnaireEntity = new QuestionnaireEntity();
-                questionnaireEntity.setPublished(true);
-                questionnaireEntity.setName(name);
-                questionnaireEntity.setDescription(description);
-                em.persist(questionnaireEntity);
-            }
-			Query query = em.createNamedQuery("PersonEntity.isEnabledByEmail");
-			query.setParameter(1, "vlasovartem22@gmail.com");
-            boolean enabled = (boolean) query.getSingleResult();
-            System.out.println(enabled);
+			Query query = em.createQuery("FROM PersonEntity q WHERE q.id = 1");
+            PersonEntity personEntity = (PersonEntity) query.getSingleResult();
+            personEntity.getPersonQuestionnaireEntities().stream().forEach(entity -> entity.checkStatus());
 //            VerificationTokenEntity verificationTokenEntity = (VerificationTokenEntity) query.getSingleResult();
 //            BeanWrapper wrapper = new BeanWrapperImpl(verificationTokenEntity);
 //            for(PropertyDescriptor descriptor : wrapper.getPropertyDescriptors()) {
@@ -90,9 +80,6 @@ public class JpaTest {
 		QuestionEntity questionEntity = new QuestionEntity();
 		questionEntity.setQuestion(question);
 		questionEntity.setType(type);
-		for (AnswerEntity answerEntity : answerEntities) {
-			answerEntity.setQuestionEntity(questionEntity);
-		}
 		questionEntity.setAnswerEntities(answerEntities);
 		return questionEntity;
 	}
@@ -106,9 +93,6 @@ public class JpaTest {
 		questionnaireEntity.setModifiedBy(personEntity);
 		questionnaireEntity.setName(name);
 		questionnaireEntity.setPublished(isPublished);
-		for (QuestionEntity questionEntity : questionEntities) {
-			questionEntity.setQuestionnaireEntity(questionnaireEntity);
-		}
 		questionnaireEntity.setQuestionEntities(questionEntities);
 		return questionnaireEntity;
 	}
@@ -161,11 +145,6 @@ public class JpaTest {
 			personQuestionnaireEntities.add(personQuestionnaireEntity);
 		}
 		ownBy.setPersonQuestionnaireEntities(personQuestionnaireEntities);
-		personQuestionnaireEntity.setOwnBy(ownBy);
-		for (PersonQuestionEntity personQuestionEntity : personQuestionEntities) {
-			personQuestionEntity
-					.setPersonQuestionnaireEntity(personQuestionnaireEntity);
-		}
 		personQuestionnaireEntity
 				.setPersonQuestionEntities(personQuestionEntities);
 		return personQuestionnaireEntity;

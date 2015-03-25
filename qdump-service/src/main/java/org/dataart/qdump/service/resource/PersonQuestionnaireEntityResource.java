@@ -1,7 +1,6 @@
 package org.dataart.qdump.service.resource;
 
 import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.Consumes;
@@ -28,6 +27,7 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/persons/questionnaires")
 public interface PersonQuestionnaireEntityResource {
+
     @POST
     @Path("create")
     public Response addPersonQuestionnaire(PersonQuestionnaireEntity entity);
@@ -35,10 +35,6 @@ public interface PersonQuestionnaireEntityResource {
     @DELETE
     @Path("delete/{id}")
     public Response deletePersonQuestionnaireEntity(@PathParam("id") long id);
-
-    @DELETE
-    @Path("delete/by/ownby/{id}")
-    public Response deletePersonQuestionnaireEntityByOwnById(@PathParam("id") long id);
 
     @DELETE
     @Path("delete")
@@ -56,12 +52,29 @@ public interface PersonQuestionnaireEntityResource {
     @Path("update")
     public Response updatePersonQuestionnaireEntity(
             PersonQuestionnaireEntity source);
+
     @GET
-    @Path("pagination")
-    public Page<PersonQuestionnaireEntity> paginationPersonQuestionnaire(
-            @DefaultValue("1") @QueryParam("page") int page,
+    @Path("/completed")
+    public List<PersonQuestionnaireEntity> getCompletedPersonQuestionnairesPagination(
+            @DefaultValue("0") @QueryParam("page") int page,
             @DefaultValue("15") @QueryParam("size") int size,
-            @DefaultValue("ASC") @QueryParam("direction") String direction,
-            @DefaultValue("modifiedDate") @QueryParam("sortBy") String sortBy);
+            @DefaultValue("DESC") @QueryParam("direction") String direction,
+            @DefaultValue("createdDate") @QueryParam("sort") String sort);
+
+    @GET
+    @Path("/started")
+    public List<PersonQuestionnaireEntity> getStartedPersonQuestionnairesPagination(
+            @DefaultValue("0") @QueryParam("page") int page,
+            @DefaultValue("15") @QueryParam("size") int size,
+            @DefaultValue("DESC") @QueryParam("direction") String direction,
+            @DefaultValue("createdDate") @QueryParam("sort") String sort);
+
+    @GET
+    @Path("/count/{type}")
+    public Response countPersonQuestionnaires(@PathParam("type") String type);
+
+    @GET
+    @Path("/completed/{id}")
+    public PersonQuestionnaireEntity getCompletedQuestionnaireEntity(@PathParam("id") long id);
 
 }

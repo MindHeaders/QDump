@@ -1,8 +1,17 @@
 package org.dataart.qdump.entities.person;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.dataart.qdump.entities.enums.QuestionTypeEnums;
+import org.dataart.qdump.entities.helper.EntitiesUpdater;
+import org.dataart.qdump.entities.questionnaire.AnswerEntity;
+import org.dataart.qdump.entities.questionnaire.BaseEntity;
+import org.dataart.qdump.entities.questionnaire.QuestionEntity;
+import org.dataart.qdump.entities.serializer.QuestionPersonSerializer;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -10,26 +19,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.dataart.qdump.entities.helper.EntitiesUpdater;
-import org.dataart.qdump.entities.questionnaire.AnswerEntity;
-import org.dataart.qdump.entities.questionnaire.BaseEntity;
-import org.dataart.qdump.entities.questionnaire.QuestionEntity;
-import org.dataart.qdump.entities.serializer.QuestionPersonSerializer;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.base.Preconditions;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Table(name = "person_questions")
@@ -39,25 +34,13 @@ import com.google.common.base.Preconditions;
 public class PersonQuestionEntity extends BaseEntity implements
 		Serializable {
 	private static final long serialVersionUID = -6691017410211190245L;
-	@JsonBackReference
-	private PersonQuestionnaireEntity personQuestionnaireEntity;
+    @JsonProperty("question_entity")
 	@JsonSerialize(using = QuestionPersonSerializer.class)
 	private QuestionEntity questionEntity;
 	@JsonProperty("correct")
 	private boolean correct;
-	@JsonProperty("person_answers")
+	@JsonProperty("person_answer_entities")
 	private List<PersonAnswerEntity> personAnswerEntities;
-
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = PersonQuestionnaireEntity.class)
-	@JoinColumn(name = "id_person_questionnaire", referencedColumnName = "id_person_questionnaire")
-	public PersonQuestionnaireEntity getPersonQuestionnaireEntity() {
-		return personQuestionnaireEntity;
-	}
-
-	public void setPersonQuestionnaireEntity(
-			PersonQuestionnaireEntity personQuestionnaireEntity) {
-		this.personQuestionnaireEntity = personQuestionnaireEntity;
-	}
 
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_question", referencedColumnName = "id_question")
@@ -78,7 +61,8 @@ public class PersonQuestionEntity extends BaseEntity implements
 		this.correct = isCorrect;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "personQuestionEntity", orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "id_person_question", referencedColumnName = "id_person_question")
 	public List<PersonAnswerEntity> getPersonAnswerEntities() {
 		return personAnswerEntities;
 	}
@@ -112,7 +96,9 @@ public class PersonQuestionEntity extends BaseEntity implements
 	private boolean checkPersonAnswersIsCorrect() {
 		for (PersonAnswerEntity answerEntity : Preconditions
 				.checkNotNull(personAnswerEntities)) {
-			if ((answerEntity.isMarked() && !Preconditions.checkNotNull(
+            if(questionEntity.getType().equals(QuestionTypeEnums.TEXTAREA)) {
+                return correct;
+            } else if ((answerEntity.isMarked() && !Preconditions.checkNotNull(
 					answerEntity.getAnswerEntity()).isCorrect())
 					|| (!answerEntity.isMarked() && Preconditions
 							.checkNotNull(answerEntity.getAnswerEntity()
@@ -123,26 +109,14 @@ public class PersonQuestionEntity extends BaseEntity implements
 		return true;
 	}
 	
-	public void addPersonQuestionnaireEntity(PersonQuestionnaireEntity personQuestionnaireEntity) {
-		this.personQuestionnaireEntity = personQuestionnaireEntity;
-		if(!personQuestionnaireEntity.getPersonQuestionEntities().contains(this)) {
-			personQuestionnaireEntity.getPersonQuestionEntities().add(this);
-		}
-	}
-	
-	public void addPersonAnswerEntity(PersonAnswerEntity personAnswerEntity) {
-		this.personAnswerEntities.add(personAnswerEntity);
-		if(personAnswerEntity.getPersonQuestionEntity() != this) {
-			personAnswerEntity.setPersonQuestionEntity(this);
-		}
-	}
-	
 	public boolean checkIdForCreation() {
 		if(id != 0 || questionEntity.getId() == 0) {
 			return false;
 		}
 		for(PersonAnswerEntity entity : personAnswerEntities) {
-			if(!entity.checkIdForCreation()) {
+            if(questionEntity.getType().equals(QuestionTypeEnums.TEXTAREA)) {
+                return true;
+            } else if(!entity.checkIdForCreation()) {
 				return false;
 			}
 		}
@@ -169,15 +143,6 @@ public class PersonQuestionEntity extends BaseEntity implements
 				.append(this.id, entity.id)
 				.append(correct, entity.correct)
 				.isEquals();
-	}
-	
-	@PrePersist
-	@PreUpdate
-	public void updatePersonAnswerEntities() {
-		if (personAnswerEntities != null) {
-			personAnswerEntities.stream().forEach(
-					entity -> entity.addPersonQuestionEntity(this));
-		}
 	}
 
 	@Override

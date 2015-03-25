@@ -1,19 +1,16 @@
 package org.dataart.qdump.entities.questionnaire;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.dataart.qdump.entities.helper.EntitiesUpdater;
+import org.dataart.qdump.entities.serializer.View;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -28,9 +25,8 @@ import java.util.List;
 public class AnswerEntity extends BaseEntity implements Serializable{
 	private static final long serialVersionUID = -5973094404031746982L;
 	private String answer;
+    @JsonView(View.Create.class)
 	private boolean correct;
-	@JsonBackReference
-	private QuestionEntity questionEntity;
 
 	@Column(name = "answer", length = 100)
 	public String getAnswer() {
@@ -50,23 +46,6 @@ public class AnswerEntity extends BaseEntity implements Serializable{
 		this.correct = correct;
 	}
 
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = QuestionEntity.class)
-	@JoinColumn(name = "id_question", referencedColumnName = "id_question")
-	public QuestionEntity getQuestionEntity() {
-		return questionEntity;
-	}
-
-	public void setQuestionEntity(QuestionEntity questionEntity) {
-		this.questionEntity = questionEntity;
-	}
-	
-	public void addQuestionEntity(QuestionEntity questionEntity) {
-		this.questionEntity = questionEntity;
-		if(!questionEntity.getAnswerEntities().contains(this)) {
-			questionEntity.getAnswerEntities().add(this);
-		}
-	}
-	
 	public void updateEntity(Object obj) {
 		AnswerEntity entity = (AnswerEntity) obj;
 		List<String> ignoredFields = Arrays.asList("questionEntity");

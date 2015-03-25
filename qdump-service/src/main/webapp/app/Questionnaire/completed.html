@@ -1,0 +1,155 @@
+<!--<div ng-cloak class="personal-questionnaires">-->
+    <!--<div class="col-md-12"><h1 align="center">Completed Questionnaires</h1></div>-->
+    <!--<div class="col-md-9">-->
+        <!--<div class="qdump-block">-->
+            <!--<table class="table table-striped table-condensed" id="questionnaires-table">-->
+                <!--<tr>-->
+                    <!--<th style="width: 5%">#</th>-->
+                    <!--<th style="width: 40%;">-->
+                        <!--<a href="#" ng-click="sorting('name')">Name-->
+                            <!--<span ng-show="currentCompletedQuestionnairesSorting.type == 'name'">-->
+                                <!--<sorting></sorting>-->
+                            <!--</span>-->
+                        <!--</a>-->
+                    <!--</th>-->
+                    <!--<th style="width: 15%">-->
+                        <!--<a href="#" ng-click="sorting('status')">Status-->
+                            <!--<span ng-show="currentCompletedQuestionnairesSorting.type == 'status'">-->
+                                <!--<sorting></sorting>-->
+                            <!--</span>-->
+                        <!--</a>-->
+                    <!--</th>-->
+                    <!--<th style="width: 20%">-->
+                        <!--<a href="#" ng-click="sorting('createdDate')">Created-->
+                            <!--<span ng-show="currentCompletedQuestionnairesSorting.type == 'createdDate'">-->
+                                <!--<sorting></sorting>-->
+                            <!--</span>-->
+                        <!--</a>-->
+                    <!--</th>-->
+                    <!--<th style="width: 20%">-->
+                        <!--<a href="#" ng-click="sorting('modifiedDate')">Modified-->
+                            <!--<span ng-show="currentCompletedQuestionnairesSorting.type == 'modifiedDate'">-->
+                                <!--<sorting></sorting>-->
+                            <!--</span>-->
+                        <!--</a>-->
+                    <!--</th>-->
+                    <!--<th></th>-->
+                <!--</tr>-->
+                <!--<tr ng-repeat="completedQuestionnaire in completedQuestionnaires">-->
+                    <!--<td ng-bind="(currentPage * currentPageSize.value) - (currentPageSize.value - ($index + 1))"-->
+                        <!--style="text-align: center;"></td>-->
+                    <!--<td ng-bind="completedQuestionnaire.questionnaire_entity.name"></td>-->
+                    <!--<td ng-bind="completedQuestionnaire.status" id="description"></td>-->
+                    <!--<td ng-bind="completedQuestionnaire.createdDate | date:'MM/dd/yyyy'"></td>-->
+                    <!--<td ng-bind="completedQuestionnaire.modifiedDate | date:'MM/dd/yyyy'"></td>-->
+                    <!--<td><input type="button" value="Show" class="btn btn-success btn-sm" ng-click="show(completedQuestionnaire.id)"/></td>-->
+                <!--</tr>-->
+            <!--</table>-->
+            <!--<div class="row">-->
+                <!--<div class="col-md-5">-->
+                    <!--<div class="form-inline">-->
+                        <!--<label for="size">Items per page:</label>-->
+                        <!--<select class="form-control"-->
+                                <!--id="size"-->
+                                <!--ng-model="currentPageSize"-->
+                                <!--ng-options="size as size.label for size in pageSize"-->
+                                <!--style="width: 25%"></select>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="col-md-7" style="text-align: right;">-->
+                    <!--<pagination-->
+                            <!--total-items="totalItems"-->
+                            <!--items-per-page="currentPageSize.value"-->
+                            <!--ng-model="currentPage"-->
+                            <!--class="pagination-sm"-->
+                            <!--max-size="maxSize"-->
+                            <!--boundary-links="true"-->
+                            <!--rotate="false"-->
+                            <!--num-pages="numPages"-->
+                            <!--style="margin: 0;"-->
+                            <!--ng-click="getCompletedQuestionnaires()">-->
+                    <!--</pagination>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="col-md-3" ng-controller="AccountCtrl" ng-include="template.menu"></div>-->
+<!--</div>-->
+<div ng-cloak class="personal-questionnaires">
+    <div class="col-md-12"><h1 align="center">Completed Questionnaires</h1></div>
+    <div class="col-md-9">
+        <div class="qdump-block">
+            <table class="table table-striped table-condensed" id="questionnaires-table">
+                <tr>
+                    <th style="width: 5%">#</th>
+                    <th style="width: 40%;">
+                        <a href="#" ng-click="sorting('name')">Name
+                            <span ng-show="currentQuestionnairesSorting.type == 'name'">
+                                <sorting></sorting>
+                            </span>
+                        </a>
+                    </th>
+                    <th style="width: 15%">
+                        <a href="#" ng-click="sorting('status')">Status
+                            <span ng-show="currentQuestionnairesSorting.type == 'status'">
+                                <sorting></sorting>
+                            </span>
+                        </a>
+                    </th>
+                    <th style="width: 15%">
+                        <a href="#" ng-click="sorting('createdDate')">Created
+                            <span ng-show="currentQuestionnairesSorting.type == 'createdDate'">
+                                <sorting></sorting>
+                            </span>
+                        </a>
+                    </th>
+                    <th style="width: 15%">
+                        <a href="#" ng-click="sorting('modifiedDate')">Modified
+                            <span ng-show="currentQuestionnairesSorting.type == 'modifiedDate'">
+                                <sorting></sorting>
+                            </span>
+                        </a>
+                    </th>
+                    <th></th>
+                </tr>
+                <tr ng-repeat="questionnaire in questionnaires">
+                    <td ng-bind="(currentPage * currentPageSize.value) - (currentPageSize.value - ($index + 1))"
+                        style="text-align: center;"></td>
+                    <td ng-bind="questionnaire.questionnaire_entity.name"></td>
+                    <td ng-bind="questionnaire.status" id="description"></td>
+                    <td ng-bind="questionnaire.createdDate | date:'MM/dd/yyyy'"></td>
+                    <td ng-bind="questionnaire.modifiedDate | date:'MM/dd/yyyy'"></td>
+                    <td><input type="button" value="Show" class="btn btn-success btn-sm"
+                               ng-controller="CompletedPersonQuestionnaireCtrl" ng-click="show(questionnaire.id)"/></td>
+                </tr>
+            </table>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-inline">
+                        <label for="size">Items per page:</label>
+                        <select class="form-control"
+                                id="size"
+                                ng-model="currentPageSize"
+                                ng-options="size as size.label for size in pageSize"
+                                style="width: 25%"></select>
+                    </div>
+                </div>
+                <div class="col-md-7" style="text-align: right;">
+                    <pagination
+                            total-items="totalItems"
+                            items-per-page="currentPageSize.value"
+                            ng-model="currentPage"
+                            class="pagination-sm"
+                            max-size="maxSize"
+                            boundary-links="true"
+                            rotate="false"
+                            num-pages="numPages"
+                            style="margin: 0;"
+                            ng-click="getQuestionnaires()">
+                    </pagination>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3" ng-controller="AccountCtrl" ng-include="template.menu"></div>
+</div>

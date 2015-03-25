@@ -1,5 +1,7 @@
 package org.dataart.qdump.service.resourceImpl;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -8,6 +10,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.dataart.qdump.entities.enums.PersonGroupEnums;
 import org.dataart.qdump.entities.helper.EntitiesUpdater;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.security.VerificationTokenEntity;
@@ -15,6 +18,8 @@ import org.dataart.qdump.service.ServiceQdump;
 import org.dataart.qdump.service.mail.MailSenderService;
 import org.dataart.qdump.service.resource.PersonEntityResource;
 import org.dataart.qdump.service.security.utils.VerificationTokenUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
@@ -40,10 +45,12 @@ public class PersonEntityResourceBean implements PersonEntityResource{
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     private MailSenderService mailSenderService;
+    private static Logger log = LoggerFactory.getLogger(PersonEntityResourceBean.class.getName());
 
     @RequiresRoles(value = {"USER", "ADMIN"})
     public Response getPersonEntity(@PathParam("id") long id) {
         if (!serviceQdump.personEntityExists(id)) {
+            log.info(String.format("User with id %d is not exists", id));
             exceptionCreator(Status.NOT_FOUND, "There is no person with this id");
         }
         return Response.status(Status.OK)
@@ -65,8 +72,10 @@ public class PersonEntityResourceBean implements PersonEntityResource{
             }
         }
         if(!isExists) {
+            log.info(String.format("User with credentials - %s is not exists in database.", loginOrEmail));
             exceptionCreator(Status.NOT_FOUND, "User with this data is not exists");
         } else if(!isVerified) {
+            log.info(String.format("User credentials %s is not verified", loginOrEmail));
             exceptionCreator(Status.FORBIDDEN, "Your account is not verified. Please check your email.");
         }
         UsernamePasswordToken token = new UsernamePasswordToken();
@@ -76,16 +85,20 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         try {
             SecurityUtils.getSubject().login(token);
         } catch (AuthenticationException e) {
+            log.info("User input incorrect credentials", e);
             exceptionCreator(Status.NOT_FOUND, "Error with login, email or password");
         }
-        return Response.status(Status.OK).build();
+        String role = serviceQdump.getPersonEntityRole((long) SecurityUtils.getSubject().getPrincipal());
+        ObjectNode roleNode = JsonNodeFactory.instance.objectNode();
+        roleNode.put("role", role);
+        return Response.status(Status.OK).entity(roleNode).build();
     }
 
     public Response registration(PersonEntity entity, UriInfo uriInfo) {
         String hashedPassword = BCrypt.hashpw(entity.getPassword(), BCrypt.gensalt());
         entity.setPassword(hashedPassword);
         serviceQdump.addPersonEntity(entity);
-        PersonEntity persistedEntity = serviceQdump.getPersonByEmail(entity.getEmail());
+        PersonEntity persistedEntity = serviceQdump.getPersonEntityByEmail(entity.getEmail());
         VerificationTokenEntity tokenEntity = new VerificationTokenEntity();
         tokenEntity.setPersonEntity(persistedEntity);
         String token = VerificationTokenUtils.beanToToken(tokenEntity);
@@ -96,8 +109,10 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         try {
             mailSenderService.sendMail(tokenEntity, host);
         } catch (EmailException e) {
+            log.error("Mail sender error", e);
             exceptionCreator(Status.CONFLICT, e.getMessage());
         }
+        log.info("User successfully registered" + entity);
         return Response.status(Status.CREATED)
                 .build();
     }
@@ -185,23 +200,31 @@ public class PersonEntityResourceBean implements PersonEntityResource{
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public Response verifyAccount(String token, UriInfo uriInfo) {
+        VerificationTokenEntity verificationTokenEntity = serviceQdump.getVerificationTokenEntity(1l);
+        System.out.println(verificationTokenEntity.getToken().equals(token));
         VerificationTokenEntity tokenEntity = VerificationTokenUtils.tokenToBean(token);
-        if(serviceQdump.verificationTokenEntityExists(token)) {
+        if(!serviceQdump.verificationTokenEntityExists(token)) {
+            log.info(String.format("Verification token is not exists: %s", token));
             exceptionCreator(Status.NOT_FOUND, "This token is not exists.");
         } else  if(tokenEntity.hasExpired()) {
+            log.info(String.format("Verification token is expired: %s", token));
             exceptionCreator(Status.CONFLICT, "This link has expired. " +
                     "Verification will be resend to your email");
         }
-        PersonEntity personEntity = serviceQdump.getPersonByEmail(tokenEntity.getPersonEntity().getEmail());
-        tokenEntity = serviceQdump.getTokenByPersonEntityEmail(personEntity.getEmail());
+        PersonEntity personEntity = serviceQdump.getPersonEntityByEmail(tokenEntity.getPersonEntity().getEmail());
+        tokenEntity = serviceQdump.getVerificationTokenEntity(personEntity.getEmail());
         tokenEntity.setVerified(true);
         personEntity.setEnabled(true);
         try {
-            return Response.temporaryRedirect(new URI("/success"))
-                    .type(MediaType.TEXT_PLAIN)
-                    .entity("You successfully verify your account. Please welcome to our Project.")
+            ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
+            objectNode.put("success", "You successfully verify your account. Please welcome to our Project.");
+            URI uri = uriInfo.getBaseUri();
+            return Response.temporaryRedirect(new URI(String.format("%s://%s/%s", uri.getScheme(), uri.getAuthority(), "success")))
+                    .type(MediaType.APPLICATION_JSON)
+                    .entity(objectNode)
                     .build();
         } catch (URISyntaxException e) {
+            log.error("Error with uri", e);
             exceptionCreator(Status.CONFLICT, e.getMessage());
         }
         return Response.status(Status.FORBIDDEN).build();
@@ -226,15 +249,46 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         PersonEntity entity = serviceQdump.getPersonEntity(id);
         entity.setPassword(hashedPassword);
         mailSenderService.sendCustomMail(entity.getEmail(), msg);
+        log.info(String.format("User with id - %d successfully reset password.", id));
         return Response.ok().build();
     }
 
+    public Response getAuthorizedPerson() {
+        ObjectNode node = JsonNodeFactory.instance.objectNode();
+        if(SecurityUtils.getSubject().getPrincipal() == null) {
+            return Response.status(Status.UNAUTHORIZED).entity(node.put("authorized", false)).build();
+        }
+        node.put("authorized", true);
+        if(SecurityUtils.getSubject().hasRole(PersonGroupEnums.ADMIN.toString())) {
+            node.put("role", "ADMIN");
+        } else {
+            node.put("role", "USER");
+        }
+        return Response.ok(node).build();
+    }
+
+    public Response checkPermission(String role) {
+        ObjectNode roleNode = JsonNodeFactory.instance.objectNode();
+        if(SecurityUtils.getSubject().getPrincipal() == null) {
+            return Response.status(Status.NOT_FOUND).entity(roleNode.put("error", "You need to login")).build();
+        }
+        String roleUpper = role.toUpperCase();
+        String userRole = serviceQdump.getPersonEntityRole((long) SecurityUtils.getSubject().getPrincipal());
+        if(!roleUpper.equals(userRole)) {
+            return Response.status(Status.NOT_FOUND).entity(roleNode.put("error", "You has no permission")).build();
+        }
+
+        roleNode.put("role", userRole);
+        return Response.ok(roleNode).build();
+    }
 
     private void exceptionCreator(Status status, String message) {
+        ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
+        objectNode.put("error", message);
         throw new WebApplicationException(Response
                 .status(status)
-                .entity(message)
-                .type(MediaType.TEXT_PLAIN)
+                .entity(objectNode)
+                .type(MediaType.APPLICATION_JSON)
                 .build());
     }
 

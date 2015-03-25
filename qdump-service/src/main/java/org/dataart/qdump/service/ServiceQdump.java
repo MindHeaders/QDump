@@ -20,29 +20,32 @@ public interface ServiceQdump {
 	void deleteAllPersonEntities();
 	PersonEntity getPersonEntity(long id);
 	List<PersonEntity> getPersonEntities();
-	PersonEntity getPersonByEmail(String email);
-	PersonEntity getPersonByLogin(String login);
+	PersonEntity getPersonEntityByEmail(String email);
+	PersonEntity getPersonEntityByLogin(String login);
 	List<PersonEntity> getPersonEntitiesForAdminPanel();
-	PersonEntity getPersonByLoginForAuth(String login);
+	PersonEntity getPersonEntityAuthorization(String login);
 	boolean personEntityExists(long id);
 	long personEntitiesCount();
 	boolean personEntityExistsByLogin(String login);
 	boolean personEntityExistsByEmail(String email);
-	String getPersonPasswordByLogin(String login);
+	String getPersonEntityPasswordByLogin(String login);
     boolean personEntityIsEnabledByLogin(String login);
     boolean personEntityIsEnabledByEmail(String email);
+    String getPersonEntityRole(long id);
 
 	//PersonQuestionnaireEntity
 	void addPersonQuestionnaireEntity(PersonQuestionnaireEntity personQuestionnaireEntity);
 	void deletePersonQuestionnaireEntity(long id);
-	void deletePersonQuestionnaireEntityByOwnById(long id);
 	void deleteAllPersonQuestionnaireEntities();
 	PersonQuestionnaireEntity getPersonQuestionnaireEntity(long id);
 	List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities();
-	List<PersonQuestionnaireEntity> findByOwnById(Long id);
 	boolean personQuestionnaireEntityExists(long id);
 	long personQuestionnaireEntitiesCount();
-    Page<PersonQuestionnaireEntity> personQuestionnairePagination(long id, Pageable pageable);
+    PersonQuestionnaireEntity getPersonQuestionnaireEntity(long personQuestionnaireId, long personId);
+    Page<PersonQuestionnaireEntity> getCompletedPersonQuestionnaireEntities(long id, Pageable pageable);
+    Page<PersonQuestionnaireEntity> getStartedPersonQuestionnaireEntities(long id, Pageable pageable);
+    long countCompletedPersonQuestionnaireEntities(long id);
+    long countStartedPersonQuestionnaireEntities(long id);
 	
 	//PersonQuestionEntity
 	void addPersonQuestionEntity(PersonQuestionEntity personQuestionEntity);
@@ -69,9 +72,11 @@ public interface ServiceQdump {
 	QuestionnaireEntity getQuestionnaireEntity(long id);
 	List<QuestionnaireEntity> getQuestionnaireEntities();
 	boolean questionnaireEntityExists(long id);
+    Page<QuestionnaireEntity> getAllQuestionnaireEntities(Pageable pageable);
 	long questionnaireEntitiesCount();
-    Page<QuestionnaireEntity> questionnairesPagination(Pageable pageable);
-    long countPublishedQuestionnaires();
+    Page<QuestionnaireEntity> getPublishedQuestionnaireEntities(Pageable pageable);
+    long countPublishedQuestionnaireEntities();
+    QuestionnaireEntity getPublishedQuestionnaireEntities(long id);
 	
 	//QuestionEntity
 	void addQuestionEntity(QuestionEntity questionEntity);
@@ -98,9 +103,9 @@ public interface ServiceQdump {
     void deleteExpired();
     void deleteVerified();
     boolean verificationTokenEntityExists(String token);
-    VerificationTokenEntity getTokenByPersonEntityEmail(String email);
-    VerificationTokenEntity getTokenByPersonEntityEmailConstructor(String email);
-    VerificationTokenEntity getVerificationTokenByToken(String token);
+    VerificationTokenEntity getVerificationTokenEntity(String email);
+    VerificationTokenEntity getVerificationTokenEntityConstructor(String email);
+    VerificationTokenEntity getVerificationTokenEntityByToken(String token);
     VerificationTokenEntity getVerificationTokenEntity(long id);
     List<VerificationTokenEntity> getVerificationTokenEntities();
 

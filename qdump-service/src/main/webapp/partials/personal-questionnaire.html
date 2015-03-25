@@ -1,0 +1,33 @@
+<h1 style="text-align: center" ng-bind="questionnaire.name"></h1>
+<div class="col-md-8 col-md-offset-2 qdump-block">
+    <div ng-repeat="(index, question) in questionnaire.question_entities">
+        <div id="question" style="display: inline;">
+            <span ng-bind="index + 1 + '. '"></span>
+            <span ng-bind="question.question"></span>
+        </div>
+        <div ng-if="question.question_type == 'TEXTAREA'">
+            <textarea cols="60" rows="3"
+                      ng-model="personQuestionnaireEntity.person_question_entities[index].person_answer_entities[0].person_answer"
+                      ng-change="textareaQuestion(index)"></textarea>
+        </div>
+        <div ng-if="question.question_type == 'SELECT'">
+            <select class="form-control" style="width: 82%;" ng-model="selectedItem.answer" ng-change="selectChange(index)" ng-options="answerIndex as answer.answer for (answerIndex, answer) in questionnaire.question_entities[index].answer_entities">
+                <option ng-bind="'Please select your answer...'"></option>
+            </select>
+        </div>
+        <div ng-repeat="answer in questionnaire.question_entities[index].answer_entities">
+            <div ng-if="question.question_type == 'CHECKBOX' || question.question_type == 'RADIO'">
+                <div id="answer" style="display: inline">
+                    <span ng-if="$parent.question.question_type == 'RADIO'"><input id="{{question.id + answer.id}}" name="{{question.id}}" type="radio" ng-model="personQuestionnaireEntity.person_question_entities[index].person_answer_entities[$index]['marked']" ng-value="true" boolean-grid-radio-person/></span>
+                    <span ng-if="$parent.question.question_type == 'CHECKBOX'"><input type="checkbox" ng-model="personQuestionnaireEntity.person_question_entities[index].person_answer_entities[$index]['marked']"/></span>
+                    <span ng-bind="answer.answer"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="text-align: center; padding-top: 20px">
+        <input type="button" value="Complete" class="btn btn-primary" ng-click="complete()"/>
+        <input type="button" value="Save" class="btn btn-success" ng-click="save()"/>
+    </div>
+    <p><input type="button" ng-click="toConsole()" value="To Console"/></p>
+</div>

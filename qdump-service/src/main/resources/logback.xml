@@ -1,0 +1,13 @@
+<configuration>
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/wildfly.log</file>
+        <append>true</append>
+        <encoder>
+            <Pattern>%d{dd MMM yyyy HH:mm:ss,SSS} [%thread] %-5level %logger{52} - %msg%n</Pattern>
+        </encoder>
+    </appender>
+    <root>
+        <level value="TRACE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

@@ -98,13 +98,24 @@ public interface PersonEntityResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/personal")
+    @Path("personal")
     public Response getEntityForPersonalPage();
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/reset/password")
+    @Path("reset/password")
     public Response resetPersonEntityPassword();
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("check/permission/{role}")
+    public Response checkPermission(@PathParam("role") String role);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("authorized")
+    public Response getAuthorizedPerson();
 
 }
