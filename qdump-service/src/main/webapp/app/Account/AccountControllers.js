@@ -39,3 +39,10 @@ app.controller('AccountCtrl', ['$scope', '$http', '$cookieStore', '$location', '
         };
     }
 ]);
+app.controller('AdminPanelCtrl', ['$scope', '$location', '$cookieStore',
+    function($scope, $location, $cookieStore) {
+        $scope.tabs = [{
+            title: 'Edit Q`s', template: '/app/Questionnaire/questionnaires-admin.html'
+        }]
+    }
+]);

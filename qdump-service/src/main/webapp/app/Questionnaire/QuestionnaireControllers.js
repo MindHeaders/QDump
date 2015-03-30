@@ -3,8 +3,8 @@
  */
 var app = angular.module('questionnaire.controllers', ['ngCookies']);
 
-app.controller('CreateQuestionnaireCtrl', ['questionnaire', '$scope', '$location', '$cookieStore', '$modal', 'CreateQuestionnaireFactory', 'PersonalQuestionnaireFactory',
-    function(questionnaire, $scope, $location, $cookieStore, $modal, CreateQuestionnaireFactory, PersonalQuestionnaireFactory) {
+app.controller('CreateQuestionnaireCtrl', ['questionnaire', '$scope', '$location', '$cookieStore', '$modal', 'CreateQuestionnaireFactory', 'PersonalQuestionnaireFactory', 'QuestionnaireFactory', 'QuestionFactory', 'AnswerFactory', 'DeleteQuestionFactory',
+    function(questionnaire, $scope, $location, $cookieStore, $modal, CreateQuestionnaireFactory, PersonalQuestionnaireFactory, QuestionnaireFactory, QuestionFactory, AnswerFactory, DeleteQuestionFactory) {
         $scope.options = [
             {label: 'Select type of question...', value: ''},
             {label: 'One answer question', value: 'RADIO'},
@@ -25,9 +25,12 @@ app.controller('CreateQuestionnaireCtrl', ['questionnaire', '$scope', '$location
         }];
         $scope.template = $scope.templates[0].template;
         $scope.questionnaire = questionnaire;
-        if($scope.questionnaire.question_entities == null) {
+        if($scope.questionnaire instanceof QuestionnaireFactory) {
             $scope.questionnaire.$promise.then(function(data) {
                 $scope.questionnaire = data;
+                if($scope.questionnaire.question_entities.length == 0) {
+                    $scope.questionnaire.published = false;
+                }
             });
         }
 
@@ -48,22 +51,24 @@ app.controller('CreateQuestionnaireCtrl', ['questionnaire', '$scope', '$location
                 })
             }
         };
-        $scope.createQ = function() {
-            PersonalQuestionnaireFactory.setQuestionnaireId(null);
-            CreateQuestionnaireFactory.save($scope.questionnaire,
-                function() {
-                    alert('Questionnaire was create successfully');
-                    location.reload();
-                },
-                function(data) {
-                    console.log(data)
-                }
-            );
-        };
         $scope.deleteAnswer = function(answerIndex, questionIndex) {
+            if(questionnaire instanceof QuestionnaireFactory) {
+                AnswerFactory.delete(
+                    {
+                        delete: 'delete',
+                        id: $scope.questionnaire.question_entities[questionIndex].answer_entities[answerIndex].answer_id
+                    })
+            }
             $scope.questionnaire.question_entities[questionIndex].answer_entities.splice(answerIndex, 1);
         };
         $scope.deleteQuestion = function(questionIndex) {
+            if(questionnaire instanceof QuestionnaireFactory) {
+                QuestionFactory.delete(
+                    {
+                        delete: 'delete',
+                        id: $scope.questionnaire.question_entities[questionIndex].question_id
+                    })
+            }
             $scope.questionnaire.question_entities.splice(questionIndex, 1);
         };
         $scope.addQuestion = function() {
@@ -87,6 +92,21 @@ app.controller('CreateQuestionnaireCtrl', ['questionnaire', '$scope', '$location
             _.each($scope.questionnaire.question_entities[questionIndex].answer_entities, function(answer, index) {
                 index == newAnswerIndex ? answer.correct = true : answer.correct = false;
             });
+        };
+        $scope.createQ = function() {
+            if($scope.questionnaire instanceof QuestionnaireFactory) {
+                console.log('Questionnaire updating');
+                PersonalQuestionnaireFactory.setQuestionnaireId(null);
+                CreateQuestionnaireFactory.update($scope.questionnaire);
+            } else {
+                console.log('Questionnaire creating');
+                CreateQuestionnaireFactory.save($scope.questionnaire,
+                    function() {
+                        alert('Questionnaire was create successfully');
+                        location.reload();
+                    }
+                );
+            }
         };
         $scope.preview = function() {
             var modalInstance = $modal.open({
@@ -331,6 +351,7 @@ app.controller('AdminQuestionnaireCtrl', ['$scope', '$location', 'QuestionnaireF
         $scope.delete = function(id) {
             alert('You really want to delete this questionnaire?');
             QuestionnaireFactory.delete_one({id: id});
+            $location.reload();
         };
         $scope.edit = function(id) {
             PersonalQuestionnaireFactory.setQuestionnaireId(id);

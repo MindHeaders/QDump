@@ -1,15 +1,20 @@
 package org.dataart.qdump.service.resource;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
 import org.dataart.qdump.entities.serializer.View;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -30,39 +35,45 @@ import java.util.List;
 public interface QuestionnaireEntityResource {
     @POST
     @Path("create")
-    public Response addQuestionnaireEntity(
+    @RequiresRoles("ADMIN")
+    public Response add(
             QuestionnaireEntity questionnaireEntity);
 
     @DELETE
-    @Path("delete/{id}")
-    public Response deleteQuestionnaireEntity(@PathParam("id") long id);
+    @Path("delete")
+    @RequiresRoles("ADMIN")
+    public void delete();
 
     @DELETE
-    @Path("delete")
-    public void deleteAllQuestionnaireEntity();
-
-    @GET
-    @Path("get/{id}")
-    public Response getQuestionnaireEntity(@PathParam("id") long id);
+    @Path("delete/{id}")
+    @RequiresRoles("ADMIN")
+    public Response delete(@PathParam("id") long id);
 
     @GET
     @Path("get")
-    public List<QuestionnaireEntity> getQuestionnaireEntities();
+    @RequiresRoles("ADMIN")
+    public List<QuestionnaireEntity> get();
 
     @GET
     @Path("get/published")
-    public List<QuestionnaireEntity> getPublishedQuestionnaireEntities(
+    public List<QuestionnaireEntity> getPublished(
             @DefaultValue("0") @QueryParam("page") int page,
             @DefaultValue("15") @QueryParam("size") int size,
             @DefaultValue("DESC") @QueryParam("direction") String direction,
             @DefaultValue("createdDate") @QueryParam("sort") String sort);
     @GET
     @Path("get/published/count")
-    public Response countPublishedQuestionnaireEntities();
+    public Response countPublished();
+
+    @GET
+    @Path("get/{id}")
+    @RequiresRoles("ADMIN")
+    public Response get(@PathParam("id") long id);
 
     @GET
     @Path("get/all")
-    public List<QuestionnaireEntity> getAllQuestionnaireEntities(
+    @RequiresRoles("ADMIN")
+    public List<QuestionnaireEntity> get(
             @DefaultValue("0") @QueryParam("page") int page,
             @DefaultValue("15") @QueryParam("size") int size,
             @DefaultValue("DESC") @QueryParam("direction") String direction,
@@ -70,11 +81,19 @@ public interface QuestionnaireEntityResource {
 
     @GET
     @Path("get/all/count")
-    public Response countAllQuestionnaireEntities();
+    @RequiresRoles("ADMIN")
+    public Response count();
 
     @GET
     @Path("personal/{id}")
     @JsonView(View.Public.class)
-    public QuestionnaireEntity getQuestionnairePersonal(@PathParam("id") long id);
+    @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
+    public QuestionnaireEntity getPersonal(@PathParam("id") long id);
+
+    @PUT
+    @Path("update")
+    @RequiresRoles("ADMIN")
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public void update(QuestionnaireEntity entity);
 
 }

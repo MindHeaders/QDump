@@ -50,7 +50,7 @@ public abstract class BaseEntity implements Serializable {
 	
 	@PrePersist
 	public void putCreatedDate() {
-		this.createdDate = new Date();
+        this.createdDate = new Date();
 	}
 	
 	@PreUpdate
@@ -80,10 +80,4 @@ public abstract class BaseEntity implements Serializable {
 				.append(createdDate, entity.createdDate)
 				.append(modifiedDate, entity.modifiedDate).isEquals();
 	}
-	
-	public boolean entitiesIsEquals(Object obj) {
-		return true;
-	}
-	
-	public void updateEntity(Object obj) {}
 }

@@ -4,9 +4,9 @@
 var services = angular.module('account.services', ['ngResource']);
 
 services.factory('PersonFactory', function($resource) {
-    return $resource('/rest/persons/:auth/:logout/:verify/:personal/:update/:reset/:password/:questionnaires/:pagination/:create/:get/:id',
+    return $resource('/rest/persons/:authentication/:logout/:verify/:personal/:update/:reset/:password/:questionnaires/:pagination/:create/:get/:id',
         {
-            auth: '@auth',
+            auth: '@authentication',
             logout: '@logout',
             verify: '@verify',
             personal: '@personal',

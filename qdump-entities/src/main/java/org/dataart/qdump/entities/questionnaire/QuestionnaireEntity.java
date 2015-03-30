@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.dataart.qdump.entities.helper.EntitiesUpdater;
 import org.dataart.qdump.entities.serializer.View;
 import org.dataart.qdump.entities.utils.QdumpJsonNaming;
 
@@ -21,7 +19,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -94,8 +91,7 @@ public class QuestionnaireEntity extends QuestionnaireBaseEntity implements
 		this.published = published;
 	}
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = QuestionEntity.class, orphanRemoval
-            = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "id_questionnaire", referencedColumnName = "id_questionnaire", nullable = false)
 	public List<QuestionEntity> getQuestionEntities() {
 		return questionEntities;
@@ -103,41 +99,6 @@ public class QuestionnaireEntity extends QuestionnaireBaseEntity implements
 
 	public void setQuestionEntities(List<QuestionEntity> questionEntities) {
 		this.questionEntities = questionEntities;
-	}
-	
-	public boolean checkIdForCreation() {
-		if(id > 0) {
-			return false;
-		}
-		for(QuestionEntity entity : questionEntities) {
-			if(entity.id > 0 || !entity.checkIdForCreation()) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	public boolean entitiesIsEquals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (obj == this) {
-			return true;
-		}
-		QuestionnaireEntity entity = (QuestionnaireEntity) obj;
-		return new EqualsBuilder()
-				.append(this.id, entity.id)
-				.append(name, entity.name)
-				.append(description, entity.description)
-				.append(published, entity.published)
-				.isEquals();
-	}
-	
-	public void updateEntity(Object obj) {
-		QuestionnaireEntity entity = (QuestionnaireEntity) obj;
-		List<String> ignoredFields = Arrays.asList("questionEntities");
-		EntitiesUpdater.updateEntity(entity, this, ignoredFields, QuestionnaireEntity.class);
-		EntitiesUpdater.updateEntities(entity.questionEntities, questionEntities, QuestionEntity.class);
 	}
 
 	@Override

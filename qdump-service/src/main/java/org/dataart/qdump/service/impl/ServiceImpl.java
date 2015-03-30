@@ -36,7 +36,8 @@ public class ServiceImpl implements ServiceQdump {
     private PersonQuestionCrudRepository personQuestionCrudRepository;
 	@Autowired
     private PersonQuestionnaireCrudRepository personQuestionnaireCrudRepository;
-	@Autowired
+    @Qualifier("questionCrudRepository")
+    @Autowired
     private QuestionCrudRepository questionCrudRepository;
 	@Autowired
     private QuestionnaireCrudRepository questionnaireCrudRepository;
@@ -133,6 +134,11 @@ public class ServiceImpl implements ServiceQdump {
         return personCrudRepository.findPersonRole(id);
     }
 
+    @Override
+    public Page<PersonEntity> getPersonQuestionnairesInCheckingProcess(Pageable pageable) {
+        return personCrudRepository.findPersonQuestionnairesInCheckingProcess(pageable);
+    }
+
     //PersonQuestionnaireEntity
 	@Override
 	public void addPersonQuestionnaireEntity(PersonQuestionnaireEntity personQuestionnaireEntity) {
@@ -172,27 +178,32 @@ public class ServiceImpl implements ServiceQdump {
 
     @Override
     public PersonQuestionnaireEntity getPersonQuestionnaireEntity(long personQuestionnaireId, long personId) {
-        return personQuestionnaireCrudRepository.findPersonQuestionnaireByPersonId(personQuestionnaireId, personId);
+        return personQuestionnaireCrudRepository.findByPersonQuestionnaireIdAndPersonId(personQuestionnaireId, personId);
     }
 
     @Override
     public Page<PersonQuestionnaireEntity> getCompletedPersonQuestionnaireEntities(long id, Pageable pageable) {
-        return personQuestionnaireCrudRepository.findCompletedPersonQuestionnairesByPersonId(id, pageable);
+        return personQuestionnaireCrudRepository.findCompletedByPersonId(id, pageable);
     }
 
     @Override
     public Page<PersonQuestionnaireEntity> getStartedPersonQuestionnaireEntities(long id, Pageable pageable) {
-        return personQuestionnaireCrudRepository.findStartedPersonQuestionnairesByPersonId(id, pageable);
+        return personQuestionnaireCrudRepository.findStartedByPersonId(id, pageable);
     }
 
     @Override
     public long countCompletedPersonQuestionnaireEntities(long id) {
-        return personQuestionnaireCrudRepository.countCompletedPersonQuestionnairesByPersonId(id);
+        return personQuestionnaireCrudRepository.countCompletedByPersonId(id);
     }
 
     @Override
     public long countStartedPersonQuestionnaireEntities(long id) {
-        return personQuestionnaireCrudRepository.countStartedPersonQuestionnairesByPersonId(id);
+        return personQuestionnaireCrudRepository.countStartedByPersonId(id);
+    }
+
+    @Override
+    public long countPersonQuestionnaireByStatus(String status) {
+        return personQuestionnaireCrudRepository.countByStatus(status);
     }
 
     //PersonQuestionEntity
@@ -233,8 +244,13 @@ public class ServiceImpl implements ServiceQdump {
 	public long personQuestionEntitiesCount() {
 		return personQuestionCrudRepository.count();
 	}
-	
-	//PersonAnswerEntity
+
+    @Override
+    public List<PersonQuestionEntity> getPersonQuestionEntitiesByPersonEntityId(long id) {
+        return personQuestionCrudRepository.findByPersonId(id);
+    }
+
+    //PersonAnswerEntity
 	@Override
 	public void addPersonAnswerEntity(PersonAnswerEntity personAnswerEntity) {
 		personAnswerCrudRepository.save(personAnswerEntity);
@@ -362,8 +378,13 @@ public class ServiceImpl implements ServiceQdump {
 	public long questionEntitiesCount() {
 		return questionCrudRepository.count();
 	}
-	
-	//AnswerEntity
+
+    @Override
+    public void deleteQuestionEntity(QuestionEntity questionEntity) {
+        questionCrudRepository.delete(questionEntity);
+    }
+
+    //AnswerEntity
 	@Override
 	public void addAnswerEntity(AnswerEntity answerEntity) {
 		answerCrudRepository.save(answerEntity);

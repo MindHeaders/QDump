@@ -1,7 +1,12 @@
 package org.dataart.qdump.service.resource;
 
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -30,32 +35,50 @@ public interface PersonQuestionnaireEntityResource {
 
     @POST
     @Path("create")
-    public Response addPersonQuestionnaire(PersonQuestionnaireEntity entity);
-
-    @DELETE
-    @Path("delete/{id}")
-    public Response deletePersonQuestionnaireEntity(@PathParam("id") long id);
+    @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public Response add(PersonQuestionnaireEntity entity);
 
     @DELETE
     @Path("delete")
-    public Response deleteAllPersonQuestionnaireEntities();
+    @RequiresRoles("ADMIN")
+    public void delete();
 
-    @GET
-    @Path("get/{id}")
-    public Response getPersonQuestionnaireEntity(@PathParam("id") long id);
+    @DELETE
+    @Path("delete/{id}")
+    @RequiresRoles("ADMIN")
+    public Response delete(@PathParam("id") long id);
 
     @GET
     @Path("get")
-    public List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities();
+    @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
+    public List<PersonQuestionnaireEntity> get();
+
+    @GET
+    @Path("get/checking")
+    @RequiresRoles("ADMIN")
+    public List<PersonEntity> getInCheckingProcess(
+            @DefaultValue("0") @QueryParam("page") int page,
+            @DefaultValue("15") @QueryParam("size") int size,
+            @DefaultValue("DESC") @QueryParam("direction") String direction,
+            @DefaultValue("createdDate") @QueryParam("sort") String sort);
+
+    @GET
+    @Path("get/{id}")
+    @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
+    public Response get(@PathParam("id") long id);
 
     @PUT
     @Path("update")
-    public Response updatePersonQuestionnaireEntity(
+    @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public Response update(
             PersonQuestionnaireEntity source);
 
     @GET
     @Path("/completed")
-    public List<PersonQuestionnaireEntity> getCompletedPersonQuestionnairesPagination(
+    @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
+    public List<PersonQuestionnaireEntity> getCompleted(
             @DefaultValue("0") @QueryParam("page") int page,
             @DefaultValue("15") @QueryParam("size") int size,
             @DefaultValue("DESC") @QueryParam("direction") String direction,
@@ -63,18 +86,33 @@ public interface PersonQuestionnaireEntityResource {
 
     @GET
     @Path("/started")
-    public List<PersonQuestionnaireEntity> getStartedPersonQuestionnairesPagination(
+    @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
+    public List<PersonQuestionnaireEntity> getStarted(
             @DefaultValue("0") @QueryParam("page") int page,
             @DefaultValue("15") @QueryParam("size") int size,
             @DefaultValue("DESC") @QueryParam("direction") String direction,
             @DefaultValue("createdDate") @QueryParam("sort") String sort);
 
     @GET
+    @Path("/count/checking")
+    @RequiresRoles("ADMIN")
+    public Response countInCheckingProcess();
+
+    @PUT
+    @Path("check/{id}")
+    @RequiresRoles("ADMIN")
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public Response check(@PathParam("id") long id, @QueryParam("correct") boolean correct);
+
+    @GET
     @Path("/count/{type}")
-    public Response countPersonQuestionnaires(@PathParam("type") String type);
+    @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
+    public Response count(@PathParam("type") String type);
 
     @GET
     @Path("/completed/{id}")
-    public PersonQuestionnaireEntity getCompletedQuestionnaireEntity(@PathParam("id") long id);
+    @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
+    public PersonQuestionnaireEntity getCompleted(@PathParam("id") long id);
+
 
 }

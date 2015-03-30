@@ -3,7 +3,13 @@ package org.dataart.qdump.service.resource;
 import org.dataart.qdump.entities.person.PersonAnswerEntity;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -20,21 +26,21 @@ import java.util.List;
 public interface PersonAnswerEntityResource {
     @POST
     @Path("create")
-    public Response addPersonAnswerEntity(PersonAnswerEntity entity);
+    public Response add(PersonAnswerEntity entity);
+
+    @DELETE
+    @Path("delete")
+    public void delete();
 
     @DELETE
     @Path("delete/{id}")
-    public Response deletePersonAnswerEntity(@PathParam("id") long id);
+    public Response delete(@PathParam("id") long id);
 
-    @DELETE
-    @Path("delete/all")
-    public void deleteAllPersonAnswerEntity();
+    @GET
+    @Path("get")
+    public List<PersonAnswerEntity> get();
 
     @GET
     @Path("get/{id}")
-    public Response getPersonAnswerEntity(@PathParam("id") long id);
-
-    @GET
-    @Path("get/all")
-    public List<PersonAnswerEntity> getPersonAnswerEntities();
+    public Response get(@PathParam("id") long id);
 }

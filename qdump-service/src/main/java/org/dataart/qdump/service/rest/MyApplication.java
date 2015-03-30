@@ -1,12 +1,17 @@
 package org.dataart.qdump.service.rest;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.dataart.qdump.service.resourceImpl.AnswerEntityResourceBean;
+import org.dataart.qdump.service.resourceImpl.PersonAnswerEntityResourceBean;
+import org.dataart.qdump.service.resourceImpl.PersonEntityResourceBean;
+import org.dataart.qdump.service.resourceImpl.PersonQuestionEntityResourceBean;
+import org.dataart.qdump.service.resourceImpl.PersonQuestionnaireEntityResourceBean;
+import org.dataart.qdump.service.resourceImpl.QuestionEntityResourceBean;
+import org.dataart.qdump.service.resourceImpl.QuestionnaireEntityResourceBean;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
-
-import org.dataart.qdump.service.resourceImpl.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @ApplicationPath("/rest")
 public class MyApplication extends Application{
@@ -24,8 +29,7 @@ public class MyApplication extends Application{
 	}
 	@Override
 	public Set<Class<?>> getClasses() {
-		HashSet<Class<?>> set = new HashSet<>();
-		return set;
+        return new HashSet<>();
 	}
 	@Override
 	public Set<Object> getSingletons() {

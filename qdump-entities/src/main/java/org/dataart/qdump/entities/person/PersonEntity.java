@@ -7,8 +7,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.dataart.qdump.entities.enums.PersonGroupEnums;
-import org.dataart.qdump.entities.helper.EntitiesUpdater;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireBaseEntity;
+import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -24,6 +24,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -92,6 +93,22 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 		this.lastname = lastname;
 		this.id = id;
 	}
+
+    public PersonEntity(long personId, String login, long personQuestionnaireId, Date createdDate, Date modifiedDate,
+                        long questionnaireId, String questionnaireName) {
+        this.id = personId;
+        this.login = login;
+        PersonQuestionnaireEntity personQuestionnaireEntity = new PersonQuestionnaireEntity();
+        personQuestionnaireEntity.setId(personQuestionnaireId);
+        personQuestionnaireEntity.setCreatedDate(createdDate);
+        personQuestionnaireEntity.setModifiedDate(modifiedDate);
+        QuestionnaireEntity questionnaireEntity = new QuestionnaireEntity();
+        questionnaireEntity.setId(questionnaireId);
+        questionnaireEntity.setName(questionnaireName);
+        personQuestionnaireEntity.setQuestionnaireEntity(questionnaireEntity);
+        List<PersonQuestionnaireEntity> entities = Arrays.asList(personQuestionnaireEntity);
+        this.personQuestionnaireEntities = entities;
+    }
 
 	/**
 	 * Length is set as requirement of Data Standards Catalogue. Name
@@ -257,43 +274,6 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 			throw new RuntimeException("You enter invalid email address");
 		}
 		return email;
-	}
-	
-	/**
-	 * Update all properties which is not equals to fields value from database. Also this update is 
-	 * @param personEntity
-	 */
-	public void updatePersonEntity(PersonEntity personEntity) {
-		List<String> ignoredFields = Arrays.asList("gender", "personQuestionnaireEntities");
-		if(personEntity.gender != 9) {
-			this.gender = personEntity.gender;
-		}
-		EntitiesUpdater.updateEntity(personEntity, this, ignoredFields, PersonEntity.class);
-	}
-
-	public boolean checkEqualsForWeb(PersonEntity entity) {
-		if(entity == null) {
-			return false;
-		}
-		if(!(entity instanceof PersonEntity)) {
-			return false;
-		}
-		if(this == entity) {
-			return true;
-		}
-		return new EqualsBuilder()
-			.append(this.getId(), entity.getId())
-			.append(this.getCreatedDate(), entity.getCreatedDate())
-			.append(this.getModifiedBy().getId(), entity.getModifiedBy().getId())
-			.append(this.getCreatedBy().getId(), entity.getCreatedBy().getId())
-			.append(this.firstname, entity.firstname)
-			.append(this.lastname, entity.lastname)
-			.append(this.email, entity.email)
-			.append(this.login, entity.login)
-			.append(this.enabled, entity.enabled)
-			.append(this.gender, entity.gender)
-			.append(this.personGroup, entity.personGroup)
-			.isEquals();
 	}
 	
 	@Override

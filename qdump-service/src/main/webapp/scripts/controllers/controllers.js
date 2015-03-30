@@ -374,8 +374,7 @@ app.controller('CreateQuestionnaireCtrl', ['admin', '$scope', '$location', '$roo
         $scope.changeRadioAnswers = function(newCheckedId, questionId) {
             $scope.questionnaire.question_entities[questionId].answer_entities.forEach(
                 function(element) {
-                    if(element.answer_id == newCheckedId) element.correct = true;
-                    else element.correct = false;
+                    element.correct = element.answer_id == newCheckedId;
                 }
             );
         };

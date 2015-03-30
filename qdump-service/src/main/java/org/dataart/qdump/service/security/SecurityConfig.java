@@ -13,6 +13,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by artemvlasov on 29/01/15.
  */
@@ -62,20 +65,19 @@ public class SecurityConfig {
     public ShiroFilterFactoryBean shiroFilter() {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager());
-        shiroFilterFactoryBean.setLoginUrl("/login/auth.html");
-		shiroFilterFactoryBean.setFilterChainDefinitions("" +
-				"/answers = authc, roles[ADMIN]" +
-				"/questions = authc, roles[ADMIN]");
-//        Map<String, String> chainDefinitionMap = new HashMap<>();
-//        chainDefinitionMap.put("/rest/persons/get/min", "authc, roles[ADMIN]");
-//        shiroFilterFactoryBean.setFilterChainDefinitionMap(chainDefinitionMap);
+        shiroFilterFactoryBean.setLoginUrl("/app/Account/authentication.html");
+        Map<String, String> chainDefinitionMap = new HashMap<>();
+        chainDefinitionMap.put("/answers", "authc, roles[ADMIN]");
+        chainDefinitionMap.put("/questions", "authc, roles[ADMIN]");
+        chainDefinitionMap.put("/persons/answers", "authc, roles[ADMIN]");
+        chainDefinitionMap.put("/persons/questions", "authc, roles[ADMIN]");
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(chainDefinitionMap);
         return shiroFilterFactoryBean;
     }
 
     @Bean
     public MemoryConstrainedCacheManager cacheManager() {
-        MemoryConstrainedCacheManager cacheManager = new MemoryConstrainedCacheManager();
-        return cacheManager;
+        return new MemoryConstrainedCacheManager();
     }
 
 }

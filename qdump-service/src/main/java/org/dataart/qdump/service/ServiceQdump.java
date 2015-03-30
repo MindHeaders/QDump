@@ -32,6 +32,7 @@ public interface ServiceQdump {
     boolean personEntityIsEnabledByLogin(String login);
     boolean personEntityIsEnabledByEmail(String email);
     String getPersonEntityRole(long id);
+    Page<PersonEntity> getPersonQuestionnairesInCheckingProcess(Pageable pageable);
 
 	//PersonQuestionnaireEntity
 	void addPersonQuestionnaireEntity(PersonQuestionnaireEntity personQuestionnaireEntity);
@@ -46,6 +47,7 @@ public interface ServiceQdump {
     Page<PersonQuestionnaireEntity> getStartedPersonQuestionnaireEntities(long id, Pageable pageable);
     long countCompletedPersonQuestionnaireEntities(long id);
     long countStartedPersonQuestionnaireEntities(long id);
+    long countPersonQuestionnaireByStatus(String status);
 	
 	//PersonQuestionEntity
 	void addPersonQuestionEntity(PersonQuestionEntity personQuestionEntity);
@@ -55,6 +57,7 @@ public interface ServiceQdump {
 	List<PersonQuestionEntity> getPersonQuestionEntities();
 	boolean personQuestionEntityExists(long id);
 	long personQuestionEntitiesCount();
+    List<PersonQuestionEntity> getPersonQuestionEntitiesByPersonEntityId(long id);
 	
 	//PersonAnswerEntity
 	void addPersonAnswerEntity(PersonAnswerEntity personAnswerEntity);
@@ -81,6 +84,7 @@ public interface ServiceQdump {
 	//QuestionEntity
 	void addQuestionEntity(QuestionEntity questionEntity);
 	void deleteQuestionEntity(long id);
+    void deleteQuestionEntity(QuestionEntity questionEntity);
 	void deleteAllQuestionEntity();
 	QuestionEntity getQuestionEntity(long id);
 	List<QuestionEntity> getQuestionEntities();

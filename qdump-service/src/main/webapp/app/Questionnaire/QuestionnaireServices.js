@@ -38,11 +38,24 @@ services.factory('PersonQuestionnairesFactory', function($resource) {
         })
 });
 services.factory('CreateQuestionnaireFactory', function($resource) {
-    return $resource('/rest/questionnaires/create', {}, {
-        save: {
-            method: 'POST'
-        }
-    });
+    return $resource('/rest/questionnaires/:create/:update',
+        {
+            create: '@create',
+            update: '@update'
+        }, {
+            save: {
+                method: 'POST',
+                params: {
+                    create: 'create'
+                }
+            },
+            update: {
+                method: 'PUT',
+                params: {
+                    update: 'update'
+                }
+            }
+        });
 });
 services.factory('QuestionnaireFactory', function($resource) {
     return $resource('/rest/questionnaires/:get/:published/:delete/:personal/:id/:all/:count', {
@@ -148,4 +161,27 @@ services.factory('Questionnaire', function($resource, $cookieStore, ErrorFactory
         }
     };
     return questionnaire;
+});
+services.factory('QuestionFactory', function($resource) {
+    return $resource('/rest/questions/:delete/:create/:get/:id', {
+        delete: '@delete',
+        create: '@create',
+        get: '@get',
+        id: '@id'
+    }, {})
+});
+services.factory('DeleteQuestionFactory', function($resource) {
+    return $resource('/rest/questions/delete/entity',{},{
+        delete_entity: {
+            method: 'DELETE'
+        }
+    });
+});
+services.factory('AnswerFactory', function($resource) {
+   return $resource('/rest/answers/:delete/:create/:get/:id', {
+       delete: '@delete',
+       create: '@create',
+       get: '@get',
+       id: '@id'
+   })
 });

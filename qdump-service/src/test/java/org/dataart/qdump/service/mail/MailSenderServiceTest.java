@@ -1,11 +1,10 @@
-package org.dataart.qdump.service.test;
+package org.dataart.qdump.service.mail;
 
 import org.apache.commons.mail.EmailException;
 import org.dataart.qdump.entities.enums.PersonGroupEnums;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.security.VerificationTokenEntity;
 import org.dataart.qdump.service.config.MailConfig;
-import org.dataart.qdump.service.mail.MailSenderService;
 import org.dataart.qdump.service.security.utils.VerificationTokenUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;

@@ -1,8 +1,11 @@
 package org.dataart.qdump.service.resource;
 
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -31,13 +34,19 @@ public interface PersonEntityResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("get/{id}")
-    public Response getPersonEntity(@PathParam("id") long id);
+    @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
+    public Response get(@PathParam("id") long id);
 
     @POST
-    @Path("auth")
-    public Response auth(@FormParam("login_or_email") String loginOrEmail,
-                          @FormParam("password") String password,
-                          @FormParam("rememberMe") boolean rememberMe);
+    @Path("authentication")
+    public Response authentication(@FormParam("login_or_email") String loginOrEmail,
+                                   @FormParam("password") String password,
+                                   @FormParam("rememberMe") boolean rememberMe);
+
+    @GET
+    @Path("logout")
+    @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
+    public void logout();
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -46,14 +55,10 @@ public interface PersonEntityResource {
     public Response registration(PersonEntity entity, @Context UriInfo uriInfo);
 
     @GET
-    @Path("logout")
-    public void logout();
-
-    @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("get")
     @RequiresRoles("ADMIN")
-    public List<PersonEntity> getAll();
+    public List<PersonEntity> get();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -62,33 +67,37 @@ public interface PersonEntityResource {
     public List<PersonEntity> getAllMin();
 
     @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("delete")
+    @RequiresRoles("ADMIN")
+    public void delete();
+
+    @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("delete/{id}")
-    public Response deletePersonEntity(@PathParam("id") long id);
-
-    @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("delete")
-    public Response deleteAllPersonEntities();
+    @RequiresRoles("ADMIN")
+    public Response delete(@PathParam("id") long id);
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("update")
-    public Response updatePersonEntity(PersonEntity source);
+    @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public Response update(PersonEntity source, @Context UriInfo uriInfo);
 
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("check/email")
-    public Response checkPersonEntityEmail(@QueryParam("email") String email);
+    public Response checkEmail(@QueryParam("email") String email);
 
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("check/login")
-    public Response checkPersonEntityLogin(@QueryParam("login") String login);
+    public Response checkLogin(@QueryParam("login") String login);
 
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -105,17 +114,12 @@ public interface PersonEntityResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("reset/password")
-    public Response resetPersonEntityPassword();
-
-    @GET
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("check/permission/{role}")
-    public Response checkPermission(@PathParam("role") String role);
+    @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
+    public Response resetPassword();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("authorized")
-    public Response getAuthorizedPerson();
+    public Response getAuthorized();
 
 }

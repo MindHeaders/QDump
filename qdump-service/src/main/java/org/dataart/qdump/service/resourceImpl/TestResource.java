@@ -21,7 +21,8 @@ import java.util.List;
 @Path("/app")
 @Component
 public class TestResource {
-	@Autowired
+	@SuppressWarnings("SpringJavaAutowiringInspection")
+    @Autowired
 	private ServiceQdump service;
 	
 	@GET
@@ -45,8 +46,7 @@ public class TestResource {
 	@GET
 	@Path("get/person")
 	public PersonEntity getPerson() {
-		PersonEntity personEntity = service.getPersonEntity(1l);
-		return personEntity;
+		return service.getPersonEntity(1l);
 	}
 	
 	@GET
@@ -67,7 +67,6 @@ public class TestResource {
     @GET
     @Path("data")
     public QuestionnaireEntity getData() {
-        QuestionnaireEntity entity = service.getQuestionnaireEntity(6l);
-        return entity;
+        return service.getQuestionnaireEntity(6l);
     }
 }

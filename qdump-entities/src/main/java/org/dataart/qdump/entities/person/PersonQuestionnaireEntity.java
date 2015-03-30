@@ -3,11 +3,6 @@ package org.dataart.qdump.entities.person;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.base.Preconditions;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.dataart.qdump.entities.enums.QuestionTypeEnums;
-import org.dataart.qdump.entities.enums.QuestionnaireStatusEnums;
-import org.dataart.qdump.entities.helper.EntitiesUpdater;
 import org.dataart.qdump.entities.questionnaire.BaseEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
 import org.dataart.qdump.entities.serializer.QuestionnairePersonSerializer;
@@ -24,7 +19,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -33,16 +27,16 @@ import java.util.List;
 @AttributeOverride(name = "id", column = @Column(name = "id_person_questionnaire", insertable = false, updatable = false))
 @JsonAutoDetect
 @NamedQueries({
-		@NamedQuery(name = "PersonQuestionnaireEntity.findPersonQuestionnaireByStatus", query = "FROM " +
-                "PersonQuestionnaireEntity pinq WHERE pinq.status = ?1"),
-		@NamedQuery(name = "PersonQuestionnaireEntity.findPersonQuestionnaireByQuestionnaireName", query = "FROM " +
+		@NamedQuery(name = "PersonQuestionnaireEntity.findByQuestionnaireName", query = "FROM " +
                 "PersonQuestionnaireEntity pinq WHERE pinq.questionnaireEntity.name = ?1"),
-        @NamedQuery(name = "PersonQuestionnaireEntity.findPersonQuestionnaireByPersonId", query = "SELECT pq FROM " +
+        @NamedQuery(name = "PersonQuestionnaireEntity.findByPersonQuestionnaireIdAndPersonId", query = "SELECT pq " +
+                "FROM " +
                 "PersonQuestionnaireEntity pq, PersonEntity p WHERE pq.id = ?1 AND p.id = ?2"),
-        @NamedQuery(name = "PersonQuestionnaireEntity.countCompletedPersonQuestionnairesByPersonId", query = "SELECT count(pq) FROM PersonQuestionnaireEntity pq, PersonEntity p WHERE p.id = ?1 AND pq.status NOT IN ('in progress', 'not specified')"),
-        @NamedQuery(name = "PersonQuestionnaireEntity.countStartedPersonQuestionnairesByPersonId", query = "SELECT " +
-                "COUNT(pq) FROM PersonQuestionnaireEntity pq, PersonEntity p WHERE p.id = ?1 AND pq.status = 'in progress'")
-
+        @NamedQuery(name = "PersonQuestionnaireEntity.countCompletedByPersonId", query = "SELECT count(pq) FROM PersonQuestionnaireEntity pq, PersonEntity p WHERE p.id = ?1 AND pq.status NOT IN ('in progress', 'not specified')"),
+        @NamedQuery(name = "PersonQuestionnaireEntity.countStartedByPersonId", query = "SELECT " +
+                "COUNT(pq) FROM PersonQuestionnaireEntity pq, PersonEntity p WHERE p.id = ?1 AND pq.status = 'in " +
+                "progress'"),
+        @NamedQuery(name = "PersonQuestionnaireEntity.countByStatus", query = "SELECT COUNT(pq) FROM PersonQuestionnaireEntity pq WHERE pq.status = ?1")
 })
 public class PersonQuestionnaireEntity extends BaseEntity
 		implements Serializable {
@@ -93,94 +87,6 @@ public class PersonQuestionnaireEntity extends BaseEntity
 	public void setPersonQuestionEntities(
 			List<PersonQuestionEntity> personQuestionEntities) {
 		this.personQuestionEntities = personQuestionEntities;
-	}
-
-	/**
-	 * Check status of {@link PersonQuestionnaireEntity}, should be used after
-	 * persistence {@link PersonQuestionnaireEntity}. If all
-	 * {@link PersonQuestionEntity} in current object is correct, status of
-	 * {@link PersonQuestionnaireEntity} should be set as "Passed". If all
-	 * {@link PersonQuestionEntity} is not correct status should be set as
-	 * "Not Passed". If any of {@link PersonQuestionEntity} is has
-	 * {@link QuestionTypeEnums} set as Field and any of
-	 * {@link PersonQuestionEntity} is not correct status should be set as
-	 * "In Checking Process". Be default all started
-	 * {@link PersonQuestionnaireEntity} should have status "In Progress"
-	 */
-	public void checkStatus() {
-		if (checkPersonQuestionEntitiesIsCorrect()) {
-			status = QuestionnaireStatusEnums.PASSED.getName();
-		} else if (!checkQuestionsType()
-                && !checkPersonQuestionEntitiesIsCorrect()) {
-            status = QuestionnaireStatusEnums.IN_CHECKING_PROCESS.getName();
-        } else if (!checkPersonQuestionEntitiesIsCorrect()) {
-			status = QuestionnaireStatusEnums.NOT_PASSED.getName();
-		}  else {
-			status = QuestionnaireStatusEnums.IN_PROGRESS.getName();
-		}
-	}
-
-	private boolean checkPersonQuestionEntitiesIsCorrect() {
-		for (PersonQuestionEntity questionEntity : Preconditions
-				.checkNotNull(personQuestionEntities)) {
-            questionEntity.checkQuestionIsCorrect();
-			if (questionEntity.isCorrect() == false) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Validate type of question. If one of this {@link QuestionTypeEnums} is
-	 * equals to FIELD method will return false.
-	 * 
-	 * @return boolean
-	 */
-	private boolean checkQuestionsType() {
-		for (PersonQuestionEntity questionEntity : Preconditions
-				.checkNotNull(personQuestionEntities)) {
-			if (Preconditions.checkNotNull(questionEntity.getQuestionEntity())
-					.getType() == QuestionTypeEnums.TEXTAREA) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	public boolean checkIdForCreation() {
-		if(id != 0 || questionnaireEntity.getId() == 0) {
-			return false;
-		}
-		for(PersonQuestionEntity entity : personQuestionEntities) {
-			if(!entity.checkIdForCreation()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	
-	public void updateEntity(Object obj) {
-		PersonQuestionnaireEntity entity = (PersonQuestionnaireEntity) obj;
-		List<String> ignoredFields = Arrays.asList("questionnaireEntity",
-				"personQuestionEntities");
-		EntitiesUpdater.updateEntity(entity, this, ignoredFields, PersonQuestionnaireEntity.class);
-		EntitiesUpdater.updateEntities(entity.personQuestionEntities, personQuestionEntities, PersonQuestionEntity.class);
-	}
-	
-	public boolean entitiesIsEquals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (obj == this) {
-			return true;
-		}
-		PersonQuestionnaireEntity entity = (PersonQuestionnaireEntity) obj;
-		return new EqualsBuilder()
-				.append(this.id, entity.id)
-				.append(status, entity.status)
-				.isEquals();
 	}
 	
 	@Override

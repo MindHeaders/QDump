@@ -18,7 +18,7 @@ var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap',
             when('/account', {
                 redirectTo: '/account/personal'
             }).
-            when('/account/auth', {
+            when('/account/authentication', {
                 templateUrl: '/app/Account/auth.html',
                 controller: 'MainCtrl'
             }).
@@ -40,6 +40,16 @@ var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap',
                 resolve: {
                     questionnaire_id: function(PersonalQuestionnaireFactory) {
                         return PersonalQuestionnaireFactory.getQuestionnaireId();
+                    }
+                }
+            }).
+            when('/account/admin', {
+                templateUrl: '/app/Account/admin-panel.html',
+                controller: 'AdminPanelCtrl',
+                resolve: {
+                    admin: function(Authorization) {
+                        var user = Authorization.getUser();
+                        return (user.authorized && _.isEqual(user.role, 'ADMIN')) ? user : null;
                     }
                 }
             }).

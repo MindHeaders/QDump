@@ -6,27 +6,28 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.dataart.qdump.entities.enums.QuestionTypeEnums;
 import org.dataart.qdump.entities.person.PersonEntity;
-import org.dataart.qdump.entities.questionnaire.AnswerEntity;
-import org.dataart.qdump.entities.questionnaire.QuestionEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
 import org.dataart.qdump.entities.serializer.View;
 import org.dataart.qdump.service.ServiceQdump;
 import org.dataart.qdump.service.resource.QuestionnaireEntityResource;
+import org.dataart.qdump.service.utils.EntitiesUpdater;
+import org.dataart.qdump.service.utils.QuestionnaireChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
+
+import static org.dataart.qdump.service.utils.WebApplicationUtils.exceptionCreator;
 
 @Component
 public class QuestionnaireEntityResourceBean implements QuestionnaireEntityResource{
@@ -36,19 +37,10 @@ public class QuestionnaireEntityResourceBean implements QuestionnaireEntityResou
     private long publishedQuestionnaireEntitiesCount;
     private long questionnaireEntitiesCount;
 
-    @RequiresRoles("ADMIN")
-    public Response addQuestionnaireEntity(
+    public Response add(
             QuestionnaireEntity questionnaireEntity) {
-        if (questionnaireEntity.getId() > 0) {
-            return Response.status(Status.CONFLICT)
-                    .entity("Questionnaire id cannot be greater than 0")
-                    .build();
-        }
-        if (!questionnaireEntity.checkIdForCreation()) {
-            return Response.status(Status.CONFLICT)
-                    .entity("Answer ud cannot be greater than 0").build();
-        }
-        if(checkQuestionnaireCanBePublished(questionnaireEntity) && !questionnaireEntity.isPublished()) {
+        QuestionnaireChecker.checkPrePersist(questionnaireEntity);
+        if(QuestionnaireChecker.checkCanBePublished(questionnaireEntity)) {
             questionnaireEntity.setPublished(true);
         }
         PersonEntity personEntity = new PersonEntity();
@@ -59,7 +51,7 @@ public class QuestionnaireEntityResourceBean implements QuestionnaireEntityResou
     }
 
     @RequiresRoles("ADMIN")
-    public Response deleteQuestionnaireEntity(@PathParam("id") long id) {
+    public Response delete(@PathParam("id") long id) {
         if (!serviceQdump.questionnaireEntityExists(id)) {
             return Response
                     .status(Status.NOT_FOUND)
@@ -77,12 +69,12 @@ public class QuestionnaireEntityResourceBean implements QuestionnaireEntityResou
     }
 
     @RequiresRoles("ADMIN")
-    public void deleteAllQuestionnaireEntity() {
+    public void delete() {
         serviceQdump.deleteAllQuestionnaireEntity();
     }
 
     @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
-    public Response getQuestionnaireEntity(@PathParam("id") long id) {
+    public Response get(@PathParam("id") long id) {
         if (!serviceQdump.questionnaireEntityExists(id)) {
             ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
             objectNode.put("error", String.format(
@@ -97,19 +89,18 @@ public class QuestionnaireEntityResourceBean implements QuestionnaireEntityResou
                 .entity(entity).build();
     }
 
-    public List<QuestionnaireEntity> getQuestionnaireEntities() {
+    public List<QuestionnaireEntity> get() {
         return serviceQdump.getQuestionnaireEntities();
     }
 
-    public List<QuestionnaireEntity> getPublishedQuestionnaireEntities(int page, int size, String direction, String sort) {
+    public List<QuestionnaireEntity> getPublished(int page, int size, String direction, String sort) {
         Pageable pageable = new PageRequest(page, size, Sort.Direction.fromString(direction), sort);
         Page<QuestionnaireEntity> databasePage = serviceQdump.getPublishedQuestionnaireEntities(pageable);
         publishedQuestionnaireEntitiesCount = databasePage.getTotalElements();
-        List<QuestionnaireEntity> resultPage = databasePage.getContent();
-        return resultPage;
+        return databasePage.getContent();
     }
 
-    public Response countPublishedQuestionnaireEntities() {
+    public Response countPublished() {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         if(publishedQuestionnaireEntitiesCount == 0) {
             publishedQuestionnaireEntitiesCount = serviceQdump.countPublishedQuestionnaireEntities();
@@ -119,16 +110,15 @@ public class QuestionnaireEntityResourceBean implements QuestionnaireEntityResou
     }
 
     @RequiresRoles("ADMIN")
-    public List<QuestionnaireEntity> getAllQuestionnaireEntities(int page, int size, String direction, String sort) {
+    public List<QuestionnaireEntity> get(int page, int size, String direction, String sort) {
         Pageable pageable = new PageRequest(page, size, Sort.Direction.fromString(direction), sort);
         Page<QuestionnaireEntity> databasePage = serviceQdump.getAllQuestionnaireEntities(pageable);
         questionnaireEntitiesCount = databasePage.getTotalElements();
-        List<QuestionnaireEntity> resultPage = databasePage.getContent();
-        return resultPage;
+        return databasePage.getContent();
     }
 
     @RequiresRoles("ADMIN")
-    public Response countAllQuestionnaireEntities() {
+    public Response count() {
         ObjectNode node = JsonNodeFactory.instance.objectNode();
         if(questionnaireEntitiesCount == 0) {
             questionnaireEntitiesCount = serviceQdump.questionnaireEntitiesCount();
@@ -139,40 +129,21 @@ public class QuestionnaireEntityResourceBean implements QuestionnaireEntityResou
 
     @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
     @JsonView(View.Public.class)
-    public QuestionnaireEntity getQuestionnairePersonal(long id) {
+    public QuestionnaireEntity getPersonal(long id) {
         return serviceQdump.getQuestionnaireEntity(id);
     }
 
-    private boolean checkQuestionnaireCanBePublished(QuestionnaireEntity questionnaireEntity) {
-        if(questionnaireEntity.getName() == null) {
-            exceptionCreator(Status.NOT_ACCEPTABLE, "Questionnaire name cannot be null");
+    @RequiresRoles("ADMIN")
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public void update(QuestionnaireEntity source) {
+        long sourceId = source.getId();
+        if(!serviceQdump.questionnaireEntityExists(sourceId)) {
+            exceptionCreator(Status.NOT_FOUND, String.format("Questionnaire with id = %d not found", sourceId));
         }
-        boolean questionHasCorrectAnswer = false;
-        for(QuestionEntity questionEntity : questionnaireEntity.getQuestionEntities()) {
-            if(questionEntity.getQuestion() == null) {
-                exceptionCreator(Status.NOT_ACCEPTABLE, "All questionnaire questions should be filled ");
-            }
-            if(questionEntity.getType() == QuestionTypeEnums.TEXTAREA) continue;
-            for(AnswerEntity answerEntity : questionEntity.getAnswerEntities()) {
-                if(!questionHasCorrectAnswer && !answerEntity.isCorrect()) {
-                    questionHasCorrectAnswer = true;
-                }
-                if(answerEntity.getAnswer() == null) {
-                    exceptionCreator(Status.NOT_ACCEPTABLE, "All question answers should be filled");
-                }
-            }
-        }
-        if(!questionHasCorrectAnswer) {
-            exceptionCreator(Status.NOT_ACCEPTABLE, "One of the answers should be correct");
-        }
-        return true;
-    }
-
-    private void exceptionCreator(Status status, String message) {
-        throw new WebApplicationException(Response
-                .status(status)
-                .entity(message)
-                .type(MediaType.TEXT_PLAIN)
-                .build());
+        QuestionnaireEntity target = serviceQdump.getQuestionnaireEntity(sourceId);
+        PersonEntity personEntity = new PersonEntity();
+        personEntity.setId((long) SecurityUtils.getSubject().getPrincipal());
+        source.setModifiedBy(personEntity);
+        EntitiesUpdater.update(source, target);
     }
 }

@@ -1,13 +1,25 @@
 <configuration>
+    <!--<appender name="STDOUT" class="ch.qos.logback.core.FileAppender">-->
+        <!--<file>logs/wildfly.log</file>-->
+        <!--<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
+            <!--<pattern>%d{dd MMM yyyy HH:mm:ss,SSS} [%thread] %-5level %logger{52} - %msg%n</pattern>-->
+        <!--</encoder>-->
+    <!--</appender>-->
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/wildfly.log</file>
-        <append>true</append>
+        <append>false</append>
+        <file>logs/MyLog.log</file>
         <encoder>
-            <Pattern>%d{dd MMM yyyy HH:mm:ss,SSS} [%thread] %-5level %logger{52} - %msg%n</Pattern>
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
         </encoder>
     </appender>
-    <root>
-        <level value="TRACE"/>
-        <appender-ref ref="FILE"/>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.dataart.qdump.service.resourceImpl" level="info"/>
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
     </root>
 </configuration>

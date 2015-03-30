@@ -3,6 +3,8 @@ package org.dataart.qdump.service.resourceImpl;
 import org.dataart.qdump.entities.questionnaire.QuestionEntity;
 import org.dataart.qdump.service.ServiceQdump;
 import org.dataart.qdump.service.resource.QuestionEntityResource;
+import org.dataart.qdump.service.utils.QuestionnaireChecker;
+import org.dataart.qdump.service.utils.WebApplicationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,55 +16,40 @@ import java.util.List;
 @Component
 public class QuestionEntityResourceBean implements QuestionEntityResource{
 
-	@Autowired
+    @Autowired
     @SuppressWarnings("SpringJavaAutowiringInspection")
-	private ServiceQdump serviceQdump;
+    private ServiceQdump serviceQdump;
 
-	public Response addQuestionEntity(QuestionEntity questionEntity) {
-		if (questionEntity.getId() > 0) {
-			return Response.status(Status.CONFLICT)
-					.entity("Question id cannot be greater than 0").build();
-		}
-		if (!questionEntity.checkIdForCreation()) {
-			return Response.status(Status.CONFLICT)
-					.entity("Answer ud cannot be greater than 0").build();
-		}
-		serviceQdump.addQuestionEntity(questionEntity);
-		return Response.status(Status.CREATED).build();
-	}
+    public Response add(QuestionEntity questionEntity) {
+        QuestionnaireChecker.QuestionChecker.checkPrePersist(questionEntity);
+        serviceQdump.addQuestionEntity(questionEntity);
+        return Response.status(Status.CREATED).build();
+    }
 
-	public Response deleteQuestionEntity(@PathParam("id") long id) {
-		if (!serviceQdump.questionEntityExists(id)) {
-			return Response
-					.status(Status.NOT_FOUND)
-					.entity(String.format(
-							"Question with id = %d is not exists", id)).build();
-		} else {
-			serviceQdump.deleteQuestionEntity(id);
-			return Response
-					.status(Status.OK)
-					.entity(String.format("Question with id = %d was deleted",
-							id)).build();
-		}
-	}
+    public Response delete(@PathParam("id") long id) {
+        if (!serviceQdump.questionEntityExists(id)) {
+            WebApplicationUtils.exceptionCreator(Status.NOT_FOUND, String.format(
+                    "Question with id = %d is not exists", id));
+        }
+        QuestionEntity questionEntity = serviceQdump.getQuestionEntity(id);
+        serviceQdump.deleteQuestionEntity(questionEntity);
+        return WebApplicationUtils.responseCreator(Status.OK, String.format("Question with id = %d was deleted",
+                id));
+    }
 
-	public void deleteAllQuestionEntity() {
-		serviceQdump.deleteAllQuestionEntity();
-	}
+    public void delete() {
+        serviceQdump.deleteAllQuestionEntity();
+    }
 
-	public Response getQuestionEntity(@PathParam("id") long id) {
-		if (!serviceQdump.questionEntityExists(id)) {
-			return Response
-					.status(Status.NOT_FOUND)
-					.entity(String.format(
-							"Question with id = %d is not exists", id)).build();
-		} else {
-			return Response.status(Status.OK)
-					.entity(serviceQdump.getQuestionEntity(id)).build();
-		}
-	}
+    public Response get(@PathParam("id") long id) {
+        if (!serviceQdump.questionEntityExists(id)) {
+            WebApplicationUtils.exceptionCreator(Status.NOT_FOUND, String.format(
+                    "Question with id = %d is not exists", id));
+        }
+        return WebApplicationUtils.responseCreator(Status.OK, serviceQdump.getQuestionEntity(id));
+    }
 
-	public List<QuestionEntity> getQuestionEntities() {
-		return serviceQdump.getQuestionEntities();
-	}
+    public List<QuestionEntity> get() {
+        return serviceQdump.getQuestionEntities();
+    }
 }

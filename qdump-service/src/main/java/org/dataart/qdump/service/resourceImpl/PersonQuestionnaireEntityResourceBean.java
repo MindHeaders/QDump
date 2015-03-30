@@ -3,27 +3,29 @@ package org.dataart.qdump.service.resourceImpl;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.dataart.qdump.entities.enums.QuestionnaireStatusEnums;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
+import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
 import org.dataart.qdump.service.ServiceQdump;
 import org.dataart.qdump.service.resource.PersonQuestionnaireEntityResource;
+import org.dataart.qdump.service.utils.EntitiesUpdater;
+import org.dataart.qdump.service.utils.PersonQuestionnaireChecker;
+import org.dataart.qdump.service.utils.WebApplicationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
+
+import static org.dataart.qdump.service.utils.WebApplicationUtils.exceptionCreator;
+import static org.dataart.qdump.service.utils.WebApplicationUtils.responseCreator;
 
 @Component
 public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnaireEntityResource{
@@ -32,26 +34,28 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
     private ServiceQdump serviceQdump;
     private long startedPersonQuestionnairesCount;
     private long completedPersonQuestionnairesCount;
+    private long inCheckingProcessCount;
 
-    @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public Response addPersonQuestionnaire(PersonQuestionnaireEntity entity) {
+    public Response add(PersonQuestionnaireEntity personQuestionnaireEntity) {
         if(SecurityUtils.getSubject().getPrincipal() == null) {
             exceptionCreator(Status.UNAUTHORIZED, "User is not authorized");
         }
-        if(entity.getId() > 0) {
-            exceptionCreator(Status.CONFLICT, "You cannot create Person Questionnaire with id that greater than 0");
-        } else if(!entity.checkIdForCreation()) {
-            exceptionCreator(Status.FORBIDDEN, "Incorrect persisted data. Persisted Person Questionnaire, Question, Answer shouldn`t contains id greater than 0 and Questionnaire, Question, Answer id should not be equals to 0.");
-        }
+        PersonQuestionnaireChecker.checkPrePersist(personQuestionnaireEntity);
+        QuestionnaireEntity questionnaireEntity = serviceQdump.getQuestionnaireEntity(personQuestionnaireEntity
+                .getQuestionnaireEntity().getId());
+        PersonQuestionnaireChecker.checkStatus(personQuestionnaireEntity, questionnaireEntity);
         PersonEntity personEntity = serviceQdump.getPersonEntity((long) SecurityUtils.getSubject().getPrincipal());
-        personEntity.getPersonQuestionnaireEntities().add(entity);
+        personEntity.getPersonQuestionnaireEntities().add(personQuestionnaireEntity);
         return Response
                 .status(Status.CREATED)
                 .build();
     }
 
-    public Response deletePersonQuestionnaireEntity(@PathParam("id") long id) {
+    public void delete() {
+        serviceQdump.deleteAllPersonQuestionnaireEntities();
+    }
+
+    public Response delete(@PathParam("id") long id) {
         if(!serviceQdump.personQuestionnaireEntityExists(id)) {
             return Response
                     .status(Status.NOT_FOUND)
@@ -64,14 +68,18 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
                 .build();
     }
 
-    public Response deleteAllPersonQuestionnaireEntities() {
-        serviceQdump.deleteAllPersonQuestionnaireEntities();
-        return Response
-                .status(Status.OK)
-                .build();
+    public List<PersonQuestionnaireEntity> get() {
+        return serviceQdump.getPersonQuestionnaireEntities();
     }
 
-    public Response getPersonQuestionnaireEntity(@PathParam("id") long id) {
+    public List<PersonEntity> getInCheckingProcess(int page, int size, String direction, String sort) {
+        Pageable pageable = new PageRequest(page, size, Sort.Direction.fromString(direction), sort);
+        Page<PersonEntity> databasePage = serviceQdump.getPersonQuestionnairesInCheckingProcess(pageable);
+        inCheckingProcessCount = databasePage.getTotalElements();
+        return databasePage.getContent();
+    }
+
+    public Response get(@PathParam("id") long id) {
         if(serviceQdump.personQuestionnaireEntityExists(id)) {
             exceptionCreator(Status.NOT_FOUND, "Person Questionnaire with this id is not exists");
         }
@@ -79,31 +87,26 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
         PersonQuestionnaireEntity entity = serviceQdump.getPersonQuestionnaireEntity(id, (long) SecurityUtils
                 .getSubject()
                 .getPrincipal());
-        return Response
-                .status(Status.OK)
-                .entity(entity)
-                .build();
+        return responseCreator(Status.OK, entity);
     }
 
-    public List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities() {
-        return serviceQdump.getPersonQuestionnaireEntities();
-    }
-
-    public Response updatePersonQuestionnaireEntity(
-            PersonQuestionnaireEntity source) {
-        if (!serviceQdump.personQuestionnaireEntityExists(source.getId())) {
+    public Response update(
+            PersonQuestionnaireEntity personQuestionnaireEntity) {
+        if (!serviceQdump.personQuestionnaireEntityExists(personQuestionnaireEntity.getId())) {
             exceptionCreator(Status.NOT_FOUND, "Person Questionnaire with this id is not exists");
         }
+        QuestionnaireEntity questionnaireEntity = serviceQdump.getQuestionnaireEntity(personQuestionnaireEntity.getQuestionnaireEntity()
+                .getId());
+        PersonQuestionnaireChecker.checkStatus(personQuestionnaireEntity, questionnaireEntity);
         PersonQuestionnaireEntity target = serviceQdump
-                .getPersonQuestionnaireEntity(source.getId());
-        target.updateEntity(source);
+                .getPersonQuestionnaireEntity(personQuestionnaireEntity.getId());
+        EntitiesUpdater.update(personQuestionnaireEntity, target);
         return Response
-                .status(Status.OK)
-                .entity("Person Questionnaire was successfully updated")
+                .ok()
                 .build();
     }
 
-    public List<PersonQuestionnaireEntity> getCompletedPersonQuestionnairesPagination(int page, int size, String direction, String sort) {
+    public List<PersonQuestionnaireEntity> getCompleted(int page, int size, String direction, String sort) {
         userIsAuthorized();
         Pageable pageable = new PageRequest(page, size, Sort.Direction.fromString(direction), sort);
         Page<PersonQuestionnaireEntity> databasePage = serviceQdump.getCompletedPersonQuestionnaireEntities((long) SecurityUtils.getSubject().getPrincipal(), pageable);
@@ -111,7 +114,7 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
         return databasePage.getContent();
     }
 
-    public List<PersonQuestionnaireEntity> getStartedPersonQuestionnairesPagination(int page, int size, String direction, String sort) {
+    public List<PersonQuestionnaireEntity> getStarted(int page, int size, String direction, String sort) {
         userIsAuthorized();
         Pageable pageable = new PageRequest(page, size, Sort.Direction.fromString(direction), sort);
         Page<PersonQuestionnaireEntity> databasePage = serviceQdump.getStartedPersonQuestionnaireEntities((long) SecurityUtils.getSubject().getPrincipal(), pageable);
@@ -119,7 +122,19 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
         return databasePage.getContent();
     }
 
-    public Response countPersonQuestionnaires(String type) {
+    public Response countInCheckingProcess() {
+        if(inCheckingProcessCount == 0) {
+            inCheckingProcessCount = serviceQdump.countPersonQuestionnaireByStatus(QuestionnaireStatusEnums.IN_CHECKING_PROCESS
+                    .getName());
+        }
+        return WebApplicationUtils.responseCreator(Status.OK, "count", inCheckingProcessCount);
+    }
+
+    public Response check(long id, boolean correct) {
+        return null;
+    }
+
+    public Response count(String type) {
         userIsAuthorized();
         ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
         if(type.toUpperCase().equals("STARTED")) {
@@ -140,7 +155,7 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
         return Response.ok(objectNode).build();
     }
 
-    public PersonQuestionnaireEntity getCompletedQuestionnaireEntity(long id) {
+    public PersonQuestionnaireEntity getCompleted(long id) {
         if(SecurityUtils.getSubject().getPrincipal() == null) {
             exceptionCreator(Status.UNAUTHORIZED, "User is not authorized");
         } else if(id == 0) {
@@ -155,15 +170,6 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
         return entity;
     }
 
-    private void exceptionCreator(Status status, String message) {
-        ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
-        objectNode.put("error", message);
-        throw new WebApplicationException(Response
-                .status(status)
-                .entity(objectNode)
-                .type(MediaType.APPLICATION_JSON)
-                .build());
-    }
     private void userIsAuthorized() {
         if(SecurityUtils.getSubject().getPrincipal() == null) {
             exceptionCreator(Status.UNAUTHORIZED, "User is not unauthorized");

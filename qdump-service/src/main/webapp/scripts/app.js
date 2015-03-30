@@ -17,8 +17,8 @@ var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap',
                 templateUrl: 'login/partials/account.html',
                 controller: 'AccountCtrl'
             }).
-            when('/account/auth', {
-                templateUrl: 'login/partials/auth.html',
+            when('/account/authentication', {
+                templateUrl: 'login/partials/authentication.html',
                 controller: 'AuthCtrl'
             }).
             when('/account/registration', {
@@ -109,8 +109,8 @@ app.run(['$rootScope', '$cookieStore', 'ErrorFactory', '$location', function($ro
                 templateUrl: 'login/partials/account.html',
                 controller: 'AccountCtrl'
             }).
-            when('/account/auth', {
-                templateUrl: 'login/partials/auth.html',
+            when('/account/authentication', {
+                templateUrl: 'login/partials/authentication.html',
                 controller: 'AuthCtrl'
             }).
             when('/account/registration', {

@@ -78,6 +78,9 @@ app.directive('createQuestionnaire', function() {
         restrict: 'A',
         link: function(scope, element, attrs) {
             scope.$watch(attrs.ngShow, function() {
+                console.log(attrs.ngShow + ' = ' + scope.$eval(attrs.ngShow));
+                console.log('Questionnaire published = ' + scope.questionnaire.published);
+                console.log(angular.toJson(scope.questionnaire));
                 if(scope.$eval(attrs.ngShow) == false) {
                     scope.questionnaire.published = false;
                 }

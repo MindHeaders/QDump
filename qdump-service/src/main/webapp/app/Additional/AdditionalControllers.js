@@ -3,8 +3,8 @@
  */
 var app = angular.module('additional.controllers', ['ngCookies']);
 
-app.controller('MainCtrl', ['$scope', '$cookieStore', '$http', '$location', '$window', 'PersonFactory', 'Authorization',
-    function($scope, $cookieStore, $http, $location, $window, PersonFactory, Authorization) {
+app.controller('MainCtrl', ['$scope', '$cookieStore', '$http', '$location', '$window', 'PersonFactory', 'Authorization', 'RegistrationFactory',
+    function($scope, $cookieStore, $http, $location, $window, PersonFactory, Authorization, RegistrationFactory) {
         $scope.userIsAuth = $cookieStore.get('userAuth');
         $scope.adminPermission = $cookieStore.get('role') == 'ADMIN';
         $scope.checkPermission = function(role) {
@@ -219,11 +219,7 @@ app.controller('ContactsCtrl', ['$scope',
             }
         ];
         $scope.checkField = function(fieldName, index) {
-            if($scope.contactsDevelopers[index][fieldName] == null || $scope.contactsDevelopers[index][fieldName] == '') {
-                return true;
-            } else {
-                return false;
-            }
+            return ($scope.contactsDevelopers[index][fieldName] == null || $scope.contactsDevelopers[index][fieldName] == '')
         }
     }
 ]);

@@ -63,8 +63,10 @@
                                 <!--<li><a href="/user-list">Get all users</a></li>-->
                             </ul>
                         </li>
-                        <li ng-show="adminPermission"><a href="/questionnaires/create">Create</a></li>
                         <li><a href="/questionnaires">QDumps</a></li>
+                        <li ng-show="adminPermission"><a href="/account/admin">Admin panel</a></li>
+                        <li ng-show="adminPermission"><a href="/questionnaires/create">Create</a></li>
+
                     </ul>
                     <ul class="nav navbar-nav navbar-right"></ul>
                     <ul class="nav navbar-nav navbar-right" ng-hide="!userIsAuth">

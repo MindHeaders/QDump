@@ -1,4 +1,4 @@
-package org.dataart.qdump.service.test;
+package org.dataart.qdump.service.security.utils;
 
 import org.dataart.qdump.service.security.utils.CryptoUtils;
 import org.junit.Before;

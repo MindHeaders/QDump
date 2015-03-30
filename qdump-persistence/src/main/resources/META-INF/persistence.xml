@@ -9,7 +9,6 @@
 		<class>org.dataart.qdump.entities.questionnaire.AnswerEntity</class>
 		<class>org.dataart.qdump.entities.questionnaire.QuestionEntity</class>
 		<class>org.dataart.qdump.entities.questionnaire.QuestionnaireEntity</class>
-		<class>org.dataart.qdump.entities.person.PersonQuestionnaireBaseEntity</class>
 		<class>org.dataart.qdump.entities.person.PersonAnswerEntity</class>
 		<class>org.dataart.qdump.entities.person.PersonEntity</class>
 		<class>org.dataart.qdump.entities.person.PersonQuestionEntity</class>
