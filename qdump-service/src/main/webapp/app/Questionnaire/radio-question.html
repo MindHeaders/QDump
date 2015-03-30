@@ -1,0 +1,55 @@
+<div class="form-inline col-md-offset-1"
+     ng-hide="$parent.$parent.question.answer_entities.length == 0">
+    <table>
+        <tr>
+            <th class="col-md-9">Answers:</th>
+            <th class="col-md-1">Correct</th>
+            <th class="col-md-2"></th>
+        </tr>
+        <tr ng-repeat="(answerIndex, answer) in $parent.$parent.question.answer_entities">
+            <td>
+                <input type="text" name="{{answerIndex}}" placeholder="Input answer..."
+                       class="form-control"
+                       style="width: 100%"
+                       ng-model="answer['answer']"/>
+            </td>
+            <td align="center">
+                <input type="radio"
+                       ng-value="true"
+                       ng-model="answer['correct']"
+                       ng-click="$parent.$parent.$parent.changeRadioAnswers(answerIndex, $parent.$parent.$parent.questionIndex)"/>
+            </td>
+            <td>
+                <button class="btn btn-danger btn-xs" ng-click="$parent.$parent.$parent.deleteAnswer(answerIndex, $parent.$parent.$parent.questionIndex)">Delete</button>
+            </td>
+        </tr>
+    </table>
+</div>
+<!--<div class="form-inline col-md-offset-1"-->
+<!--ng-hide="$parent.$parent.questionnaire.question_entities[$parent.$parent.formQuestion.id].answer_entities == null">-->
+<!--<table>-->
+<!--<tr>-->
+<!--<th class="col-md-9" style="width: 95%">Answers:</th>-->
+<!--<th class="col-md-1" style="width: 5%">Correct</th>-->
+<!--<th class="col-md-2"></th>-->
+<!--</tr>-->
+<!--<tr ng-repeat="formAnswer in $parent.$parent.formQuestion.answers">-->
+<!--<td>-->
+<!--<input type="text" name="{{formAnswer.idAnswer}}" placeholder="Input answer..."-->
+<!--class="form-control"-->
+<!--style="width: 100%"-->
+<!--ng-model="$parent.$parent.$parent.questionnaire.question_entities[$parent.$parent.$parent.formQuestion.id].answer_entities[$index]['answer']"/>-->
+<!--</td>-->
+<!--<td align="center">-->
+<!--<input type="radio"-->
+<!--name="{{$parent.$parent.$parent.formQuestion.idQuestion}}"-->
+<!--ng-value="true"-->
+<!--ng-model="$parent.$parent.$parent.questionnaire.question_entities[$parent.$parent.$parent.formQuestion.id].answer_entities[$index]['correct']"-->
+<!--ng-click="$parent.$parent.$parent.changeRadioAnswers($index, $parent.$parent.$parent.formQuestion.id)"/>-->
+<!--</td>-->
+<!--<td>-->
+<!--<button class="btn btn-danger btn-xs" ng-click="$parent.$parent.$parent.deleteAnswer(formAnswer.id, $parent.$parent.$parent.formQuestion.id)">Delete</button>-->
+<!--</td>-->
+<!--</tr>-->
+<!--</table>-->
+<!--</div>-->

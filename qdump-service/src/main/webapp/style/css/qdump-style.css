@@ -1,0 +1,228 @@
+div.col-md-4.col-md-offset-4.errors {
+    font-style: italic;
+    font-size: large;
+    color: red;
+}
+a.navbar-link {
+    color: deepskyblue;
+}
+.my-messages {
+    transition: 1s linear all;
+}
+.my-messages.ng-active {
+
+}
+.my-messages.ng-inactive {
+
+}
+.test.ng-enter {
+    -webkit-transition: enter_sequence 1s linear;
+    animation: enter_sequence 1s linear;
+}
+@-webkit-keyframes enter_sequence {
+    form { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes enter_sequence {
+    from { opacity: 0; }
+    to { opacity: 1;}
+}
+article {
+    display: block;
+}
+.fixToTop {
+    position: fixed;
+    top: 50px;
+}
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}
+.navbar-fixed-bottom .navbar-nav > li > a {padding-top:5px !important; padding-bottom:5px !important;}
+.navbar-fixed-bottom .navbar-text {margin-bottom: 5px !important; margin-top: 5px !important;}
+.navbar {min-height:32px !important}
+.createStyle {
+    display: inline;
+}
+input[name^=answer].form-control {
+    height: 26px !important;
+    font-size: 12px !important;
+}
+.my-pagination {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+.pagination-table > td {
+    vertical-align: middle !important;
+}
+footer {
+    margin-top: 20px;
+    margin-bottom: -100px;
+}
+html,
+body {
+    background: url(/style/img/pier-407252.jpg) no-repeat center center fixed;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    margin:0;
+    padding:0;
+    height:100%;
+    font-family: Gruppo;
+    font-size: large;
+}
+#wrapper {
+    min-height:100%;
+    position:relative;
+}
+#header {
+    background:#5ee;
+}
+#content {
+    padding-top: 60px;
+    padding-bottom: 60px; /* Height of the footer element */
+}
+#footer {
+    width:100%;
+    height:50px;
+    position:absolute;
+    bottom:0;
+    left:0;
+}
+tbody > tr > td:first-child {
+    width: 10%;
+    font-weight: bold;
+}
+#contacts {
+    border: 1px solid grey;
+}
+.jumbotron {
+    width:30%;
+    height: 20%;
+    padding: 20px 30px 20px 30px !important;
+}
+.jumbotron p {
+    font-size: 18px !important;
+}
+.contact-case {
+    height: 300px;
+    background-color: #eeeeee;
+    border-radius: 8px;
+    font-size: 18px;
+    color: inherit;
+    font-weight: 200;
+    padding: 20px 30px 20px 30px;
+    margin-bottom: 30px;
+    margin-right: auto;
+    margin-left: auto;
+}
+#blackrain {
+    width: 80px;
+    height: 80px;
+    display: block;
+    margin-left: auto;
+}
+.qdump-block {
+    border-radius: 6px;
+    padding: 30px;
+    margin-bottom: 20px;
+    background: rgba(246, 246, 246, 0.7);
+    box-shadow: 0 5px 15px rgba(0,0,0,.5);
+}
+.navbar {
+    background: rgba(0, 0, 0, 0.1);
+    border: 0;
+    border-radius: 0;
+}
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+    color: #ffffff;
+    background-color: transparent;
+}
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: #ffffff;
+    background-color: transparent;
+}
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+    color: #ffffff;
+    background-color: #080808;
+}
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: #ffffff;
+}
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+    color: #ffffff;
+    background-color: #080808;
+}
+@font-face {
+    font-family: "Gruppo";
+    font-weight: bold;
+    src: url(/style/fonts/Gruppo-Regular.ttf);
+}
+.qdump-welcome {
+    margin-top: 10%;
+    display: block;
+    position: relative;
+    color: #4c4947;
+    padding-right: auto;
+    padding-left: auto;
+    text-align: center;
+}
+#createQForm > div > span {
+    margin-top: 5px;
+}
+#questionnaires-table tr > td, th {
+    text-align: center;
+}
+#questionnaires-table tr > td:nth-of-type(2), th:nth-of-type(2) {
+    text-align: left;
+}
+#questionnaires-table tr > th[name=id], td[name=id] {
+    max-width: 5%;
+    width: 5%;
+}
+#questionnaires-table tr > th[name=name], td[name=name] {
+    max-width: 40%;
+    width: 40%;
+}
+#questionnaires-table tr > th[name=description], td[name=description] {
+    max-width: 40%;
+    width: 40%;
+}
+#questionnaires-table tr > th[name=createdDate], td[name=createdDate] {
+    max-width: 15%;
+    width: 15%;
+}
+#questionnaires-table tr > th[name=modifiedDate], td[name=modifiedDate] {
+    max-width: 15%;
+    width: 15%;
+}
+#questionnaires-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.personal-page {
+    font-size: larger;
+}
+.personal-page tr th {
+    width: 40%;
+    text-align: left;
+}
+aside {
+    border-radius: 6px;
+    background: rgba(246, 246, 246, 0.7) !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,.5);
+}
+#questionnaires-table tr > td[name=description] {
+    max-width: 40%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

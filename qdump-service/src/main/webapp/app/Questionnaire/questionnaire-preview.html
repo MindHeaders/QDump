@@ -1,0 +1,38 @@
+<div class="modal-header">
+    <h1 style="text-align: center" ng-bind="questionnaire.name"></h1>
+</div>
+<div class="modal-body">
+    <div ng-repeat="(index, question) in questionnaire.question_entities">
+        <div id="question" style="display: inline;">
+            <span ng-bind="index + 1 + '. '"></span>
+            <span ng-bind="question.question"></span>
+        </div>
+        <div ng-if="question.question_type == 'TEXTAREA'">
+            <textarea cols="60" rows="3" disabled></textarea>
+        </div>
+        <div ng-if="question.question_type == 'SELECT'">
+            <!--<select class="form-control" style="width: 70%;"-->
+                    <!--ng-options="answerIndex as answer.answer for (answerIndex, answer) in questionnaire.question_entities[index].answer_entities">-->
+                <!--<option ng-bind="'Please select your answer...'"></option>-->
+            <!--</select>-->
+            <select class="form-control" style="width: 70%;">
+                <option ng-repeat="answer in question.answer_entities">{{answer.answer}}</option>
+            </select>
+        </div>
+        <div ng-repeat="answer in questionnaire.question_entities[index].answer_entities">
+            <div ng-if="question.question_type == 'CHECKBOX' || question.question_type == 'RADIO'">
+                <div id="answer" style="display: inline">
+                    <span ng-if="$parent.question.question_type == 'RADIO'">
+                        <input id="{{question.id + answer.id}}"
+                               name="{{question.id}}"
+                               type="radio"
+                               ng-value="true" disabled/></span>
+                    <span ng-if="$parent.question.question_type == 'CHECKBOX'">
+                        <input type="checkbox" disabled/>
+                    </span>
+                    <span ng-bind="answer.answer"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

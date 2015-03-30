@@ -1,8 +1,10 @@
 package org.dataart.qdump.entities.questionnaire;
 
-import java.io.Serializable;
-import java.util.Comparator;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.dataart.qdump.entities.enums.QuestionTypeEnums;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -12,31 +14,16 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-
-import org.dataart.qdump.entities.enums.QuestionTypeEnums;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "questions")
 @AttributeOverride(name = "id", column = @Column(name = "id_question", insertable = false, updatable = false))
 @JsonAutoDetect
-@JsonIgnoreProperties({ "createdDate", "modifiedDate" })
-@NamedQueries({
-		@NamedQuery(name = "QuestionEntity.getQuestionByName", query = "FROM QuestionEntity q "
-				+ "WHERE q.question = ?1"),
-		@NamedQuery(name = "QuestionEntity.getQuestionByQuestionnaireId", query = "FROM QuestionEntity q  "
-				+ "WHERE q.questionnaireEntity.id = ?1") })
+@JsonIgnoreProperties({ "createdDate", "modifiedDate"})
 public class QuestionEntity extends BaseEntity implements Serializable {
 	private static final long serialVersionUID = 7827573669263895832L;
 	private String question;
@@ -44,10 +31,8 @@ public class QuestionEntity extends BaseEntity implements Serializable {
 	private QuestionTypeEnums type;
 	@JsonProperty("answer_entities")
 	private List<AnswerEntity> answerEntities;
-	@JsonBackReference
-	private QuestionnaireEntity questionnaireEntity;
 
-	@Column(name = "question", nullable = false, length = 1500)
+	@Column(name = "question", nullable = false, length = 250)
 	public String getQuestion() {
 		return question;
 	}
@@ -66,80 +51,15 @@ public class QuestionEntity extends BaseEntity implements Serializable {
 		this.type = type;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "questionEntity", fetch = FetchType.EAGER, targetEntity = AnswerEntity.class)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @Cascade(value = {org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.REMOVE})
+    @JoinColumn(name = "id_question", referencedColumnName = "id_question", nullable = false)
 	public List<AnswerEntity> getAnswerEntities() {
 		return answerEntities;
 	}
 
 	public void setAnswerEntities(List<AnswerEntity> answerEntities) {
 		this.answerEntities = answerEntities;
-	}
-
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = QuestionnaireEntity.class)
-	@JoinColumn(name = "id_questionnaire", referencedColumnName = "id_questionnaire")
-	public QuestionnaireEntity getQuestionnaireEntity() {
-		return questionnaireEntity;
-	}
-
-	public void setQuestionnaireEntity(QuestionnaireEntity questionnaireEntity) {
-		this.questionnaireEntity = questionnaireEntity;
-	}
-
-	public void addQuestionnaireEntity(QuestionnaireEntity questionnaireEntity) {
-		this.questionnaireEntity = questionnaireEntity;
-		if (!questionnaireEntity.getQuestionEntities().contains(this)) {
-			questionnaireEntity.getQuestionEntities().add(this);
-		}
-	}
-	
-	@PrePersist
-	@PreUpdate
-	public void setAnswerEntities() {
-		if (answerEntities != null) {
-			answerEntities.stream().forEach(
-					entity -> entity.addQuestionEntity(this));
-		}
-	}
-	
-	/**
-	 * Update {@link QuestionEntity} for update current object. This method will
-	 * update all fields from source {@link QuestionEntity}. This fields cannot
-	 * be updated in database.
-	 * 
-	 * @param entity
-	 */
-	public void updateQuestionEntity(QuestionEntity entity) {
-		Comparator<AnswerEntity> comparator = new Comparator<AnswerEntity>() {
-			@Override
-			public int compare(AnswerEntity o1, AnswerEntity o2) {
-				long answerId1 = o1.getId();
-				long answerId2 = o2.getId();
-				return (int) (answerId1 - answerId2);
-			}
-		};
-		if (this.getQuestion() != entity.getQuestion()
-				&& entity.getQuestion() != null) {
-			this.setQuestion(entity.getQuestion());
-		}
-		if (this.getType() != entity.getType() && entity.getType() != null) {
-			this.setType(entity.getType());
-		}
-		if (this.answerEntities != null && entity.answerEntities != null) {
-			this.answerEntities.sort(comparator);
-			entity.answerEntities.sort(comparator);
-			if (this.answerEntities.size() != entity.answerEntities.size()) {
-				throw new RuntimeException(
-						"Target Answer Entities size is not equals to Source Answer Entities");
-			} else {
-				for (int i = 0; i < answerEntities.size(); i++) {
-					if (entity.answerEntities.get(i).getId() == this.answerEntities
-							.get(i).getId()) {
-						this.answerEntities.get(i).updateAnswerEntity(
-								entity.answerEntities.get(i));
-					}
-				}
-			}
-		}
 	}
 
 	@Override

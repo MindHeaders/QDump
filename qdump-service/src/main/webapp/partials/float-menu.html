@@ -1,0 +1,30 @@
+<aside>
+    <div class="list-group">
+        <a class="list-group-item" href="/account/personal">Personal page</a>
+        <a class="list-group-item" href="/account/completed">Completed Questionnaires</a>
+        <a class="list-group-item" href="#">Started Questionnaires</a>
+    </div>
+</aside>
+<script type="text/javascript">
+    $(function() {
+        var sidebar = $('aside div');
+        var wt = sidebar.width();
+        var ot = sidebar.offset().top;
+
+        // reset the sidebar width
+        sidebar.width(wt);
+
+        if(sidebar.hasClass('fixToTop')) {
+            sidebar.removeClass('fixToTop');
+        }
+
+        $(window).scroll(function(){
+            var st = $(window).scrollTop() + 50;
+            if(st > ot) {
+                sidebar.addClass('fixToTop');
+            } else {
+                sidebar.removeClass('fixToTop');
+            }
+        });
+    });
+</script>

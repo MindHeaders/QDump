@@ -1,0 +1,32 @@
+
+<div class="container" ng-cloak>
+    <div class="col-md-12" align="center"><h1>Personal Data</h1></div>
+    <div class="col-md-offset-2 col-md-7">
+        <div class="contact-case" style="height: auto !important; box-shadow: 0 5px 15px rgba(0,0,0,.5);">
+            <table class="personal-page">
+                <tr>
+                    <th>Firstname:</th>
+                    <td ng-bind="user.firstname"></td>
+                </tr>
+                <tr>
+                    <th>Lastname:</th>
+                    <td ng-bind="user.lastname"></td>
+                </tr>
+                <tr>
+                    <th>Login:</th>
+                    <td ng-bind="user.login"></td>
+                </tr>
+                <tr>
+                    <th>Email:</th>
+                    <td ng-bind="user.email"></td>
+                </tr>
+                <tr>
+                    <th>Gender:</th>
+                    <td ng-bind="userGender()"></td>
+                </tr>
+            </table>
+        </div>
+        <a href="/account/change" class="btn btn-primary">Change</a>
+    </div>
+    <div class="col-md-3" ng-include="template.menu"></div>
+</div>

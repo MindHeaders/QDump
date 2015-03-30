@@ -1,13 +1,12 @@
 package org.dataart.qdump.entities.serializer;
 
-import java.io.IOException;
-
-import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
+
+import java.io.IOException;
 
 public class QuestionnairePersonSerializer extends
 		JsonSerializer<QuestionnaireEntity> {

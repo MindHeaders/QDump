@@ -1,8 +1,11 @@
 package org.dataart.qdump.entities.questionnaire;
 
-import java.io.Serializable;
-import java.util.Comparator;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import org.dataart.qdump.entities.serializer.View;
+import org.dataart.qdump.entities.utils.QdumpJsonNaming;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -10,14 +13,14 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "questionnaires")
@@ -25,16 +28,43 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 		@AttributeOverride(name = "id", column = @Column(name = "id_questionnaire", insertable = false, updatable = false)),
 		@AttributeOverride(name = "created_by", column = @Column(name = "created_by", insertable = false, updatable = false, nullable = false)) })
 @JsonAutoDetect
+@NamedQueries({
+        @NamedQuery(name = "QuestionnaireEntity.findPublishedQuestionnaires", query = "SELECT NEW org.dataart.qdump.entities.questionnaire.QuestionnaireEntity(q.id, q.name, q.description) FROM QuestionnaireEntity q WHERE q.published = true"),
+        @NamedQuery(name = "QuestionnaireEntity.countPublishedQuestionnaires", query = "SELECT count(q) FROM QuestionnaireEntity q WHERE q.published = true"),
+        @NamedQuery(name = "QuestionnaireEntity.findPublishedQuestionnairesById", query = "SELECT NEW org.dataart.qdump.entities.questionnaire.QuestionnaireEntity(q.id, q.name, q.description) FROM QuestionnaireEntity q WHERE q.published = true AND q.id = ?1"),
+        @NamedQuery(name = "QuestionnaireEntity.findQuestionnaireById", query = "FROM QuestionnaireEntity q " +
+                "WHERE q.id = ?1")
+})
+@JsonNaming(value = QdumpJsonNaming.class)
 public class QuestionnaireEntity extends QuestionnaireBaseEntity implements
 		Serializable {
 	private static final long serialVersionUID = 8952388499186170808L;
 	private String name;
 	private String description;
+    @JsonView(View.Create.class)
 	private boolean published;
-	@JsonProperty("question_entities")
+    @JsonProperty("question_entities")
 	private List<QuestionEntity> questionEntities;
 
-	@Column(name = "name", nullable = false, length = 1000)
+    public QuestionnaireEntity(){
+        super();
+    }
+    public QuestionnaireEntity(Long id, String name, String description) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+    public QuestionnaireEntity(Long id, String name, String description, Date createdDate, Date modifiedDate ) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+    }
+
+    @Column(name = "name", nullable = false, length = 250)
 	public String getName() {
 		return name;
 	}
@@ -43,7 +73,7 @@ public class QuestionnaireEntity extends QuestionnaireBaseEntity implements
 		this.name = name;
 	}
 
-	@Column(name = "description", length = 4500)
+	@Column(name = "description", length = 500)
 	public String getDescription() {
 		return description;
 	}
@@ -61,68 +91,14 @@ public class QuestionnaireEntity extends QuestionnaireBaseEntity implements
 		this.published = published;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "questionnaireEntity", fetch = FetchType.EAGER, orphanRemoval = true, targetEntity = QuestionEntity.class)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "id_questionnaire", referencedColumnName = "id_questionnaire", nullable = false)
 	public List<QuestionEntity> getQuestionEntities() {
 		return questionEntities;
 	}
 
 	public void setQuestionEntities(List<QuestionEntity> questionEntities) {
 		this.questionEntities = questionEntities;
-	}
-	
-	/**
-	 * Update {@link QuestionEntity} that is associated with this {@link QuestionnaireEntity}. 
-	 * This update is performed before persist current object to dataBase and before update.
-	 * This update is needed for One To Many associations.
-	 */
-	@PrePersist
-	@PreUpdate
-	public void setQuestionEntities() {
-		if (questionEntities != null) {
-			questionEntities.stream().forEach(
-					entity -> entity.addQuestionnaireEntity(this));
-		}
-	}
-	
-	/**
-	 * Update existing {@link QuestionnaireEntity} object in database
-	 * Field published should be update separately
-	 */
-	public void updateQuestionnaireEntity(QuestionnaireEntity entity) {
-		Comparator<QuestionEntity> comparator = new Comparator<QuestionEntity>() {
-			@Override
-			public int compare(QuestionEntity o1, QuestionEntity o2) {
-				long questionId1 = o1.getId();
-				long questionId2 = o2.getId();
-				return (int) (questionId1 - questionId2);
-			}
-		};
-		if (entity.getDescription() != this.getDescription()
-				&& entity.getDescription() != null) {
-			this.setDescription(entity.getDescription());
-		}
-		if (entity.getName() != this.getName() && entity.getName() != null) {
-			this.setName(entity.getName());
-		}
-		if (entity.getModifiedBy() != null) {
-			this.setModifiedBy(entity.getModifiedBy());
-		}
-		if (this.questionEntities != null && entity.questionEntities != null) {
-			this.questionEntities.sort(comparator);
-			entity.questionEntities.sort(comparator);
-			if (this.questionEntities.size() != entity.questionEntities.size()) {
-				throw new RuntimeException(
-						"Target Answer Entities size is not equals to Source Answer Entities");
-			} else {
-				for (int i = 0; i < this.questionEntities.size(); i++) {
-					if (entity.questionEntities.get(i).getId() == this.questionEntities
-							.get(i).getId()) {
-						this.questionEntities.get(i).updateQuestionEntity(
-								entity.questionEntities.get(i));
-					}
-				}
-			}
-		}
 	}
 
 	@Override
