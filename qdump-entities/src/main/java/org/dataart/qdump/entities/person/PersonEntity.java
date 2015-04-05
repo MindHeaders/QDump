@@ -32,34 +32,32 @@ import java.util.List;
 @AttributeOverride(name = "id", column = @Column(name = "id_person", insertable = false, updatable = false))
 @JsonAutoDetect
 @NamedQueries({
-        @NamedQuery(name = "PersonEntity.findPersonByEmail", query = "FROM PersonEntity p "
-                + "WHERE p.email = ?1"),
-        @NamedQuery(name = "PersonEntity.findPersonByLogin", query = "FROM PersonEntity p "
-                + "WHERE p.login = ?1"),
-        @NamedQuery(name = "PersonEntity.findPersonByPersonGroup", query = "FROM PersonEntity p  "
-                + "WHERE p.personGroup = ?1"),
-        @NamedQuery(name = "PersonEntity.findPersonsForAdminPanel", query = "SELECT NEW "
-                + "org.dataart.qdump.entities.person.PersonEntity(p.firstname, p.lastname, p.id) "
-                + "FROM PersonEntity p"),
-        @NamedQuery(name = "PersonEntity.findPersonByLoginForAuth", query = "SELECT NEW "
-                + "org.dataart.qdump.entities.person.PersonEntity(p.email, p.password, p.login) "
+        @NamedQuery(name = "PersonEntity.findByEmail",
+                query = "FROM PersonEntity p WHERE p.email = ?1"),
+        @NamedQuery(name = "PersonEntity.findByLogin",
+                query = "FROM PersonEntity p WHERE p.login = ?1"),
+        @NamedQuery(name = "PersonEntity.findByPersonGroup",
+                query = "FROM PersonEntity p WHERE p.personGroup = ?1"),
+        @NamedQuery(name = "PersonEntity.findByLoginForAuth",
+                query = "SELECT NEW org.dataart.qdump.entities.person.PersonEntity(p.email, p.password, p.login) "
                 + "FROM PersonEntity p WHERE p.login = ?1"),
-        @NamedQuery(name = "PersonEntity.deletePersonByEmail", query = "DELETE FROM "
-                + "PersonEntity p WHERE p.email = ?1"),
-        @NamedQuery(name = "PersonEntity.deletePersonByLogin", query = "DELETE FROM "
-                + "PersonEntity p WHERE p.login = ?1"),
-        @NamedQuery(name = "PersonEntity.personExistsByLogin", query = "SELECT CASE WHEN "
-                + "(COUNT(p) > 0) THEN true ELSE false END FROM PersonEntity p WHERE p.login = ?1"),
-        @NamedQuery(name = "PersonEntity.personExistsByEmail", query = "SELECT CASE WHEN "
-                + "(COUNT(p) > 0) THEN true ELSE false END FROM PersonEntity p WHERE p.email = ?1"),
-        @NamedQuery(name = "PersonEntity.getPersonPasswordByLogin", query = "SELECT p.password "
-                + "FROM PersonEntity p WHERE p.login = ?1"),
-        @NamedQuery(name = "PersonEntity.personEnabledByLogin", query = "SELECT CASE WHEN " +
-                "(p.enabled = true) THEN true ELSE false END FROM PersonEntity p WHERE p.login = ?1"),
-        @NamedQuery(name = "PersonEntity.personEnabledByEmail", query = "SELECT CASE WHEN " +
-                "(p.enabled = true) THEN true ELSE false END FROM PersonEntity p WHERE p.email = ?1"),
-        @NamedQuery(name = "PersonEntity.findPersonRole", query = "SELECT p.personGroup FROM PersonEntity p " +
-                "WHERE p.id = ?1")
+        @NamedQuery(name = "PersonEntity.deleteByEmail",
+                query = "DELETE FROM PersonEntity p WHERE p.email = ?1"),
+        @NamedQuery(name = "PersonEntity.deleteByLogin",
+                query = "DELETE FROM PersonEntity p WHERE p.login = ?1"),
+        @NamedQuery(name = "PersonEntity.existsByLogin",
+                query = "SELECT CASE WHEN (COUNT(p) > 0) THEN true ELSE false END FROM PersonEntity p WHERE p.login = ?1"),
+        @NamedQuery(name = "PersonEntity.existsByEmail",
+                query = "SELECT CASE WHEN (COUNT(p) > 0) THEN true ELSE false END FROM PersonEntity p WHERE p.email = ?1"),
+        @NamedQuery(name = "PersonEntity.enabledByLogin",
+                query = "SELECT CASE WHEN (p.enabled = true) THEN true ELSE false END FROM PersonEntity p WHERE p.login = ?1"),
+        @NamedQuery(name = "PersonEntity.enabledByEmail",
+                query = "SELECT CASE WHEN (p.enabled = true) THEN true ELSE false END FROM PersonEntity p WHERE p.email = ?1"),
+        @NamedQuery(name = "PersonEntity.findPersonRole",
+                query = "SELECT p.personGroup FROM PersonEntity p WHERE p.id = ?1"),
+        @NamedQuery(name = "PersonEntity.findById",
+                query = "SELECT NEW org.dataart.qdump.entities.person.PersonEntity(p.id, p.email, p.login, p.firstname, p.lastname, p.gender) " +
+                        "FROM PersonEntity p WHERE p.id = ?1")
 })
 public class PersonEntity extends QuestionnaireBaseEntity implements Serializable {
 	private static final long serialVersionUID = -219526512840281300L;
@@ -86,14 +84,33 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 		this.password = password;
 		this.login = login;
 	}
-	
 	public PersonEntity(String firstname, String lastname, long id) {
 		super();
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.id = id;
 	}
-
+    public PersonEntity(long id, Date createdDate, Date modifiedDate, String email, String login, boolean
+            enabled, PersonGroupEnums personGroup) {
+		super();
+		this.id = id;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+        this.email = email;
+        this.login = login;
+        this.enabled = enabled;
+        this.personGroup = personGroup;
+	}
+    public PersonEntity(long id, String email, String login, String firstname, String lastname, byte
+      gender) {
+		super();
+		this.id = id;
+        this.email = email;
+        this.login = login;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.gender = gender;
+	}
     public PersonEntity(long personId, String login, long personQuestionnaireId, Date createdDate, Date modifiedDate,
                         long questionnaireId, String questionnaireName) {
         this.id = personId;
@@ -217,7 +234,8 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 		}
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = PersonQuestionnaireEntity.class, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = PersonQuestionnaireEntity.class,
+            orphanRemoval = true)
     @JoinColumn(name = "id_person", referencedColumnName = "id_person", nullable = false)
 	public List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities() {
 		return personQuestionnaireEntities;
@@ -284,7 +302,7 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 				+ getPassword() + ", isEnabled()=" + isEnabled()
 				+ ", getGender()=" + getGender() + ", getPersonGroup()="
 				+ getPersonGroup() + ", getCreatedDate()=" + getCreatedDate()
-				+ ", getModifiedDate()=" + getModifiedDate() + "]";
+				+ ", getModifiedDate()=" + getModifiedDate() + ", ]";
 	}
 
 	@Override

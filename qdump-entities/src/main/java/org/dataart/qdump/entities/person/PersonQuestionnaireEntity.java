@@ -36,7 +36,11 @@ import java.util.List;
         @NamedQuery(name = "PersonQuestionnaireEntity.countStartedByPersonId", query = "SELECT " +
                 "COUNT(pq) FROM PersonQuestionnaireEntity pq, PersonEntity p WHERE p.id = ?1 AND pq.status = 'in " +
                 "progress'"),
-        @NamedQuery(name = "PersonQuestionnaireEntity.countByStatus", query = "SELECT COUNT(pq) FROM PersonQuestionnaireEntity pq WHERE pq.status = ?1")
+        @NamedQuery(name = "PersonQuestionnaireEntity.countByStatus", query = "SELECT COUNT(pq) FROM " +
+                "PersonQuestionnaireEntity pq WHERE pq.status = ?1"),
+        @NamedQuery(name = "PersonQuestionnaireEntity.findByPersonQuestionId",
+                query = "SELECT pq FROM PersonQuestionnaireEntity pq, PersonQuestionEntity pqe " +
+                        "WHERE pqe MEMBER OF pq.personQuestionEntities AND pqe.id = ?1")
 })
 public class PersonQuestionnaireEntity extends BaseEntity
 		implements Serializable {

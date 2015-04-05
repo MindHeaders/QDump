@@ -1,10 +1,63 @@
 package org.dataart.qdump.persistence;
 
+import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+import java.util.List;
+
 public class JpaTest {
 
+    public static void main(String[] args) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("qdump-persistence");
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query query = em.createQuery("SELECT NEW PersonQuestionnaireEntity(pq.id, pq.status, q.id, q.name, pq.createdDate, pq.modifiedDate) " +
+                    "FROM PersonQuestionnaireEntity pq, PersonEntity p " +
+                    "LEFT JOIN pq.questionnaireEntity q " +
+                    "WHERE pq MEMBER OF p.personQuestionnaireEntities " +
+                    "AND p.id = ?1 " +
+                    "AND pq.status NOT IN ('in progress', 'not specified')");
+            query.setParameter(1, 1l);
+            List<PersonQuestionnaireEntity> personQuestionnaireEntities = query.getResultList();
+            System.out.println(personQuestionnaireEntities.size());
+
+//            PersonEntity personEntity = (PersonEntity) em.createQuery("SELECT p FROM PersonEntity p WHERE p.id = 1")
+//                    .getSingleResult();
+//            for(int i = 0; i < 10; i++) {
+//                QuestionnaireEntity questionnaireEntity = new QuestionnaireEntity();
+//                PersonQuestionnaireEntity personQuestionnaireEntity = new PersonQuestionnaireEntity();
+//                personQuestionnaireEntity.setStatus(QuestionnaireStatusEnums.IN_CHECKING_PROCESS.getName());
+//                personQuestionnaireEntity.setQuestionnaireEntity(questionnaireEntity);
+//                QuestionEntity questionEntity = new QuestionEntity();
+//                questionEntity.setType(QuestionTypeEnums.TEXTAREA);
+//                PersonQuestionEntity personQuestionEntity = new PersonQuestionEntity();
+//                personQuestionEntity.setQuestionEntity(questionEntity);
+//                PersonAnswerEntity personAnswerEntity = new PersonAnswerEntity();
+//                personQuestionEntity.setPersonAnswerEntities(Arrays.asList(personAnswerEntity));
+//                questionnaireEntity.setName("This is the test questionnaire #" + (i + 1));
+//                questionnaireEntity.setPublished(true);
+//                questionEntity.setQuestion("This is the test question #" + (i + 1));
+//                questionnaireEntity.setQuestionEntities(Arrays.asList(questionEntity));
+//                personQuestionEntity.getPersonAnswerEntities().get(0).setPersonAnswer("This is the test person answer" +
+//                        " #" + (i + 1));
+//                personQuestionnaireEntity.setPersonQuestionEntities(Arrays.asList(personQuestionEntity));
+//                em.persist(questionnaireEntity);
+//                personEntity.getPersonQuestionnaireEntities().add(personQuestionnaireEntity);
+//            }
+            em.getTransaction().commit();
+        } finally {
+            if (em.isOpen()) {
+                em.close();
+            }
+            emf.close();
+        }
+    }
 //	public static void main(String[] args) throws IOException, IntrospectionException, NamingException {
-//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("qdump-persistence");
-//        EntityManager em = emf.createEntityManager();
+//
 //		ObjectMapper mapper = new ObjectMapper();
 //		try {
 //            em.getTransaction().begin();

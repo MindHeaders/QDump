@@ -12,14 +12,13 @@ var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap',
         $locationProvider.html5Mode(true);
         $routeProvider.
             when('/qdump', {
-                templateUrl: '/app/qdump.html',
-                controller: 'MainCtrl'
+                templateUrl: '/app/qdump.html'
             }).
             when('/account', {
                 redirectTo: '/account/personal'
             }).
             when('/account/authentication', {
-                templateUrl: '/app/Account/auth.html',
+                templateUrl: '/app/Account/authentication.html',
                 controller: 'MainCtrl'
             }).
             when('/account/registration', {
@@ -28,7 +27,12 @@ var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap',
             }).
             when('/account/personal', {
                 templateUrl: '/app/Account/personal-page.html',
-                controller: 'AccountCtrl'
+                controller: 'AccountCtrl',
+                resolve: {
+                    isAuth: function(Authorization) {
+                        return Authorization.resolve();
+                    }
+                }
             }).
             when('/account/change', {
                 templateUrl: '/app/Account/change-personal.html',
@@ -47,9 +51,22 @@ var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap',
                 templateUrl: '/app/Account/admin-panel.html',
                 controller: 'AdminPanelCtrl',
                 resolve: {
-                    admin: function(Authorization) {
-                        var user = Authorization.getUser();
-                        return (user.authorized && _.isEqual(user.role, 'ADMIN')) ? user : null;
+                    isAuth: function(Authorization) {
+                        return Authorization.resolve();
+                    },
+                    admin: function(Permission) {
+                        return Permission.resolve('ADMIN');
+                    },
+                    page_type: function() {
+                        return 'edit_questionnaires'
+                    },
+                    tab_number: function() {
+                        if(typeof(Storage) != "undefined") {
+                            var tab = sessionStorage.getItem("admin_panel_tab");
+                            return  tab == null ? 0 : Number(tab);
+                        } else {
+                            return 0;
+                        }
                     }
                 }
             }).
@@ -70,9 +87,11 @@ var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap',
                 templateUrl: '/app/Questionnaire/create-questionnaire.html',
                 controller: 'CreateQuestionnaireCtrl',
                 resolve: {
-                    admin: function(Authorization) {
-                        var user = Authorization.getUser();
-                        return (user.authorized && _.isEqual(user.role, 'ADMIN')) ? user : null;
+                    isAuth: function(Authorization) {
+                        return Authorization.resolve();
+                    },
+                    admin: function(Permission) {
+                        return Permission.resolve('ADMIN');
                     },
                     questionnaire: function(QuestionnaireFactory, PersonalQuestionnaireFactory) {
                         var id = PersonalQuestionnaireFactory.getQuestionnaireId();
@@ -116,19 +135,6 @@ var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap',
                     }
                 }
             }).
-            when('/account/questionnaires/admin', {
-                templateUrl: '/app/Questionnaire/questionnaires-admin.html',
-                controller: 'QuestionnaireCtrl',
-                resolve: {
-                    admin: function(Authorization) {
-                        var user = Authorization.getUser();
-                        return (user.authorized && _.isEqual(user.role, 'ADMIN')) ? user : null;
-                    },
-                    questionnaire_type: function() {
-                        return 'all'
-                    }
-                }
-            }).
             when('/contacts', {
                 templateUrl: '/app/Additional/contacts.html',
                 controller: 'ContactsCtrl'
@@ -139,22 +145,24 @@ var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap',
     });
 app.run(['$rootScope', '$cookieStore', 'ErrorFactory', '$location', function($root, $cookieStore, ErrorFactory, $location) {
     $root.$on('$routeChangeStart', function(event, next, current) {
-        if(next.$$route.originalPath != '/error' && next.$$route.originalPath != '/success') {
-            $cookieStore.remove('error');
-            $cookieStore.remove('success')
-        }
-        if(!angular.equals(next.$$route.originalPath, '/account/questionnaire')
-            && !angular.equals(next.$$route.originalPath, '/account/questionnaires/show/completed')) {
-            $cookieStore.remove('person_questionnaire_id');
-            $cookieStore.remove('questionnaire_id')
+        if(next != null) {
+            if(next.$$route) {
+                if(next.$$route.originalPath != '/error' && next.$$route.originalPath != '/success') {
+                    $cookieStore.remove('error');
+                    $cookieStore.remove('success')
+                }
+                if(!angular.equals(next.$$route.originalPath, '/account/questionnaire')
+                    && !angular.equals(next.$$route.originalPath, '/account/questionnaires/show/completed')) {
+                    $cookieStore.remove('person_questionnaire_id');
+                    $cookieStore.remove('questionnaire_id')
+                }
+            }
         }
     });
     $root.$on('$routeChangeSuccess', function(event, current, previous) {
     });
     $root.$on('$routeChangeError', function(event, current, previous, reject) {
-        if(current.$$route.originalPath == '/questionnaires/create') {
-            $cookieStore.put('error', reject.data.error);
-            $location.path('/error');
-        }
+        ErrorFactory.setErrorMessage(reject.data.error);
+        $location.path('/error');
     });
 }]);

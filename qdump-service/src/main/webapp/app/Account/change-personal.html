@@ -1,155 +1,121 @@
-<div class="container" ng-cloak ng-controller="CheckerCtrl">
-    <div class="col-md-9">
-        <form class="form-horizontal" name="changeForm" novalidate>
-            <div class="form-group has-feedback"
-                 ng-class="{'has-success' : check(changeForm.email, 'dirtyValid'),
+<div class="col-md-12" ng-cloak ng-controller="CheckerCtrl">
+    <form class="form-horizontal" name="changeForm" novalidate>
+        <div class="form-group has-feedback"
+             ng-class="{'has-success' : check(changeForm.email, 'dirtyValid'),
                     'has-error' : check(changeForm.email, 'dirtyInvalid'),
                     'has-warning' : isEquals(changedUser.email, user.email)}"
-                 show-errors>
-                <div class="col-md-8 col-md-offset-2">
-                    <input type="email" name="email" class="form-control" placeholder="Email"
-                           ng-model="changedUser.email"
-                           ensure-unique
-                           ng-minlength="3"
-                           ng-maxlength="255"
-                           autocomplete="off"
-                           ng-bind="setData(changeForm.email, user.email, changedUser.email)"/>
-                    <div validation-messages
-                         model-controller="changeForm.email"
-                         minlength-error="Email is too short"
-                         maxlength-error="Email is too long"
-                         email-error="Email is invalid"
-                         unique-error="Email is already exists" ng-show="checkState(state.notEquals)">
-                    </div>
-                    <div class="error-container"
-                         ng-show="checkState(state.errorContainer)">
-                        <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-                    </div>
+             show-errors>
+            <input type="email" name="email" class="form-control" placeholder="Email"
+                   ng-model="changedUser.email"
+                   ensure-unique
+                   ng-minlength="3"
+                   ng-maxlength="255"
+                   autocomplete="off"
+                   ng-bind="setData(changeForm.email, user.email, changedUser.email)"/>
+            <div validation-messages
+                 model-controller="changeForm.email"
+                 minlength-error="Email is too short"
+                 maxlength-error="Email is too long"
+                 email-error="Email is invalid"
+                 unique-error="Email is already exists" ng-show="checkState(state.notEquals)">
+            </div>
+            <div class="error-container"
+                 ng-show="checkState(state.errorContainer)">
+                <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+            </div>
                     <span class="glyphicon glyphicon-ok form-control-feedback"
                           ng-if="checkState(state.okIconUnique)"></span>
                     <span class="glyphicon glyphicon-warning-sign form-control-feedback"
                           ng-if="checkState(state.warnIconUpdate)"></span>
-                    <small class="help-block" ng-if="checkState(state.warnIconUpdate)">This is your email</small>
-                </div>
-            </div>
-            <div class="form-group has-feedback"
-                 ng-class="{'has-success' : check(changeForm.login, 'dirtyValid'),
+            <small class="help-block" ng-if="checkState(state.warnIconUpdate)">Current user email</small>
+        </div>
+        <div class="form-group has-feedback"
+             ng-class="{'has-success' : check(changeForm.login, 'dirtyValid'),
                     'has-error' : check(changeForm.login, 'dirtyInvalid'),
                     'has-warning' : isEquals('login')}"
-                 show-errors>
-                <div class="col-md-8 col-md-offset-2">
-                    <input type="text" class="form-control" name="login" placeholder="Login"
-                           ng-model="changedUser.login"
-                           ng-minlength=3
-                           ng-maxlength=35
-                           ensure-unique
-                           autocomplete="off"
-                           ng-bind="setData(changeForm.login, user.login, changedUser.login)"/>
-                    <div validation-messages
-                         model-controller="changeForm.login"
-                         minlength-error="Login is too short"
-                         maxlength-error="Login is too long"
-                         unique-error="Login is already exists"
-                         ng-show="checkState(state.notEquals)">
-                    </div>
-                    <div class="error-container"
-                         ng-show="checkState(state.errorContainer)">
-                        <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-                    </div>
+             show-errors>
+            <input type="text" class="form-control" name="login" placeholder="Login"
+                   ng-model="changedUser.login"
+                   ng-minlength=3
+                   ng-maxlength=35
+                   ensure-unique
+                   autocomplete="off"
+                   ng-bind="setData(changeForm.login, user.login, changedUser.login)"/>
+            <div validation-messages
+                 model-controller="changeForm.login"
+                 minlength-error="Login is too short"
+                 maxlength-error="Login is too long"
+                 unique-error="Login is already exists"
+                 ng-show="checkState(state.notEquals)">
+            </div>
+            <div class="error-container"
+                 ng-show="checkState(state.errorContainer)">
+                <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+            </div>
                     <span class="glyphicon glyphicon-ok form-control-feedback"
                           ng-if="checkState(state.okIconUnique)">
                     </span>
                     <span class="glyphicon glyphicon-warning-sign form-control-feedback"
                           ng-if="checkState(state.warnIconUpdate)"></span>
-                    <small class="help-block" ng-if="checkState(state.warnIconUpdate)">This is your login</small>
-                </div>
-            </div>
-            <div class="form-group has-feedback"
-                 ng-class="{'has-success' : check(changeForm.firstname, 'dirtyValid'),
+            <small class="help-block" ng-if="checkState(state.warnIconUpdate)">Current user login</small>
+        </div>
+        <div class="form-group has-feedback"
+             ng-class="{'has-success' : check(changeForm.firstname, 'dirtyValid'),
                     'has-error' : check(changeForm.firstname, 'dirtyInvalid')}"
-                 show-errors>
-                <div class="col-md-8 col-md-offset-2">
-                    <input type="text" class="form-control" name="firstname" placeholder="Firstname"
-                           ng-model="changedUser.firstname"
-                           ng-minlength=2
-                           ng-maxlength=35
-                           ng-pattern="firstnamePattern"
-                           autocomplete="off"
-                           ng-bind="setData(changeForm.firstname, user.firstname, changedUser.firstname)">
-                    <div validation-messages
-                         model-controller="changeForm.firstname"
-                         minlength-error="Firstname is too short"
-                         maxlength-error="Firstname is too long"
-                         pattern-error="Should contains only A-Z, a-z symbols (valid - John, invalid - john, j0hn)"
-                         ng-show="checkState(state.notEquals)">
-                    </div>
+             show-errors>
+            <input type="text" class="form-control" name="firstname" placeholder="Firstname"
+                   ng-model="changedUser.firstname"
+                   ng-minlength=2
+                   ng-maxlength=35
+                   ng-pattern="firstnamePattern"
+                   autocomplete="off"
+                   ng-bind="setData(changeForm.firstname, user.firstname, changedUser.firstname)">
+            <div validation-messages
+                 model-controller="changeForm.firstname"
+                 minlength-error="Firstname is too short"
+                 maxlength-error="Firstname is too long"
+                 pattern-error="Should contains only A-Z, a-z symbols (valid - John, invalid - john, j0hn)"
+                 ng-show="checkState(state.notEquals)">
+            </div>
                     <span class="glyphicon glyphicon-ok form-control-feedback"
                           ng-if="checkState(state.okIcon)"></span>
                     <span class="glyphicon glyphicon-remove form-control-feedback"
                           ng-if="checkState(state.errorContainer)"></span>
                     <span class="glyphicon glyphicon-warning-sign form-control-feedback"
                           ng-if="checkState(state.warnIconUpdate)"></span>
-                    <small class="help-block" ng-if="checkState(state.warnIconUpdate)">This is your firstname</small>
-                </div>
-            </div>
-            <div class="form-group has-feedback"
-                 ng-class="{'has-success' : check(changeForm.lastname, 'dirtyValid'),
+            <small class="help-block" ng-if="checkState(state.warnIconUpdate)">Current user firstname</small>
+        </div>
+        <div class="form-group has-feedback"
+             ng-class="{'has-success' : check(changeForm.lastname, 'dirtyValid'),
                     'has-error' : check(changeForm.lastname, 'dirtyInvalid')}"
-                 show-errors>
-                <div class="col-md-8 col-md-offset-2">
-                    <input type="text" class="form-control" name="lastname" placeholder="Lastname"
-                           ng-model="changedUser.lastname"
-                           ng-minlength="2"
-                           ng-maxlength="35"
-                           ng-pattern="lastnamePattern"
-                           autocomplete="off"
-                           ng-bind="setData(changeForm.lastname, user.lastname, changedUser.lastname)">
-                    <div validation-messages
-                         model-controller="changeForm.lastname"
-                         minlength-error="Lastname is too short"
-                         maxlength-error="Lastname is too long"
-                         pattern-error="Should contains only A-Z, a-z, , ', - symbols (example valid - M`gain, invalid - 1Smith)"
-                         ng-show="checkState(state.notEquals)">
-                    </div>
+             show-errors>
+            <input type="text" class="form-control" name="lastname" placeholder="Lastname"
+                   ng-model="changedUser.lastname"
+                   ng-minlength="2"
+                   ng-maxlength="35"
+                   ng-pattern="lastnamePattern"
+                   autocomplete="off"
+                   ng-bind="setData(changeForm.lastname, user.lastname, changedUser.lastname)">
+            <div validation-messages
+                 model-controller="changeForm.lastname"
+                 minlength-error="Lastname is too short"
+                 maxlength-error="Lastname is too long"
+                 pattern-error="Should contains only A-Z, a-z, , ', - symbols (example valid - M`gain, invalid - 1Smith)"
+                 ng-show="checkState(state.notEquals)">
+            </div>
                     <span class="glyphicon glyphicon-ok form-control-feedback"
                           ng-if="checkState(state.okIcon)"></span>
                     <span class="glyphicon glyphicon-remove form-control-feedback"
                           ng-if="checkState(state.errorContainer)"></span>
                     <span class="glyphicon glyphicon-warning-sign form-control-feedback"
                           ng-if="checkState(state.warnIconUpdate)"></span>
-                    <small class="help-block" ng-if="checkState(state.warnIconUpdate)">This is your lastname</small>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-8 col-md-offset-2">
-                    <label class="radio-inline">
-                        <input type="radio" ng-model="changedUser.gender" value=1> Male</label>
-                    <label class="radio-inline">
-                        <input type="radio" ng-model="changedUser.gender" value=2> Female</label>
-                </div>
-            </div>
-            <p>Form invalid = {{changeForm.$invalid}}
-                , Object equals = {{objectEquals(user, changedUser)}}
-                , Check user gender = {{user.gender == changedUser.gender}}</p>
-            <div class="form-group">
-                <div class="col-md-2 col-md-offset-2">
-                    <button type="submit" class="btn btn-primary btn-block"
-                            ng-disabled="changeForm.$invalid
-                                || objectEquals(user, changedUser)
-                                && user.gender == changedUser.gender"
-                            ng-click="update(changedUser, user)">Update</button>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-danger btn-block disable"
-                            ng-disabled="objectEquals(user, changedUser)"
-                            ng-click="reset()">Reset</button>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-danger btn-block disabled"
-                            ng-click="resetPassword()">Reset password</button>
-                </div>
-            </div>
-        </form>
-    </div>
-    <div class="col-md-3" ng-include="template.menu"></div>
+            <small class="help-block" ng-if="checkState(state.warnIconUpdate)">Current user lastname</small>
+        </div>
+        <div class="form-group">
+            <label class="radio-inline">
+                <input type="radio" ng-model="changedUser.gender" value=1> Male</label>
+            <label class="radio-inline">
+                <input type="radio" ng-model="changedUser.gender" value=2> Female</label>
+        </div>
+    </form>
 </div>

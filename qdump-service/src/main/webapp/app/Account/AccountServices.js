@@ -4,27 +4,29 @@
 var services = angular.module('account.services', ['ngResource']);
 
 services.factory('PersonFactory', function($resource) {
-    return $resource('/rest/persons/:authentication/:logout/:verify/:personal/:update/:reset/:password/:questionnaires/:pagination/:create/:get/:id',
+    return $resource('/rest/persons/:count/:authentication/:delete/:logout/:verify/:personal/:update/:reset/:password/:questionnaires/:pagination/:create/:get/:admin/:id',
         {
-            auth: '@authentication',
+            count: '@count',
+            authentication: '@authentication',
+            delete: '@delete',
             logout: '@logout',
             verify: '@verify',
             personal: '@personal',
-            update: '@update',
             reset: '@reset',
             password: '@password',
             questionnaires: '@questionnaires',
             pagination: '@pagination',
             create: '@create',
             get: '@get',
+            admin: '@admin',
             id: '@id'
         },
         {
-            auth: {
+            authentication: {
                 method: 'POST',
                 isArray: false,
                 params: {
-                    auth: 'auth'
+                    authentication: 'authentication'
                 },
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -46,16 +48,6 @@ services.factory('PersonFactory', function($resource) {
                 method: 'GET',
                 params: {
                     personal: 'personal'
-                }
-            },
-            update: {
-                method: 'PUT',
-                isArray: false,
-                params: {
-                    update: 'update'
-                },
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
             },
             resetPassword: {
@@ -86,6 +78,26 @@ services.factory('PersonFactory', function($resource) {
                     questionnaires: 'questionnaires',
                     get: 'get'
                 }
+            },
+            get_all_questionnaires: {
+                method: 'GET',
+                params: {
+                    get: 'get',
+                    admin: 'admin'
+                },
+                isArray: true
+            },
+            count: {
+                method: 'GET',
+                params: {
+                    count: 'count'
+                }
+            },
+            get_for_update: {
+                method: 'GET',
+                params: {
+                    personal: 'personal'
+                }
             }
         })
 });
@@ -103,26 +115,85 @@ services.factory('RegistrationFactory', function($resource) {
         }
     })
 });
-services.factory('Authorization', function($resource, $cookieStore) {
-    var user = null;
+services.factory('UpdateUserGroupFactory', function($resource) {
+    return $resource('/rest/persons/update/:id', {id: '@id'}, {
+        update: {
+            method: 'PUT'
+        }
+    });
+});
+services.factory('UpdateUserDataFactory', function($resource) {
+    return $resource('/rest/persons/update', {}, {
+        update: {
+            method: 'PUT'
+        }
+    })
+});
+services.factory('Authorization', function($resource, $cookieStore, $q) {
+    var isAuth = null;
     return {
-        getUser: function() {
-            if(user == null) {
-                this.setUser();
-            }
-            return user;
+        isAuth: function() {
+            return $resource('/rest/persons/authorized').get();
         },
-        setUser: function() {
-            if($cookieStore.get('user') == null) {
-                user = $resource('/rest/persons/authorized').get();
-                $cookieStore.put('user', user);
-            } else {
-                user = $cookieStore.get('user');
-            }
+        resolve: function() {
+            var deferred = $q.defer();
+            $resource('/rest/persons/authorized').get(
+                function(data) {
+                    deferred.resolve(data);
+                }, function(data) {
+                    deferred.reject(data);
+                }
+            );
+            return deferred.promise;
+        },
+        setIsAuth: function(isAuth) {
+            this.isAuth = isAuth;
+            $cookieStore.put('isAuth', isAuth);
+        },
+        getIsAuth: function() {
+            return isAuth;
         },
         logout: function() {
-            user = null;
-            $cookieStore.remove('user');
+            isAuth = null;
+            $cookieStore.remove('isAuth');
         }
     }
+});
+services.factory('Permission', function($resource, $q) {
+    return {
+        check_permission: function(userRole) {
+            return $resource('/rest/persons/check/permission/:role', {role: userRole}).get();
+        },
+        resolve: function(userRole) {
+            var deferred = $q.defer();
+            $resource('/rest/persons/check/permission/:role', {role: userRole}).get(
+                function(data) {
+                    deferred.resolve(data);
+                }, function(data) {
+                    deferred.reject(data);
+                }
+            );
+            return deferred.promise;
+        }
+    }
+});
+services.factory('PersonQuestionFactory', function($resource) {
+    return $resource('/rest/persons/questions/:delete/:get/:count/:checking/:id',
+        {
+            delete: '@delete',
+            get: '@get',
+            count: '@count',
+            checking: '@checking',
+            id: '@id'
+
+        }, {
+            get_not_checked: {
+                method: 'GET',
+                params: {
+                    get: 'get',
+                    checking: 'checking'
+                },
+                isArray: true
+            }
+        })
 });

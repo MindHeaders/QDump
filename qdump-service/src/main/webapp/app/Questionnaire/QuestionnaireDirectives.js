@@ -65,22 +65,11 @@ app.directive('booleanGridRadioPerson', function() {
         }
     }
 });
-app.directive('sorting', function() {
-    return {
-        restrict: 'E',
-        template:
-        '<span style="font-size: small" class="glyphicon glyphicon-sort-by-alphabet" ng-show="currentQuestionnairesSorting.direction == \'ASC\'"></span> ' +
-        '<span style="font-size: small" class="glyphicon glyphicon-sort-by-alphabet-alt" ng-show="currentQuestionnairesSorting.direction == \'DESC\'"></span> '
-    }
-});
 app.directive('createQuestionnaire', function() {
     return {
         restrict: 'A',
         link: function(scope, element, attrs) {
             scope.$watch(attrs.ngShow, function() {
-                console.log(attrs.ngShow + ' = ' + scope.$eval(attrs.ngShow));
-                console.log('Questionnaire published = ' + scope.questionnaire.published);
-                console.log(angular.toJson(scope.questionnaire));
                 if(scope.$eval(attrs.ngShow) == false) {
                     scope.questionnaire.published = false;
                 }

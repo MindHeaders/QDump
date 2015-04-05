@@ -12,17 +12,15 @@ import java.util.List;
 public interface PersonCrudRepository extends
         CrudRepository<PersonEntity, Long> {
 
-    PersonEntity findPersonByEmail(String email);
-    PersonEntity findPersonByLogin(String login);
-    List<PersonEntity> findPersonByPersonGroup(
+    PersonEntity findByEmail(String email);
+    PersonEntity findByLogin(String login);
+    List<PersonEntity> findByPersonGroup(
             PersonGroupEnums persongroup);
-    List<PersonEntity> findPersonsForAdminPanel();
-    PersonEntity findPersonByLoginForAuth(String login);
-    boolean personExistsByLogin(String login);
-    boolean personExistsByEmail(String email);
-    String findPersonPasswordByLogin(String login);
-    boolean personEnabledByLogin(String login);
-    boolean personEnabledByEmail(String email);
+    PersonEntity findByLoginForAuth(String login);
+    boolean existsByLogin(String login);
+    boolean existsByEmail(String email);
+    boolean enabledByLogin(String login);
+    boolean enabledByEmail(String email);
     String findPersonRole(long id);
     @Query(value = "SELECT p.id, p.login, pq.id, pq.createdDate, pq.modifiedDate, q.id, q.name " +
             "FROM PersonQuestionnaireEntity pq, PersonEntity p, QuestionnaireEntity q " +
@@ -31,4 +29,7 @@ public interface PersonCrudRepository extends
             "AND pq.status = 'in checking process'",
             countQuery = "SELECT COUNT(pq) FROM PersonQuestionnaireEntity pq WHERE pq.status = 'in checking process'")
     Page<PersonEntity> findPersonQuestionnairesInCheckingProcess(Pageable pageable);
+    @Query(value = "SELECT NEW org.dataart.qdump.entities.person.PersonEntity(p.id, p.createdDate, p.modifiedDate, p.email, p.login, p.enabled, p.personGroup) FROM PersonEntity p", countQuery = "select count(p) from PersonEntity p")
+    Page<PersonEntity> findForAdminPanel(Pageable pageable);
+    PersonEntity findById(long id);
 }

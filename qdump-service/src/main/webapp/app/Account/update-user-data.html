@@ -1,0 +1,19 @@
+<div class="modal-header">
+    <h2 style="text-align: center">Update user data</h2>
+</div>
+<div class="modal-body container-fluid">
+    <div ng-include src="'/app/Account/change-personal.html'"></div>
+</div>
+<div class="modal-footer">
+    <div class="form-inline" ng-controller="CheckerCtrl">
+        <button type="submit" class="btn btn-primary"
+                ng-disabled="changeForm.$invalid
+                                || objectEquals(user, changedUser)
+                                && user.gender == changedUser.gender"
+                ng-click="update()">Update</button>
+        <button type="submit" class="btn btn-danger"
+                ng-disabled="objectEquals(user, changedUser)"
+                ng-click="reset()">Reset</button>
+        <input type="button" value="Close" class="btn btn-primary" ng-click="close()"/>
+    </div>
+</div>

@@ -3,42 +3,43 @@
  */
 var app = angular.module('additional.controllers', ['ngCookies']);
 
-app.controller('MainCtrl', ['$scope', '$cookieStore', '$http', '$location', '$window', 'PersonFactory', 'Authorization', 'RegistrationFactory',
-    function($scope, $cookieStore, $http, $location, $window, PersonFactory, Authorization, RegistrationFactory) {
-        $scope.userIsAuth = $cookieStore.get('userAuth');
-        $scope.adminPermission = $cookieStore.get('role') == 'ADMIN';
-        $scope.checkPermission = function(role) {
-            return _.isEqual(Authorization.getUser().role, role);
-        };
-        //Authorization
+app.controller('MainCtrl', ['$scope', '$route', '$cookieStore', '$http', '$location', '$window', 'PersonFactory', 'Authorization', 'RegistrationFactory', 'ErrorFactory', 'Permission',
+    function($scope, $route, $cookieStore, $http, $location, $window, PersonFactory, Authorization, RegistrationFactory, ErrorFactory, Permission) {
+        if($cookieStore.get('isAuth') == null) {
+            Authorization.isAuth().$promise.then(
+                function() {Authorization.setIsAuth(true)},
+                function() {Authorization.setIsAuth(false)}
+            );
+            $scope.isAuth = Authorization.getIsAuth();
+        }
+        $scope.admin = false;
+        Permission.check_permission('ADMIN').$promise.then(function() {$scope.admin = true});
+        $scope.isAuth = $cookieStore.get('isAuth');
+        //Authentication
         $scope.isFormSubmitted = false;
-        $scope.auth = function() {
+        $scope.authentication = function() {
             $scope.isFormSubmitted = true;
-            PersonFactory.auth($.param({
+            PersonFactory.authentication($.param({
                 login_or_email: $scope.user.login_or_email,
                 password: $scope.user.password,
                 rememberMe: $scope.rememberMe
-            }), function(data) {
-                console.log(data);
-                $cookieStore.put('userAuth', true);
-                $cookieStore.put('role', data.role);
+            }), function() {
+                Authorization.setIsAuth(true);
                 $window.location.assign('/');
             }, function(data) {
-                $cookieStore.put('userAuth', false);
-                $scope.errorData = data.data;
+                Authorization.setIsAuth(false);
+                $scope.errorData = data.data.error;
                 $scope.user.password = '';
             });
+            $scope.isAuth = Authorization.getIsAuth();
         };
-        Authorization.setUser();
         //Logout
         $scope.logout = function() {
-            PersonFactory.logout();
-            $cookieStore.remove('userAuth');
-            $cookieStore.remove('role');
-            $location.path('/qdump');
-            $window.location.reload()
+            PersonFactory.logout(function() {
+                Authorization.logout();
+                $window.location.assign('/');
+            });
         };
-        Authorization.logout();
         //Registration
         $scope.firstnamePattern = /^[A-Z][a-zA-Z]*/i;
         $scope.lastnamePattern = /[a-zA-z]+([ '-][a-zA-Z]+)*/i;
@@ -221,5 +222,19 @@ app.controller('ContactsCtrl', ['$scope',
         $scope.checkField = function(fieldName, index) {
             return ($scope.contactsDevelopers[index][fieldName] == null || $scope.contactsDevelopers[index][fieldName] == '')
         }
+    }
+]);
+app.controller('TestDirectiveCtrl', ['$scope', 'QuestionnaireFactory',
+    function($scope, QuestionnaireFactory) {
+        $scope.dataSorting = [
+            {type: 'createdDate', direction: 'DESC'},
+            {type: 'modifiedDate', direction: 'DESC'}
+        ];
+        $scope.getData = function(queryParams) {
+            $scope.questionnaires = QuestionnaireFactory.get_all(queryParams);
+            QuestionnaireFactory.count_all(function(data) {
+                $scope.totalItems = data.count;
+            });
+        };
     }
 ]);

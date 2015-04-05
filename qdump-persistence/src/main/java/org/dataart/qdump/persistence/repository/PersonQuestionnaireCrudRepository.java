@@ -16,13 +16,24 @@ public interface PersonQuestionnaireCrudRepository extends
 	List<PersonQuestionnaireEntity> findByQuestionnaireName(
             String questionnaireName);
     PersonQuestionnaireEntity findByPersonQuestionnaireIdAndPersonId(long personQuestionnaireId, long personId);
-    @Query(value = "SELECT NEW PersonQuestionnaireEntity(pq.id, pq.status, q.id, q.name, pq.createdDate, pq.modifiedDate) FROM PersonQuestionnaireEntity pq, QuestionnaireEntity q, PersonEntity p WHERE p.id = ?1 AND pq.status NOT IN ('in progress', 'not specified')",
+    @Query(value = "SELECT NEW PersonQuestionnaireEntity(pq.id, pq.status, q.id, q.name, pq.createdDate, pq.modifiedDate) " +
+            "FROM PersonQuestionnaireEntity pq, PersonEntity p " +
+            "LEFT JOIN pq.questionnaireEntity q " +
+            "WHERE pq MEMBER OF p.personQuestionnaireEntities " +
+            "AND p.id = ?1 " +
+            "AND pq.status NOT IN ('in progress', 'not specified')",
             countQuery = "SELECT count(pq) FROM PersonQuestionnaireEntity pq, PersonEntity p WHERE p.id = ?1 AND pq.status NOT IN ('in progress', 'not specified')")
     Page<PersonQuestionnaireEntity> findCompletedByPersonId(long id, Pageable pageable);
-    @Query(value = "SELECT NEW PersonQuestionnaireEntity(pq.id, pq.status, q.id, q.name, pq.createdDate, pq.modifiedDate) FROM PersonQuestionnaireEntity pq, QuestionnaireEntity q, PersonEntity p WHERE p.id = ?1 AND pq.status = 'in progress'",
+    @Query(value = "SELECT NEW PersonQuestionnaireEntity(pq.id, pq.status, q.id, q.name, pq.createdDate, pq.modifiedDate) " +
+            "FROM PersonQuestionnaireEntity pq, PersonEntity p " +
+            "LEFT JOIN pq.questionnaireEntity q " +
+            "WHERE pq MEMBER OF p.personQuestionnaireEntities " +
+            "AND p.id = ?1 " +
+            "AND pq.status = 'in progress'",
             countQuery = "SELECT COUNT(pq) FROM PersonQuestionnaireEntity pq, PersonEntity p WHERE p.id = ?1 AND pq.status = 'in progress'")
     Page<PersonQuestionnaireEntity> findStartedByPersonId(long id, Pageable pageable);
     long countCompletedByPersonId(long id);
     long countStartedByPersonId(long id);
     long countByStatus(String status);
+    PersonQuestionnaireEntity findByPersonQuestionId(long id);
 }

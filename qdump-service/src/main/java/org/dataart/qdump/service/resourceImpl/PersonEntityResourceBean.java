@@ -21,6 +21,10 @@ import org.dataart.qdump.service.utils.EntitiesUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -47,14 +51,7 @@ public class PersonEntityResourceBean implements PersonEntityResource{
     @Autowired
     private MailSenderService mailSenderService;
     private static final Logger LOG = LoggerFactory.getLogger(PersonEntityResourceBean.class.getName());
-
-    public Response get(@PathParam("id") long id) {
-        if (!serviceQdump.personEntityExists(id)) {
-            LOG.info(String.format("User with id %d is not exists", id));
-            exceptionCreator(Status.NOT_FOUND, "There is no person with this id");
-        }
-        return responseCreator(Status.OK, serviceQdump.getPersonEntity(id));
-    }
+    private long personEntitiesCount;
 
     public Response authentication(String loginOrEmail, String password, boolean rememberMe) {
         boolean isVerified = false;
@@ -70,10 +67,7 @@ public class PersonEntityResourceBean implements PersonEntityResource{
                 isVerified = serviceQdump.personEntityIsEnabledByLogin(loginOrEmail);
             }
         }
-        if(!isExists) {
-            LOG.info(String.format("User with credentials - %s is not exists in database.", loginOrEmail));
-            exceptionCreator(Status.NOT_FOUND, "User with this data is not exists");
-        } else if(!isVerified) {
+        if(!isVerified && isExists) {
             LOG.info(String.format("User credentials %s is not verified", loginOrEmail));
             exceptionCreator(Status.FORBIDDEN, "Your account is not verified. Please check your " +
                     "email.");
@@ -115,17 +109,26 @@ public class PersonEntityResourceBean implements PersonEntityResource{
     }
 
     public void logout() {
-        if(SecurityUtils.getSubject().isAuthenticated() || SecurityUtils.getSubject().isRemembered()) {
-            SecurityUtils.getSubject().logout();
-        }
+        SecurityUtils.getSubject().logout();
     }
 
     public List<PersonEntity> get() {
         return serviceQdump.getPersonEntities();
     }
 
-    public List<PersonEntity> getAllMin() {
-        return serviceQdump.getPersonEntitiesForAdminPanel();
+    public List<PersonEntity> getForAdminPanel(int page, int size, String direction, String sort) {
+        Pageable pageable = new PageRequest(page, size, Sort.Direction.fromString(direction), sort);
+        Page<PersonEntity> databasePage = serviceQdump.getPersonEntitiesForAdminPanel(pageable);
+        personEntitiesCount = databasePage.getTotalElements();
+        return databasePage.getContent();
+    }
+
+    public Response get(@PathParam("id") long id) {
+        if (!serviceQdump.personEntityExists(id)) {
+            LOG.info(String.format("User with id %d is not exists", id));
+            exceptionCreator(Status.NOT_FOUND, "There is no person with this id");
+        }
+        return responseCreator(Status.OK, serviceQdump.getPersonEntity(id));
     }
 
     public Response delete(@PathParam("id") long id) {
@@ -133,7 +136,6 @@ public class PersonEntityResourceBean implements PersonEntityResource{
             exceptionCreator(Status.NOT_FOUND, "Person with this id is not exist");
         }
         serviceQdump.deletePersonEntity(id);
-
         return Response.ok().build();
     }
 
@@ -142,17 +144,37 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         serviceQdump.deleteAllPersonEntities();
     }
 
+    public void updatePersonGroup(long id, PersonGroupEnums group) {
+        if(!serviceQdump.personEntityExists(id)) {
+            exceptionCreator(Status.NOT_FOUND, "Person entity with this id is not exists");
+        }
+        PersonEntity personEntity = serviceQdump.getPersonEntity(id);
+        personEntity.setModifiedBy(new PersonEntity(null, null, (long) SecurityUtils.getSubject().getPrincipal()));
+        personEntity.setPersonGroup(group);
+    }
+
     //If email was changed, account should be disabled, need to generate token and send it to current email
     //make logout().
     @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public Response update(PersonEntity source, UriInfo uriInfo) {
-        long id = (long) SecurityUtils.getSubject().getPrincipal();
-        if (!serviceQdump.personEntityExists(id)) {
-            exceptionCreator(Status.NOT_FOUND, "Person with this id is not exists");
+        if(SecurityUtils.getSubject().getPrincipal() == null) {
+            exceptionCreator(Status.UNAUTHORIZED, "You need to authorize");
         }
+        long id = 0;
+        PersonEntity modifiedBy = null;
+        if(!SecurityUtils.getSubject().hasRole("ADMIN")) {
+            id = (long) SecurityUtils.getSubject().getPrincipal();
+            if (!serviceQdump.personEntityExists(id)) {
+                exceptionCreator(Status.NOT_FOUND, "Person with this id is not exists");
+            }
+        } else {
+            modifiedBy = new PersonEntity(null, null, (long) SecurityUtils.getSubject().getPrincipal());
+        }
+        id = source.getId();
         PersonEntity target = serviceQdump.getPersonEntity(id);
-        if (source.equals(source)) {
+        target.setModifiedBy(modifiedBy);
+        if (target.equals(source)) {
             return responseCreator(Status.ACCEPTED, "message", "User data is already up to date");
         }
         if(!source.getEmail().equals(target.getEmail())) {
@@ -176,13 +198,13 @@ public class PersonEntityResourceBean implements PersonEntityResource{
     }
 
     public Response checkEmail(String email){
-        boolean isValid = serviceQdump.personEntityExistsByEmail(email);
-        return isValid ? Response.ok().build() : Response.status(Status.FORBIDDEN).build();
+        boolean isExist = serviceQdump.personEntityExistsByEmail(email);
+        return !isExist ? Response.ok().build() : Response.status(Status.FORBIDDEN).build();
     }
 
     public Response checkLogin(String login) {
-        boolean isValid = serviceQdump.personEntityExistsByLogin(login);
-        return isValid ? Response.ok().build() : Response.status(Status.FORBIDDEN).build();
+        boolean isExist = serviceQdump.personEntityExistsByLogin(login);
+        return !isExist ? Response.ok().build() : Response.status(Status.FORBIDDEN).build();
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -217,13 +239,20 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         return Response.status(Status.FORBIDDEN).build();
     }
 
-    @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
+
     public Response getEntityForPersonalPage() {
         if(!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             exceptionCreator(Status.UNAUTHORIZED, "You need to Authenticate");
         }
-        PersonEntity personEntity = serviceQdump.getPersonEntity((long)SecurityUtils.getSubject().getPrincipal());
+        PersonEntity personEntity = serviceQdump.getPersonEntityForAccountPanel((long) SecurityUtils.getSubject().getPrincipal());
         return responseCreator(Status.OK, personEntity);
+    }
+
+    public Response getEntityForPersonalPage(long id) {
+        if(!serviceQdump.personEntityExists(id)) {
+            exceptionCreator(Status.NOT_FOUND, String.format("Person with id = %d not found", id));
+        }
+        return responseCreator(Status.OK, serviceQdump.getPersonEntityForAccountPanel(id));
     }
 
     @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
@@ -241,16 +270,23 @@ public class PersonEntityResourceBean implements PersonEntityResource{
     }
 
     public Response getAuthorized() {
-        ObjectNode node = JsonNodeFactory.instance.objectNode();
         if(SecurityUtils.getSubject().getPrincipal() == null) {
-            return responseCreator(Status.UNAUTHORIZED, node.put("authorized", true));
+            exceptionCreator(Status.UNAUTHORIZED, "User is not authorized");
         }
-        node.put("authorized", true);
-        if(SecurityUtils.getSubject().hasRole(PersonGroupEnums.ADMIN.toString())) {
-            node.put("role", "ADMIN");
-        } else {
-            node.put("role", "USER");
+        return Response.ok().build();
+    }
+
+    public Response checkPermission(String role) {
+        if(!SecurityUtils.getSubject().hasRole(role.toUpperCase())) {
+            exceptionCreator(Status.FORBIDDEN, "User has no permission");
         }
-        return Response.ok(node).build();
+        return Response.ok().build();
+    }
+
+    public Response count() {
+        if(personEntitiesCount == 0) {
+            personEntitiesCount = serviceQdump.personEntitiesCount();
+        }
+        return responseCreator(Status.OK, "count", personEntitiesCount);
     }
 }
