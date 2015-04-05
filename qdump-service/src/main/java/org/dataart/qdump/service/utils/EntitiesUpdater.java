@@ -83,7 +83,7 @@ public class EntitiesUpdater {
                 updatedFields = Arrays.asList("status", "personQuestionEntities");
                 break;
             case "PersonEntity":
-                updatedFields = Arrays.asList("firstname", "lastname", "email", "login", "password",
+                updatedFields = Arrays.asList("firstname", "lastname", "email", "login",
                         "gender");
                 break;
         }

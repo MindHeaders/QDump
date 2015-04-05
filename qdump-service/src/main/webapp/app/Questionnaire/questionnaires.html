@@ -1,4 +1,4 @@
-<div class="container" ng-cloak>
+<div class="container" ng-cloak entity-sorting>
     <div class="row">
         <div class="col-md-12" align="center">
             <h1>Questionnaires</h1>
@@ -8,44 +8,28 @@
                 <tr>
                     <th style="width: 5%">#</th>
                     <th style="width: 35%">
-                        <a href="#" ng-click="sorting('name')">Name
-                            <span ng-show="currentQuestionnairesSorting.type == 'name'">
-                                <sorting></sorting>
-                            </span>
-                        </a>
+                        <sorting attribute="'name'" name="Name"></sorting>
                     </th>
                     <th style="width: 35%">
-                        <a href="#" ng-click="sorting('description')">Description
-                            <span ng-show="currentQuestionnairesSorting.type == 'description'">
-                                <sorting></sorting>
-                            </span>
-                        </a>
+                        <sorting attribute="'description'" name="Description"></sorting>
                     </th>
                     <th style="width: 15%">
-                        <a href="#" ng-click="sorting('createdDate')">Created
-                            <span ng-show="currentQuestionnairesSorting.type == 'createdDate'">
-                                <sorting></sorting>
-                            </span>
-                        </a>
+                        <sorting attribute="'createdDate'" name="Created"></sorting>
                     </th>
                     <th></th>
                 </tr>
                 <tr ng-repeat="questionnaire in questionnaires" class="pagination-table">
-                    <td name="id"
-                        ng-bind="(currentPage * currentPageSize.value) - (currentPageSize.value - ($index + 1))"></td>
-                    <td name="named"
-                        ng-bind="questionnaire.name"></td>
-                    <td name="description"
-                        ng-bind="questionnaire.description"
+                    <td ng-bind="(currentPage * currentPageSize.value) - (currentPageSize.value - ($index + 1))"></td>
+                    <td ng-bind="questionnaire.name"></td>
+                    <td ng-bind="questionnaire.description"
                         class="description"
                         tooltip="{{questionnaire.description}}"
                         tooltip-placement="top"
                         tooltip-trigger="mouseenter"
                         tooltip-popup-delay="500"
                         tooltip-append-to-body="true"></td>
-                    <td name="createdDate"
-                        ng-bind="questionnaire.createdDate | date:'MM/dd/yyyy'"></td>
-                    <td ng-controller="MainCtrl" ng-hide="!userIsAuth"><input
+                    <td ng-bind="questionnaire.createdDate | date:'MM/dd/yyyy'"></td>
+                    <td ng-hide="!isAuth"><input
                             type="button" value="Start"
                             class="btn btn-success"
                             ng-controller="StartQuestionnaireCtrl"

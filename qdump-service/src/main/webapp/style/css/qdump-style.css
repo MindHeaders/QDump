@@ -69,8 +69,7 @@ body {
     margin:0;
     padding:0;
     height:100%;
-    font-family: Gruppo;
-    font-size: large;
+    font-family: 'PT Mono';
 }
 #wrapper {
     min-height:100%;
@@ -160,11 +159,11 @@ tbody > tr > td:first-child {
     color: #ffffff;
     background-color: #080808;
 }
-@font-face {
-    font-family: "Gruppo";
-    font-weight: bold;
-    src: url(/style/fonts/Gruppo-Regular.ttf);
-}
+/*@font-face {*/
+    /*font-family: "Gruppo";*/
+    /*font-weight: bold;*/
+    /*src: url(/style/fonts/Gruppo-Regular.ttf);*/
+/*}*/
 .qdump-welcome {
     margin-top: 10%;
     display: block;
@@ -173,9 +172,6 @@ tbody > tr > td:first-child {
     padding-right: auto;
     padding-left: auto;
     text-align: center;
-}
-#createQForm > div > span {
-    margin-top: 5px;
 }
 #questionnaires-table tr > td, th {
     text-align: center;

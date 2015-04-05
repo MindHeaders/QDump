@@ -1,6 +1,10 @@
-<div class="col-md-12 qdump-block" style="height: 100%">
+<div class="col-md-12"><h1 style="text-align: center">{{currentTabName}}</h1></div>
+<div class="col-md-12 qdump-block" style="height: 100%" ng-cloak>
     <tabset>
-        <tab ng-repeat="tab in tabs" heading="tab.title">
+        <tab ng-repeat="tab in tabs" heading="{{tab.title}}" select="change_type(tab, $index)" active="tab.active">
+            <tab-heading>
+                {{tab.title}}
+            </tab-heading>
             <div ng-include="tab.template"></div>
         </tab>
     </tabset>

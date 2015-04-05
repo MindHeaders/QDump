@@ -240,118 +240,55 @@ app.controller('ShowCompletedPersonQuestionnaireCtrl', ['$scope', 'person_questi
 ]);
 app.controller('QuestionnaireCtrl', ['questionnaire_type', '$scope', '$location', '$cookieStore', 'PersonQuestionnairesFactory', 'QuestionnaireFactory',
     function(questionnaire_type, $scope, $location, $cookieStore, PersonQuestionnairesFactory, QuestionnaireFactory) {
-        var type = questionnaire_type;
-        var queryParams = null;
-        $scope.questionnaires = [];
-        $scope.getQuestionnaires = function() {
-            switch (type.toUpperCase()) {
+        var type = questionnaire_type.toUpperCase();
+        if(angular.equals(type, 'PUBLISHED')) {
+            $scope.dataSorting = [{type: 'description', direction: 'DESC'}, {type: 'name', direction: 'DESC'}];
+        } else if(angular.equals(type, 'COMPLETED')) {
+            $scope.dataSorting= [{type: 'status', direction: 'DESC'}];
+        }
+        $scope.getData = function(queryParams) {
+            switch (type) {
                 case 'COMPLETED':
-                    getCompleted();
+                    getCompleted(queryParams);
                     break;
                 case 'STARTED':
-                    getStarted();
+                    getStarted(queryParams);
                     break;
                 case 'PUBLISHED':
-                    getPublished();
-                    break;
-                case 'ALL':
-                    getAll();
+                    getPublished(queryParams);
                     break;
             }
         };
-        var setParams = function() {
-            queryParams = {
-                page: $scope.currentPage - 1,
-                size: $scope.currentPageSize.value,
-                direction: $scope.currentQuestionnairesSorting.direction,
-                sort: $scope.currentQuestionnairesSorting.type
-            };
-        };
-        var getCompleted = function() {
-            setParams();
-            $scope.questionnaires = PersonQuestionnairesFactory.completed(queryParams);
+        var getCompleted = function(queryParams) {
+            PersonQuestionnairesFactory.completed(queryParams, function(questionnaires) {
+                $scope.questionnaires = questionnaires;
+                console.log('Questionnaires length = ' + $scope.questionnaires.length);
+                console.log(angular.toJson($scope.questionnaires, true));
+            });
             PersonQuestionnairesFactory.count_completed(function(data) {
                 $scope.totalItems = data.count;
             });
         };
-        var getStarted = function() {
-            setParams();
+        var getStarted = function(queryParams) {
             $scope.questionnaires = PersonQuestionnairesFactory.started(queryParams);
             PersonQuestionnairesFactory.count_started(function(data) {
                 $scope.totalItems = data.count;
             });
         };
-        var getPublished = function() {
-            setParams();
+        var getPublished = function(queryParams) {
             $scope.questionnaires = QuestionnaireFactory.get_published(queryParams);
             QuestionnaireFactory.count_published(function(data) {
                 $scope.totalItems = data.count;
             })
         };
-        var getAll = function() {
-            setParams();
-            $scope.questionnaires = QuestionnaireFactory.get_all(queryParams);
-            QuestionnaireFactory.count_all(function(data) {
-                $scope.totalItems = data.count;
-            })
-        };
-        $scope.currentPage = 1;
-        $scope.maxSize = 5;
-        var questionnairesSorting = [
-            {type: 'name', direction: 'DESC'},
-            {type: 'createdDate', direction: 'DESC'}
-        ];
-        if(angular.equals(type.toUpperCase(), 'PUSBLISHED')) {
-            questionnairesSorting.push({type: 'description', direction: 'DESC'});
-
-        } else if(_.isEqual(type.toUpperCase(), 'ALL')) {
-            questionnairesSorting.push({type: 'modifiedDate', direction: 'DESC'});
-        } else {
-            questionnairesSorting.push({type: 'status', direction: 'DESC'});
-            questionnairesSorting.push({type: 'modifiedDate', direction: 'DESC'});
-
-        }
-        $scope.currentQuestionnairesSorting = questionnairesSorting[1];
-        $scope.pageSize = [
-            {label: '15', value: 15},
-            {label: '25', value: 25},
-            {label: '50', value: 50},
-            {label: '100', value: 100}
-        ];
-        $scope.currentPageSize = $scope.pageSize[0];
-        if($scope.currentPage == 1) {
-            $scope.getQuestionnaires();
-        }
-        $scope.$watch(
-            "currentPageSize.value",
-            function(newValue, oldValue) {
-                if(newValue === oldValue) return;
-                $scope.getQuestionnaires();
-            }
-        );
-        $scope.sorting = function(type){
-            $scope.questionnairesSorting.forEach(function(element, index) {
-                if(element.type == type) {
-                    var previousQuestionnairesSorting = angular.copy($scope.currentQuestionnairesSorting);
-                    $scope.currentQuestionnairesSorting = $scope.questionnairesSorting[index];
-                    if(angular.equals($scope.currentQuestionnairesSorting, previousQuestionnairesSorting)) {
-                        if($scope.currentQuestionnairesSorting.direction == 'ASC')
-                            $scope.currentQuestionnairesSorting.direction = 'DESC';
-                        else
-                            $scope.currentQuestionnairesSorting.direction = 'ASC'
-                    }
-                }
-            });
-            $scope.getQuestionnaires();
-        };
+        $scope.getData();
     }
 ]);
-app.controller('AdminQuestionnaireCtrl', ['$scope', '$location', 'QuestionnaireFactory', 'PersonalQuestionnaireFactory',
-    function($scope, $location, QuestionnaireFactory, PersonalQuestionnaireFactory) {
+app.controller('AdminQuestionnaireCtrl', ['$scope', '$location', '$window', 'QuestionnaireFactory', 'PersonalQuestionnaireFactory',
+    function($scope, $location, $window, QuestionnaireFactory, PersonalQuestionnaireFactory) {
         $scope.delete = function(id) {
             alert('You really want to delete this questionnaire?');
-            QuestionnaireFactory.delete_one({id: id});
-            $location.reload();
+            QuestionnaireFactory.delete_one({id: id}).$promise.then($window.location.reload());
         };
         $scope.edit = function(id) {
             PersonalQuestionnaireFactory.setQuestionnaireId(id);

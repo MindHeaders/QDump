@@ -1,0 +1,19 @@
+<div class="modal-header">
+    <h2 style="text-align: center">Update User Group</h2>
+</div>
+<div class="modal-body">
+    <table class="col-md-12">
+        <tr>
+            <td style="text-align: center">Updated user data</td>
+        </tr>
+        <tr><td>Login: {{user.login}}</td></tr>
+        <tr><td>Email: {{user.email}}</td></tr>
+        <tr><td></td></tr>
+    </table>
+    <span ng-if="currentGroup == newGroup"><i style="color: red;">This is the current group</i><br></span>
+    <select class="form-control" ng-options="group for group in groups" ng-model="newGroup"></select>
+</div>
+<div class="modal-footer">
+    <input type="button" value="Update" class="btn btn-warning" ng-disabled="currentGroup == newGroup" ng-click="update()"/>
+    <input type="button" value="Close" class="btn btn-primary" ng-click="close()"/>
+</div>

@@ -11,6 +11,8 @@
     <link rel="stylesheet" type="text/css" href="/style/css/qdump-style.css">
     <link rel="shortcut icon" type="image/x-icon" href="/style/icons/favicon.png"/>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+    <link href='http://fonts.googleapis.com/css?family=Prosto+One&subset=cyrillic,latin' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=PT+Mono&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
     <script src="/js/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/js/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/js/bower_components/angular/angular.min.js"></script>
@@ -40,10 +42,10 @@
     <script src="/app/Questionnaire/QuestionnaireDirectives.js"></script>
     <script src="/app/Questionnaire/QuestionnaireServices.js"></script>
 </head>
-<body ng-cloak>
+<body ng-cloak ng-controller="MainCtrl">
 <div id="wrapper">
     <div id="header">
-        <nav class="navbar navbar-default navbar-fixed-top" ng-controller="MainCtrl">
+        <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -64,12 +66,9 @@
                             </ul>
                         </li>
                         <li><a href="/questionnaires">QDumps</a></li>
-                        <li ng-show="adminPermission"><a href="/account/admin">Admin panel</a></li>
-                        <li ng-show="adminPermission"><a href="/questionnaires/create">Create</a></li>
-
                     </ul>
                     <ul class="nav navbar-nav navbar-right"></ul>
-                    <ul class="nav navbar-nav navbar-right" ng-hide="!userIsAuth">
+                    <ul class="nav navbar-nav navbar-right" ng-hide="!isAuth">
                         <li>
                             <a href="/account">Account</a>
                         </li>
@@ -79,10 +78,10 @@
                             </p>
                         </li>
                     </ul>
-                    <ul class="nav navbar-nav navbar-right" ng-hide="userIsAuth">
+                    <ul class="nav navbar-nav navbar-right" ng-hide="isAuth">
                         <li>
                             <p class="navbar-btn">
-                                <a href="/account/auth" class="btn btn-default">Log In</a>
+                                <a href="/account/authentication" class="btn btn-default">Log In</a>
                             </p>
                         </li>
                     </ul>

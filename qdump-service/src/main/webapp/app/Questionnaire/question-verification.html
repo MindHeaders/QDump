@@ -1,0 +1,45 @@
+<div entity-sorting class="col-md-12">
+    <div class="col-md-offset-2 col-md-8" ng-hide="personQuestions.length == 0 || personQuestions == null">
+        <table class="table" style="border: 0px">
+            <tr>
+                <th colspan="2" style="width: 80%">Person Question</th>
+                <th style="vertical-align: middle; text-align: center"><a href="#" ng-click="checkAll()">Correct?</a></th>
+                <th></th>
+            </tr>
+            <tr ng-repeat="personQuestion in personQuestions">
+                <td style="text-align: center; vertical-align: middle"
+                    ng-bind="(currentPage * currentPageSize.value) - (currentPageSize.value - ($index + 1))"></td>
+                <td>
+                    <span>Question: {{personQuestion.question_entity.question}}</span><br/>
+                    <hr style="margin-top: 0px"/>
+                    <span style="border: 2px">{{personQuestion.person_answer_entities[0].person_answer}}</span>
+                </td>
+                <td style="vertical-align: middle; text-align: center">
+                    <input type="checkbox" ng-model="personQuestion.correct"/>
+                </td>
+                <td style="vertical-align: middle; text-align: center">
+                    <input class="btn btn-success" type="button" value="Verify" ng-click="verify(personQuestion.id, personQuestion.correct)"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align: middle; text-align: right" colspan="5">
+                    <input class="btn btn-primary" type="button" value="Verify All" ng-click="verifyAll()"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-offset-8 col-md-4" style="text-align: right;">
+        <pagination
+                total-items="totalItems"
+                items-per-page="currentPageSize.value"
+                ng-model="currentPage"
+                class="pagination-sm"
+                max-size="maxSize"
+                boundary-links="true"
+                rotate="false"
+                num-pages="numPages"
+                style="margin: 0;"
+                ng-click="getQuestionnaires()">
+        </pagination>
+    </div>
+</div>

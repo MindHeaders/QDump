@@ -2,6 +2,7 @@ package org.dataart.qdump.service.resource;
 
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.dataart.qdump.entities.enums.PersonGroupEnums;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -31,11 +33,6 @@ import java.util.List;
 @Component
 @Path("/persons")
 public interface PersonEntityResource {
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("get/{id}")
-    @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
-    public Response get(@PathParam("id") long id);
 
     @POST
     @Path("authentication")
@@ -62,9 +59,19 @@ public interface PersonEntityResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("get/min")
+    @Path("get/admin")
     @RequiresRoles("ADMIN")
-    public List<PersonEntity> getAllMin();
+    public List<PersonEntity> getForAdminPanel(
+            @DefaultValue("0") @QueryParam("page") int page,
+            @DefaultValue("15") @QueryParam("size") int size,
+            @DefaultValue("DESC") @QueryParam("direction") String direction,
+            @DefaultValue("createdDate") @QueryParam("sort") String sort);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("get/{id}")
+    @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
+    public Response get(@PathParam("id") long id);
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
@@ -78,6 +85,14 @@ public interface PersonEntityResource {
     @Path("delete/{id}")
     @RequiresRoles("ADMIN")
     public Response delete(@PathParam("id") long id);
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("update/{id}")
+    @RequiresRoles("ADMIN")
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public void updatePersonGroup(@PathParam("id") long id, @DefaultValue("USER") @QueryParam("group") PersonGroupEnums
+            group);
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -108,7 +123,14 @@ public interface PersonEntityResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("personal")
+    @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
     public Response getEntityForPersonalPage();
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("personal/{id}")
+    @RequiresRoles("ADMIN")
+    public Response getEntityForPersonalPage(@PathParam("id") long id);
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -122,4 +144,14 @@ public interface PersonEntityResource {
     @Path("authorized")
     public Response getAuthorized();
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("check/permission/{role}")
+    public Response checkPermission(@PathParam("role") String role);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("count")
+    public Response count();
 }

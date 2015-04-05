@@ -1,5 +1,5 @@
-<div ng-cloak class="personal-questionnaires">
-    <div class="col-md-12"><h1 style="text-align: center">Started Questionnaires</h1></div>
+<div ng-cloak class="personal-questionnaires" entity-sorting="">
+    <div class="col-md-9"><h1 style="text-align: center">Started Questionnaires</h1></div>
     <div class="col-md-9">
         <div class="qdump-block">
             <table class="table table-striped table-condensed" id="questionnaires-table">
@@ -8,18 +8,10 @@
                     <th style="width: 45%">Name
                     </th>
                     <th style="width: 15%">
-                        <a href="#" ng-click="sorting('createdDate')">Created
-                            <span ng-show="currentQuestionnairesSorting.type == 'createdDate'">
-                                <sorting></sorting>
-                            </span>
-                        </a>
+                        <sorting attribute="'createdDate'" name="Created"></sorting>
                     </th>
                     <th style="width: 15%">
-                        <a href="#" ng-click="sorting('modifiedDate')">Modified
-                            <span ng-show="currentQuestionnairesSorting.type == 'modifiedDate'">
-                                <sorting></sorting>
-                            </span>
-                        </a>
+                        <sorting attribute="'modifiedDate'" name="Modified"></sorting>
                     </th>
                     <th></th>
                 </tr>
@@ -54,7 +46,7 @@
                             rotate="false"
                             num-pages="numPages"
                             style="margin: 0;"
-                            ng-click="getQuestionnaires()">
+                            ng-click="getData()">
                     </pagination>
                 </div>
             </div>
