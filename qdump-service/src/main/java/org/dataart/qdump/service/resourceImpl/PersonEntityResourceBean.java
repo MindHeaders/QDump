@@ -8,11 +8,10 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.dataart.qdump.entities.enums.PersonGroupEnums;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.security.VerificationTokenEntity;
+import org.dataart.qdump.entities.statistics.PersonEntitiesStatistic;
 import org.dataart.qdump.service.ServiceQdump;
 import org.dataart.qdump.service.mail.MailSenderService;
 import org.dataart.qdump.service.resource.PersonEntityResource;
@@ -21,16 +20,12 @@ import org.dataart.qdump.service.utils.EntitiesUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -51,8 +46,8 @@ public class PersonEntityResourceBean implements PersonEntityResource{
     @Autowired
     private MailSenderService mailSenderService;
     private static final Logger LOG = LoggerFactory.getLogger(PersonEntityResourceBean.class.getName());
-    private long personEntitiesCount;
 
+    @Override
     public Response authentication(String loginOrEmail, String password, boolean rememberMe) {
         boolean isVerified = false;
         boolean isExists;
@@ -85,6 +80,7 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         return Response.ok().build();
     }
 
+    @Override
     public Response registration(PersonEntity entity, UriInfo uriInfo) {
         String hashedPassword = BCrypt.hashpw(entity.getPassword(), BCrypt.gensalt());
         entity.setPassword(hashedPassword);
@@ -108,30 +104,42 @@ public class PersonEntityResourceBean implements PersonEntityResource{
                 .build();
     }
 
+    @Override
     public void logout() {
         SecurityUtils.getSubject().logout();
     }
 
+    @Override
     public List<PersonEntity> get() {
         return serviceQdump.getPersonEntities();
     }
 
-    public List<PersonEntity> getForAdminPanel(int page, int size, String direction, String sort) {
+    @Override
+    public List<PersonEntity> get(int page, int size, String direction, String sort) {
         Pageable pageable = new PageRequest(page, size, Sort.Direction.fromString(direction), sort);
-        Page<PersonEntity> databasePage = serviceQdump.getPersonEntitiesForAdminPanel(pageable);
-        personEntitiesCount = databasePage.getTotalElements();
-        return databasePage.getContent();
+        return serviceQdump.getPersonEntities(pageable);
     }
 
-    public Response get(@PathParam("id") long id) {
+    @Override
+    public PersonEntity get(long id) {
         if (!serviceQdump.personEntityExists(id)) {
             LOG.info(String.format("User with id %d is not exists", id));
             exceptionCreator(Status.NOT_FOUND, "There is no person with this id");
         }
-        return responseCreator(Status.OK, serviceQdump.getPersonEntity(id));
+        return serviceQdump.getPersonEntity(id);
     }
 
-    public Response delete(@PathParam("id") long id) {
+    @Override
+    public PersonEntity getPersonal() {
+        if(!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
+            exceptionCreator(Status.UNAUTHORIZED, "You need to Authenticate");
+        }
+        PersonEntity personEntity = serviceQdump.getPersonEntity((long) SecurityUtils.getSubject().getPrincipal());
+        return personEntity;
+    }
+
+    @Override
+    public Response delete(long id) {
         if (!serviceQdump.personEntityExists(id)) {
             exceptionCreator(Status.NOT_FOUND, "Person with this id is not exist");
         }
@@ -139,24 +147,26 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         return Response.ok().build();
     }
 
-    @RequiresRoles("ADMIN")
+    @Override
     public void delete() {
-        serviceQdump.deleteAllPersonEntities();
+        serviceQdump.deletePersonEntities();
     }
 
+    @Override
     public void updatePersonGroup(long id, PersonGroupEnums group) {
         if(!serviceQdump.personEntityExists(id)) {
             exceptionCreator(Status.NOT_FOUND, "Person entity with this id is not exists");
         }
         PersonEntity personEntity = serviceQdump.getPersonEntity(id);
-        personEntity.setModifiedBy(new PersonEntity(null, null, (long) SecurityUtils.getSubject().getPrincipal()));
+        PersonEntity modifiedBy = new PersonEntity();
+        modifiedBy.setId((long) SecurityUtils.getSubject().getPrincipal());
+        personEntity.setModifiedBy(modifiedBy);
         personEntity.setPersonGroup(group);
     }
 
     //If email was changed, account should be disabled, need to generate token and send it to current email
     //make logout().
-    @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    @Override
     public Response update(PersonEntity source, UriInfo uriInfo) {
         if(SecurityUtils.getSubject().getPrincipal() == null) {
             exceptionCreator(Status.UNAUTHORIZED, "You need to authorize");
@@ -169,7 +179,8 @@ public class PersonEntityResourceBean implements PersonEntityResource{
                 exceptionCreator(Status.NOT_FOUND, "Person with this id is not exists");
             }
         } else {
-            modifiedBy = new PersonEntity(null, null, (long) SecurityUtils.getSubject().getPrincipal());
+            modifiedBy = new PersonEntity();
+            modifiedBy.setId((long) SecurityUtils.getSubject().getPrincipal());
         }
         id = source.getId();
         PersonEntity target = serviceQdump.getPersonEntity(id);
@@ -197,17 +208,19 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         return responseCreator(Status.OK, "success", "Person was successful updated");
     }
 
+    @Override
     public Response checkEmail(String email){
         boolean isExist = serviceQdump.personEntityExistsByEmail(email);
         return !isExist ? Response.ok().build() : Response.status(Status.FORBIDDEN).build();
     }
 
+    @Override
     public Response checkLogin(String login) {
         boolean isExist = serviceQdump.personEntityExistsByLogin(login);
         return !isExist ? Response.ok().build() : Response.status(Status.FORBIDDEN).build();
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    @Override
     public Response verifyAccount(String token, UriInfo uriInfo) {
         VerificationTokenEntity verificationTokenEntity = serviceQdump.getVerificationTokenEntity(1l);
         System.out.println(verificationTokenEntity.getToken().equals(token));
@@ -239,24 +252,7 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         return Response.status(Status.FORBIDDEN).build();
     }
 
-
-    public Response getEntityForPersonalPage() {
-        if(!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
-            exceptionCreator(Status.UNAUTHORIZED, "You need to Authenticate");
-        }
-        PersonEntity personEntity = serviceQdump.getPersonEntityForAccountPanel((long) SecurityUtils.getSubject().getPrincipal());
-        return responseCreator(Status.OK, personEntity);
-    }
-
-    public Response getEntityForPersonalPage(long id) {
-        if(!serviceQdump.personEntityExists(id)) {
-            exceptionCreator(Status.NOT_FOUND, String.format("Person with id = %d not found", id));
-        }
-        return responseCreator(Status.OK, serviceQdump.getPersonEntityForAccountPanel(id));
-    }
-
-    @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    @Override
     public Response resetPassword() {
         long id = (long) SecurityUtils.getSubject().getPrincipal();
         String generatedPassword = RandomStringUtils.randomAlphanumeric(16);
@@ -269,6 +265,7 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         return Response.ok().build();
     }
 
+    @Override
     public Response getAuthorized() {
         if(SecurityUtils.getSubject().getPrincipal() == null) {
             exceptionCreator(Status.UNAUTHORIZED, "User is not authorized");
@@ -276,6 +273,7 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         return Response.ok().build();
     }
 
+    @Override
     public Response checkPermission(String role) {
         if(!SecurityUtils.getSubject().hasRole(role.toUpperCase())) {
             exceptionCreator(Status.FORBIDDEN, "User has no permission");
@@ -283,10 +281,21 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         return Response.ok().build();
     }
 
+    @Override
     public Response count() {
-        if(personEntitiesCount == 0) {
-            personEntitiesCount = serviceQdump.personEntitiesCount();
-        }
-        return responseCreator(Status.OK, "count", personEntitiesCount);
+        return responseCreator(Status.OK, "count", serviceQdump.personEntitiesCount());
+    }
+
+    @Override
+    public PersonEntitiesStatistic getStatistics() {
+        PersonEntitiesStatistic statistics = new PersonEntitiesStatistic();
+        statistics.setEnabledPersonEntities(serviceQdump.personEntitiesCount(true));
+        statistics.setFemaleRegisteredPersonEntities(serviceQdump.personEntitiesCount((byte) 2));
+        statistics.setMaleRegisteredPersonEntities(serviceQdump.personEntitiesCount((byte) 1));
+        statistics.setMostActivePersonEntityInCreatingQuestionnaireEntities(serviceQdump.mostActivePersonEntityInCreatingQuestionnaires());
+        statistics.setMostActivePersonEntityInPassingQuestionnaireEntities(serviceQdump.mostActivePersonEntityInPassingQuestionnaires());
+        statistics.setRegisteredPersonEntities(serviceQdump.personEntitiesCount());
+        statistics.setTop10ActivePersonEntities(serviceQdump.top10ActivePersonEntitiesTest());
+        return statistics;
     }
 }

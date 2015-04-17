@@ -1,19 +1,17 @@
 package org.dataart.qdump.service.resourceImpl;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.shiro.SecurityUtils;
 import org.dataart.qdump.entities.enums.QuestionnaireStatusEnums;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
+import org.dataart.qdump.entities.statistics.PersonQuestionnaireEntitiesStatistic;
 import org.dataart.qdump.service.ServiceQdump;
 import org.dataart.qdump.service.resource.PersonQuestionnaireEntityResource;
 import org.dataart.qdump.service.utils.EntitiesUpdater;
 import org.dataart.qdump.service.utils.PersonQuestionnaireChecker;
 import org.dataart.qdump.service.utils.WebApplicationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,16 +23,12 @@ import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
 import static org.dataart.qdump.service.utils.WebApplicationUtils.exceptionCreator;
-import static org.dataart.qdump.service.utils.WebApplicationUtils.responseCreator;
 
 @Component
 public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnaireEntityResource{
     @Autowired
     @SuppressWarnings("SpringJavaAutowiringInspection")
     private ServiceQdump serviceQdump;
-    private long startedPersonQuestionnairesCount;
-    private long completedPersonQuestionnairesCount;
-    private long inCheckingProcessCount;
 
     public Response add(PersonQuestionnaireEntity personQuestionnaireEntity) {
         if(SecurityUtils.getSubject().getPrincipal() == null) {
@@ -52,15 +46,12 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
     }
 
     public void delete() {
-        serviceQdump.deleteAllPersonQuestionnaireEntities();
+        serviceQdump.deletePersonQuestionnaireEntities();
     }
 
     public Response delete(@PathParam("id") long id) {
         if(!serviceQdump.personQuestionnaireEntityExists(id)) {
-            return Response
-                    .status(Status.NOT_FOUND)
-                    .entity("Person Questionnaire with this id is not exists")
-                    .build();
+            WebApplicationUtils.exceptionCreator(Status.NOT_FOUND, "Person Questionnaire with this id is not exists");
         }
         serviceQdump.deletePersonQuestionnaireEntity(id);
         return Response
@@ -69,17 +60,17 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
     }
 
     public List<PersonQuestionnaireEntity> get() {
-        return serviceQdump.getPersonQuestionnaireEntities();
+        List<PersonQuestionnaireEntity> personQuestionnaireEntities = serviceQdump.getPersonQuestionnaireEntities();
+        personQuestionnaireEntities.stream().forEach(entity -> entity.getPersonQuestionEntities().size());
+        return personQuestionnaireEntities;
     }
 
-    public List<PersonEntity> getInCheckingProcess(int page, int size, String direction, String sort) {
+    public List<PersonQuestionnaireEntity> getInCheckingProcess(int page, int size, String direction, String sort) {
         Pageable pageable = new PageRequest(page, size, Sort.Direction.fromString(direction), sort);
-        Page<PersonEntity> databasePage = serviceQdump.getPersonQuestionnairesInCheckingProcess(pageable);
-        inCheckingProcessCount = databasePage.getTotalElements();
-        return databasePage.getContent();
+        return serviceQdump.getPersonQuestionnairesInCheckingProcess(pageable);
     }
 
-    public Response get(@PathParam("id") long id) {
+    public PersonQuestionnaireEntity get(@PathParam("id") long id) {
         if(serviceQdump.personQuestionnaireEntityExists(id)) {
             exceptionCreator(Status.NOT_FOUND, "Person Questionnaire with this id is not exists");
         }
@@ -87,7 +78,8 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
         PersonQuestionnaireEntity entity = serviceQdump.getPersonQuestionnaireEntity(id, (long) SecurityUtils
                 .getSubject()
                 .getPrincipal());
-        return responseCreator(Status.OK, entity);
+        entity.getPersonQuestionEntities().size();
+        return entity;
     }
 
     public Response update(
@@ -109,25 +101,13 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
     public List<PersonQuestionnaireEntity> getCompleted(int page, int size, String direction, String sort) {
         userIsAuthorized();
         Pageable pageable = new PageRequest(page, size, Sort.Direction.fromString(direction), sort);
-        Page<PersonQuestionnaireEntity> databasePage = serviceQdump.getCompletedPersonQuestionnaireEntities((long) SecurityUtils.getSubject().getPrincipal(), pageable);
-        completedPersonQuestionnairesCount = databasePage.getTotalElements();
-        return databasePage.getContent();
+        return serviceQdump.getCompletedPersonQuestionnaireEntities((long) SecurityUtils.getSubject().getPrincipal(), pageable);
     }
 
     public List<PersonQuestionnaireEntity> getStarted(int page, int size, String direction, String sort) {
         userIsAuthorized();
         Pageable pageable = new PageRequest(page, size, Sort.Direction.fromString(direction), sort);
-        Page<PersonQuestionnaireEntity> databasePage = serviceQdump.getStartedPersonQuestionnaireEntities((long) SecurityUtils.getSubject().getPrincipal(), pageable);
-        startedPersonQuestionnairesCount = databasePage.getTotalElements();
-        return databasePage.getContent();
-    }
-
-    public Response countInCheckingProcess() {
-        if(inCheckingProcessCount == 0) {
-            inCheckingProcessCount = serviceQdump.countPersonQuestionnaireByStatus(QuestionnaireStatusEnums.IN_CHECKING_PROCESS
-                    .getName());
-        }
-        return WebApplicationUtils.responseCreator(Status.OK, "count", inCheckingProcessCount);
+        return serviceQdump.getStartedPersonQuestionnaireEntities((long) SecurityUtils.getSubject().getPrincipal(), pageable);
     }
 
     public Response check(long id, boolean correct) {
@@ -136,23 +116,18 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
 
     public Response count(String type) {
         userIsAuthorized();
-        ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
+        long count = 0;
         if(type.toUpperCase().equals("STARTED")) {
-            if(startedPersonQuestionnairesCount == 0 ) {
-                startedPersonQuestionnairesCount = serviceQdump.countStartedPersonQuestionnaireEntities((long) SecurityUtils.getSubject().getPrincipal());
-                objectNode.put("count", startedPersonQuestionnairesCount);
-            } else {
-                objectNode.put("count", startedPersonQuestionnairesCount);
-            }
+            count = serviceQdump.startedPersonQuestionnaireEntitiesCount((long) SecurityUtils.getSubject().getPrincipal
+                    ());
         } else if(type.toUpperCase().equals("COMPLETED")) {
-            if(completedPersonQuestionnairesCount == 0) {
-                completedPersonQuestionnairesCount = serviceQdump.countCompletedPersonQuestionnaireEntities((long) SecurityUtils.getSubject().getPrincipal());
-                objectNode.put("count", completedPersonQuestionnairesCount);
-            } else {
-                objectNode.put("count", completedPersonQuestionnairesCount);
-            }
+           count = serviceQdump.completedPersonQuestionnaireEntitiesCount((long) SecurityUtils.getSubject()
+                   .getPrincipal());
+        } else if (type.toUpperCase().equals("CHECKING")) {
+            count = serviceQdump.personQuestionnaireCountByStatus(
+                    (QuestionnaireStatusEnums.IN_CHECKING_PROCESS.getName()));
         }
-        return Response.ok(objectNode).build();
+        return WebApplicationUtils.responseCreator(Status.OK, "count", count);
     }
 
     public PersonQuestionnaireEntity getCompleted(long id) {
@@ -167,7 +142,16 @@ public class PersonQuestionnaireEntityResourceBean implements PersonQuestionnair
         if(entity == null) {
             exceptionCreator(Status.NOT_FOUND, "There is not person questionnaire with this persisted data");
         }
+        entity.getPersonQuestionEntities().size();
         return entity;
+    }
+
+    public PersonQuestionnaireEntitiesStatistic getStatistics() {
+        PersonQuestionnaireEntitiesStatistic statistic = new PersonQuestionnaireEntitiesStatistic();
+        statistic.setCompletedPersonQuestionnaireEntities(serviceQdump.completedQuestionnaireEntitiesCount());
+        statistic.setStartedPersonQuestionnaireEntities(serviceQdump.startedQuestionnaireEntitiesCount());
+        statistic.setTotalPersonQuestionnaireEntities(serviceQdump.personQuestionnaireEntitiesCount());
+        return statistic;
     }
 
     private void userIsAuthorized() {

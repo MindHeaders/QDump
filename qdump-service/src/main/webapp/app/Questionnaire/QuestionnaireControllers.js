@@ -3,8 +3,8 @@
  */
 var app = angular.module('questionnaire.controllers', ['ngCookies']);
 
-app.controller('CreateQuestionnaireCtrl', ['questionnaire', '$scope', '$location', '$cookieStore', '$modal', 'CreateQuestionnaireFactory', 'PersonalQuestionnaireFactory', 'QuestionnaireFactory', 'QuestionFactory', 'AnswerFactory', 'DeleteQuestionFactory',
-    function(questionnaire, $scope, $location, $cookieStore, $modal, CreateQuestionnaireFactory, PersonalQuestionnaireFactory, QuestionnaireFactory, QuestionFactory, AnswerFactory, DeleteQuestionFactory) {
+app.controller('CreateQuestionnaireCtrl', ['questionnaire', '$scope', '$location', '$cookieStore', '$modal', 'PersonalQuestionnaire', 'QuestionnaireFactory', 'QuestionFactory', 'AnswerFactory', 'UpdateQuestionnaire',
+    function(questionnaire, $scope, $location, $cookieStore, $modal, PersonalQuestionnaire, QuestionnaireFactory, QuestionFactory, AnswerFactory, UpdateQuestionnaire) {
         $scope.options = [
             {label: 'Select type of question...', value: ''},
             {label: 'One answer question', value: 'RADIO'},
@@ -55,7 +55,6 @@ app.controller('CreateQuestionnaireCtrl', ['questionnaire', '$scope', '$location
             if(questionnaire instanceof QuestionnaireFactory) {
                 AnswerFactory.delete(
                     {
-                        delete: 'delete',
                         id: $scope.questionnaire.question_entities[questionIndex].answer_entities[answerIndex].answer_id
                     })
             }
@@ -65,7 +64,6 @@ app.controller('CreateQuestionnaireCtrl', ['questionnaire', '$scope', '$location
             if(questionnaire instanceof QuestionnaireFactory) {
                 QuestionFactory.delete(
                     {
-                        delete: 'delete',
                         id: $scope.questionnaire.question_entities[questionIndex].question_id
                     })
             }
@@ -95,12 +93,10 @@ app.controller('CreateQuestionnaireCtrl', ['questionnaire', '$scope', '$location
         };
         $scope.createQ = function() {
             if($scope.questionnaire instanceof QuestionnaireFactory) {
-                console.log('Questionnaire updating');
-                PersonalQuestionnaireFactory.setQuestionnaireId(null);
-                CreateQuestionnaireFactory.update($scope.questionnaire);
+                PersonalQuestionnaire.setQuestionnaireId(null);
+                UpdateQuestionnaire.update($scope.questionnaire);
             } else {
-                console.log('Questionnaire creating');
-                CreateQuestionnaireFactory.save($scope.questionnaire,
+                QuestionnaireFactory.save($scope.questionnaire,
                     function() {
                         alert('Questionnaire was create successfully');
                         location.reload();
@@ -126,27 +122,27 @@ app.controller('CreateQuestionnaireCtrl', ['questionnaire', '$scope', '$location
         }
     }
 ]);
-app.controller('StartQuestionnaireCtrl', ['$scope', '$location', '$cookieStore', 'PersonalQuestionnaireFactory',
-    function($scope, $location, $cookieStore, PersonalQuestionnaireFactory) {
+app.controller('StartQuestionnaireCtrl', ['$scope', '$location', '$cookieStore', 'PersonalQuestionnaire',
+    function($scope, $location, $cookieStore, PersonalQuestionnaire) {
         $scope.startQDump = function(id) {
             if(_.isNull($cookieStore.get('user'))) {
                 $location.path('');
             }
-            PersonalQuestionnaireFactory.setQuestionnaireId(id);
+            PersonalQuestionnaire.setQuestionnaireId(id);
             $location.path('/account/questionnaire');
         };
     }
 ]);
-app.controller('PersonalQuestionnaireCtrl', ['$scope', '$location', '$cookieStore', 'PersonalQuestionnaireFactory', 'QuestionnaireFactory', 'PersonFactory',
-    function($scope, $location, $cookieStore, PersonalQuestionnaireFactory, QuestionnaireFactory, PersonFactory) {
+app.controller('PersonalQuestionnaireCtrl', ['questionnaireId', 'personQuestionnaireId', '$scope', '$location', '$cookieStore', 'QuestionnaireFactory', 'PersonFactory', 'PersonQuestionnairesFactory', 'UpdatePersonQuestionnaire',
+    function(questionnaireId, personQuestionnaireId, $scope, $location, $cookieStore, QuestionnaireFactory, PersonFactory, PersonQuestionnairesFactory, UpdatePersonQuestionnaire) {
         $scope.personQuestionnaireEntity = {};
-        if (PersonalQuestionnaireFactory.getPersonQuestionnaireId() == null) {
+        if (!personQuestionnaireId) {
             $scope.personQuestionnaireEntity = {
                 questionnaire_entity: {},
                 person_question_entities: []
             };
             $scope.question_index = [];
-            QuestionnaireFactory.get({personal: 'personal', id: PersonalQuestionnaireFactory.getQuestionnaireId()},
+            QuestionnaireFactory.get({personal: 'personal', id: questionnaireId},
                 function (data) {
                     $scope.questionnaire = data;
                     $scope.updatePersonQuestionnaireEntity = function () {
@@ -176,7 +172,10 @@ app.controller('PersonalQuestionnaireCtrl', ['$scope', '$location', '$cookieStor
                 }
             );
         } else {
-            PersonFactory.get_questionnaire({id: PersonalQuestionnaireFactory.getPersonQuestionnaireId()})
+            PersonFactory.get({id: questionnaireId},
+                function(data) {
+                    $scope.personQuestionnaireEntity = data;
+                })
         }
         $scope.selectedItem = {};
         $scope.selectChange = function (parentIndex) {
@@ -193,16 +192,27 @@ app.controller('PersonalQuestionnaireCtrl', ['$scope', '$location', '$cookieStor
         $scope.complete = function () {
             var complete = confirm("If you complete questionnaire you cannot change it. Do you want to continue?");
             if(complete) {
-                $scope.personQuestionnaireEntity.status = 'in checking process';
-                PersonFactory.create($scope.personQuestionnaireEntity);
-                $location.path('/');
+                if(!personQuestionnaireId) {
+                    $scope.personQuestionnaireEntity.status = 'in checking process';
+                    PersonQuestionnairesFactory.save($scope.personQuestionnaireEntity);
+                    $location.path('/');
+                } else {
+                    UpdatePersonQuestionnaire.update($scope.personQuestionnaireEntity);
+                    $location.path('/')
+                }
             }
         };
         $scope.save = function () {
             $scope.personQuestionnaireEntity.status = 'in progress';
-            PersonFactory.create($scope.personQuestionnaireEntity);
+            if(!personQuestionnaireId) {
+                PersonFactory.save($scope.personQuestionnaireEntity);
+            } else {
+                UpdatePersonQuestionnaire.update($scope.personQuestionnaireEntity);
+            }
         };
-
+        $scope.close = function() {
+            $location.path('/questionnaires')
+        };
         $scope.toConsole = function () {
             console.clear();
             console.log(angular.toJson($scope.personQuestionnaireEntity, true))
@@ -216,10 +226,10 @@ app.controller('CompletedPersonQuestionnaireCtrl', ['$scope', '$location', 'Ques
             $location.path('/account/questionnaires/show/completed');
         }
     }]);
-app.controller('StartedPersonQuestionnaireCtrl', ['$scope', '$location', 'PersonQuestionnairesFactory',
-    function($scope, $location, PersonQuestionnairesFactory) {
+app.controller('StartedPersonQuestionnaireCtrl', ['$scope', '$location', 'PersonalQuestionnaire',
+    function($scope, $location, PersonalQuestionnaire) {
         $scope.continue = function(id) {
-            PersonQuestionnairesFactory.setPersonQuestionnaireId(id);
+            PersonalQuestionnaire.setPersonQuestionnaireId(id);
             $location.path('/account/questionnaire');
         }
     }]);
@@ -260,38 +270,36 @@ app.controller('QuestionnaireCtrl', ['questionnaire_type', '$scope', '$location'
             }
         };
         var getCompleted = function(queryParams) {
-            PersonQuestionnairesFactory.completed(queryParams, function(questionnaires) {
+            PersonQuestionnairesFactory.getCompleted(queryParams, function(questionnaires) {
                 $scope.questionnaires = questionnaires;
-                console.log('Questionnaires length = ' + $scope.questionnaires.length);
-                console.log(angular.toJson($scope.questionnaires, true));
             });
-            PersonQuestionnairesFactory.count_completed(function(data) {
+            PersonQuestionnairesFactory.get({completed: 'completed', count: 'count'}, function(data) {
                 $scope.totalItems = data.count;
             });
         };
         var getStarted = function(queryParams) {
-            $scope.questionnaires = PersonQuestionnairesFactory.started(queryParams);
-            PersonQuestionnairesFactory.count_started(function(data) {
+            $scope.questionnaires = PersonQuestionnairesFactory.getStarted(queryParams);
+            PersonQuestionnairesFactory.get({started: 'started', count: 'count'}, function(data) {
                 $scope.totalItems = data.count;
             });
         };
         var getPublished = function(queryParams) {
-            $scope.questionnaires = QuestionnaireFactory.get_published(queryParams);
-            QuestionnaireFactory.count_published(function(data) {
+            $scope.questionnaires = QuestionnaireFactory.getPublished(queryParams);
+            QuestionnaireFactory.get({published: 'published', count: 'count'}, function(data) {
                 $scope.totalItems = data.count;
             })
         };
         $scope.getData();
     }
 ]);
-app.controller('AdminQuestionnaireCtrl', ['$scope', '$location', '$window', 'QuestionnaireFactory', 'PersonalQuestionnaireFactory',
-    function($scope, $location, $window, QuestionnaireFactory, PersonalQuestionnaireFactory) {
+app.controller('AdminQuestionnaireCtrl', ['$scope', '$location', '$window', 'QuestionnaireFactory', 'PersonalQuestionnaire',
+    function($scope, $location, $window, QuestionnaireFactory, PersonalQuestionnaire) {
         $scope.delete = function(id) {
             alert('You really want to delete this questionnaire?');
-            QuestionnaireFactory.delete_one({id: id}).$promise.then($window.location.reload());
+            QuestionnaireFactory.delete({id: id}).$promise.then($window.location.reload());
         };
         $scope.edit = function(id) {
-            PersonalQuestionnaireFactory.setQuestionnaireId(id);
+            PersonalQuestionnaire.setQuestionnaireId(id);
             $location.path('/questionnaires/create');
         }
     }

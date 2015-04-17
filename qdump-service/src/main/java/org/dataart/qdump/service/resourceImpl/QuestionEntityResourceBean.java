@@ -31,22 +31,21 @@ public class QuestionEntityResourceBean implements QuestionEntityResource{
             WebApplicationUtils.exceptionCreator(Status.NOT_FOUND, String.format(
                     "Question with id = %d is not exists", id));
         }
-        QuestionEntity questionEntity = serviceQdump.getQuestionEntity(id);
-        serviceQdump.deleteQuestionEntity(questionEntity);
+        serviceQdump.deleteQuestionEntity(id);
         return WebApplicationUtils.responseCreator(Status.OK, String.format("Question with id = %d was deleted",
                 id));
     }
 
     public void delete() {
-        serviceQdump.deleteAllQuestionEntity();
+        serviceQdump.deleteQuestionEntities();
     }
 
-    public Response get(@PathParam("id") long id) {
+    public QuestionEntity get(@PathParam("id") long id) {
         if (!serviceQdump.questionEntityExists(id)) {
             WebApplicationUtils.exceptionCreator(Status.NOT_FOUND, String.format(
                     "Question with id = %d is not exists", id));
         }
-        return WebApplicationUtils.responseCreator(Status.OK, serviceQdump.getQuestionEntity(id));
+        return serviceQdump.getQuestionEntity(id);
     }
 
     public List<QuestionEntity> get() {

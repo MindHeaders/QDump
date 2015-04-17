@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Created by artemvlasov on 08/02/15.
@@ -40,7 +40,7 @@ public class MailSenderServiceTest {
         personEntity.setGender((byte) 1);
         personEntity.setLastname("Vlasov");
         personEntity.setLogin("vlasovartem");
-        personEntity.setCreatedDate(new Date());
+        personEntity.setCreatedDate(LocalDateTime.now());
         verificationTokenEntity.setPersonEntity(personEntity);
         String token = verificationTokenUtils.beanToToken(verificationTokenEntity);
         verificationTokenEntity.setToken(token);

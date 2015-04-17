@@ -24,9 +24,14 @@
                     <th>Gender:</th>
                     <td ng-bind="userGender()"></td>
                 </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="button" value="Change" class="btn btn-primary" ng-click="updateUser(user.id)"/>
+                        <input type="button" value="Reset Password" class="btn btn-success" ng-click="resetPassword()"/>
+                    </td>
+                </tr>
             </table>
         </div>
-        <a href="/account/change" class="btn btn-primary">Change</a>
     </div>
     <div class="col-md-3" ng-include="template.menu"></div>
 </div>

@@ -123,8 +123,6 @@ app.directive('entitySorting', function() {
                 } else {
                     for(var i = 0; i < dataSorting.length; i++){
                         if(dataSorting[i].type == type) {
-                            console.log("Type = " + type);
-                            console.log(dataSorting[i].type);
                             scope.currentDataSorting.direction = 'DESC';
                             scope.currentDataSorting = dataSorting[i];
                             break;

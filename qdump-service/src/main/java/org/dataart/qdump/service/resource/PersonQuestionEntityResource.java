@@ -3,7 +3,6 @@ package org.dataart.qdump.service.resource;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.dataart.qdump.entities.person.PersonQuestionEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.Consumes;
@@ -29,57 +28,53 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Component
 @Path("/persons/questions")
+@Transactional
 public interface PersonQuestionEntityResource {
 
     @POST
-    @Path("create")
     @RequiresRoles("ADMIN")
-    public Response add(PersonQuestionEntity entity);
+    Response add(PersonQuestionEntity entity);
 
     @DELETE
-    @Path("delete")
     @RequiresRoles("ADMIN")
-    public void delete();
+    void delete();
 
     @DELETE
-    @Path("delete/{id}")
+    @Path("{id : \\d+}")
     @RequiresRoles("ADMIN")
-    public Response delete(@PathParam("id") long id);
+    Response delete(@PathParam("id") long id);
 
     @GET
-    @Path("get")
     @RequiresRoles("ADMIN")
-    public List<PersonQuestionEntity> get();
+    List<PersonQuestionEntity> get();
 
     @GET
-    @Path("get/checking")
+    @Path("checking")
     @RequiresRoles("ADMIN")
-    public List<PersonQuestionEntity> getChecking(
+    List<PersonQuestionEntity> get(
             @DefaultValue("0") @QueryParam("page") int page,
             @DefaultValue("15") @QueryParam("size") int size,
             @DefaultValue("DESC") @QueryParam("direction") String direction,
             @DefaultValue("createdDate") @QueryParam("sort") String sort);
 
     @GET
-    @Path("get/{id}")
+    @Path("{id : \\d+}")
     @RequiresRoles("ADMIN")
-    public Response get(@PathParam("id") long id);
+    Response get(@PathParam("id") long id);
 
     @GET
-    @Path("count/checking")
+    @Path("checking/count")
     @RequiresRoles("ADMIN")
-    public Response count();
+    Response count();
 
     @PUT
-    @Path("verify/{id}")
+    @Path("verify/{id : \\d+}")
     @RequiresRoles("ADMIN")
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public void verify(@PathParam("id") long id, @QueryParam("correct") boolean correct);
+    void verify(@PathParam("id") long id, @QueryParam("correct") boolean correct);
 
     @PUT
     @Path("verify")
     @RequiresRoles("ADMIN")
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public void verify(List<PersonQuestionEntity> personQuestionEntities);
+    void verify(List<PersonQuestionEntity> personQuestionEntities);
 
 }

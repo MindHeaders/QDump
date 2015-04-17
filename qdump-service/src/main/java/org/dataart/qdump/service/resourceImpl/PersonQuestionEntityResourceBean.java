@@ -7,7 +7,6 @@ import org.dataart.qdump.service.resource.PersonQuestionEntityResource;
 import org.dataart.qdump.service.utils.PersonQuestionnaireChecker;
 import org.dataart.qdump.service.utils.WebApplicationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,7 +22,6 @@ public class PersonQuestionEntityResourceBean implements PersonQuestionEntityRes
     @Autowired
     @SuppressWarnings("SpringJavaAutowiringInspection")
     private ServiceQdump serviceQdump;
-    long notCheckedQuestionsCount;
 
     public Response add(PersonQuestionEntity entity) {
         PersonQuestionnaireChecker.PersonQuestionChecker.checkPrePersist(entity);
@@ -44,18 +42,16 @@ public class PersonQuestionEntityResourceBean implements PersonQuestionEntityRes
     }
 
     public void delete() {
-        serviceQdump.deleteAllPersonQuestionEntity();
+        serviceQdump.deletePersonQuestionEntities();
     }
 
     public List<PersonQuestionEntity> get() {
         return serviceQdump.getPersonQuestionEntities();
     }
 
-    public List<PersonQuestionEntity> getChecking(int page, int size, String direction, String sort) {
+    public List<PersonQuestionEntity> get(int page, int size, String direction, String sort) {
         Pageable pageable = new PageRequest(page, size, Sort.Direction.fromString(direction), sort);
-        Page<PersonQuestionEntity> databasePage = serviceQdump.getNotCheckedPersonQuestionEntities(pageable);
-        notCheckedQuestionsCount = databasePage.getTotalElements();
-        return databasePage.getContent();
+        return serviceQdump.getNotCheckedPersonQuestionEntities(pageable);
     }
 
     public Response get(@PathParam("id") long id) {
@@ -68,10 +64,7 @@ public class PersonQuestionEntityResourceBean implements PersonQuestionEntityRes
     }
 
     public Response count() {
-        if(notCheckedQuestionsCount != 0) {
-            notCheckedQuestionsCount = serviceQdump.countNotCheckedPersonQuestionEntities();
-        }
-        return WebApplicationUtils.responseCreator(Status.OK, "count", notCheckedQuestionsCount);
+        return WebApplicationUtils.responseCreator(Status.OK, "count", serviceQdump.notCheckedPersonQuestionEntitiesCount());
     }
 
     public void verify(long id, boolean correct) {

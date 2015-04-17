@@ -11,7 +11,7 @@
     <questions id_question="2" question="This is the second question" question_type="TEXTAREA" id_questionnaire="1" created_date="2015-04-08 01:00:00"/>
     <answers id_answer="1" answer="First answer" correct="true" id_question="1" created_date="2015-04-08 01:00:00"/>
     <answers id_answer="2" answer="Second answer" correct="false" id_question="1" created_date="2015-04-08 01:00:00"/>
-    <person_questionnaires id_person_questionnaire="1" id_person="2" id_questionnaire="1" status="in checking process"
+    <person_questionnaires id_person_questionnaire="1" id_person="1" id_questionnaire="1" status="in checking process"
                            created_date="2015-04-08 01:00:00"/>
     <person_questions id_person_questionnaire="1" id_person_question="1" id_question="1" correct="true"
                       checked="true" created_date="2015-04-08 01:00:00"/>

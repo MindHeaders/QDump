@@ -42,8 +42,11 @@ var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap',
                 templateUrl: '/app/Questionnaire/personal-questionnaire.html',
                 controller: 'PersonalQuestionnaireCtrl',
                 resolve: {
-                    questionnaire_id: function(PersonalQuestionnaireFactory) {
-                        return PersonalQuestionnaireFactory.getQuestionnaireId();
+                    questionnaireId: function(PersonalQuestionnaire) {
+                        return PersonalQuestionnaire.getQuestionnaireId();
+                    },
+                    personQuestionnaireId: function(PersonalQuestionnaire) {
+                        return PersonalQuestionnaire.getPersonQuestionnaireId();
                     }
                 }
             }).
@@ -93,9 +96,9 @@ var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap',
                     admin: function(Permission) {
                         return Permission.resolve('ADMIN');
                     },
-                    questionnaire: function(QuestionnaireFactory, PersonalQuestionnaireFactory) {
-                        var id = PersonalQuestionnaireFactory.getQuestionnaireId();
-                        return _.isNull(id) ? new Object({question_entities: []}) : QuestionnaireFactory.get({get: 'get', id: id}, function(data) { return data});
+                    questionnaire: function(QuestionnaireFactory, PersonalQuestionnaire) {
+                        var id = PersonalQuestionnaire.getQuestionnaireId();
+                        return _.isNull(id) ? new Object({question_entities: []}) : QuestionnaireFactory.get({id: id}, function(data) { return data});
                     }
                 }
             }).
@@ -153,8 +156,13 @@ app.run(['$rootScope', '$cookieStore', 'ErrorFactory', '$location', function($ro
                 }
                 if(!angular.equals(next.$$route.originalPath, '/account/questionnaire')
                     && !angular.equals(next.$$route.originalPath, '/account/questionnaires/show/completed')) {
-                    $cookieStore.remove('person_questionnaire_id');
-                    $cookieStore.remove('questionnaire_id')
+                    $cookieStore.remove('personQuestionnaireId');
+                    $cookieStore.remove('questionnaireId')
+                }
+                if(angular.equals(next.$$route.originalPath, '/account/registration')) {
+                    if($cookieStore.get('isAuth') == true) {
+                        $location.path('/');
+                    }
                 }
             }
         }

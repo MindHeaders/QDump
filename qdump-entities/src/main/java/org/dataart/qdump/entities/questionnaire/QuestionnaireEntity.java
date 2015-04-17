@@ -14,12 +14,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -28,43 +25,19 @@ import java.util.List;
 		@AttributeOverride(name = "id", column = @Column(name = "id_questionnaire", insertable = false, updatable = false)),
 		@AttributeOverride(name = "created_by", column = @Column(name = "created_by", insertable = false, updatable = false, nullable = false)) })
 @JsonAutoDetect
-@NamedQueries({
-        @NamedQuery(name = "QuestionnaireEntity.findPublishedQuestionnaires", query = "SELECT NEW org.dataart.qdump.entities.questionnaire.QuestionnaireEntity(q.id, q.name, q.description) FROM QuestionnaireEntity q WHERE q.published = true"),
-        @NamedQuery(name = "QuestionnaireEntity.countPublishedQuestionnaires", query = "SELECT count(q) FROM QuestionnaireEntity q WHERE q.published = true"),
-        @NamedQuery(name = "QuestionnaireEntity.findPublishedQuestionnairesById", query = "SELECT NEW org.dataart.qdump.entities.questionnaire.QuestionnaireEntity(q.id, q.name, q.description) FROM QuestionnaireEntity q WHERE q.published = true AND q.id = ?1"),
-        @NamedQuery(name = "QuestionnaireEntity.findQuestionnaireById", query = "FROM QuestionnaireEntity q " +
-                "WHERE q.id = ?1")
-})
 @JsonNaming(value = QdumpJsonNaming.class)
 public class QuestionnaireEntity extends QuestionnaireBaseEntity implements
 		Serializable {
 	private static final long serialVersionUID = 8952388499186170808L;
 	private String name;
 	private String description;
-    @JsonView(View.Create.class)
+    @JsonView(View.Admin.class)
 	private boolean published;
     @JsonProperty("question_entities")
+    @JsonView(View.User.class)
 	private List<QuestionEntity> questionEntities;
 
-    public QuestionnaireEntity(){
-        super();
-    }
-    public QuestionnaireEntity(Long id, String name, String description) {
-        super();
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
-    public QuestionnaireEntity(Long id, String name, String description, Date createdDate, Date modifiedDate ) {
-        super();
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-    }
-
-    @Column(name = "name", nullable = false, length = 250)
+    @Column(name = "name", nullable = false, length = 250, unique = true)
 	public String getName() {
 		return name;
 	}

@@ -13,7 +13,6 @@ import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
 import static org.dataart.qdump.service.utils.WebApplicationUtils.exceptionCreator;
-import static org.dataart.qdump.service.utils.WebApplicationUtils.responseCreator;
 
 @Component
 public class AnswerEntityResourceBean implements AnswerEntityResource{
@@ -37,14 +36,14 @@ public class AnswerEntityResourceBean implements AnswerEntityResource{
     }
 
     public void delete() {
-        serviceQdump.deleteAllAnswerEntity();
+        serviceQdump.deleteAnswerEntities();
     }
 
-    public Response get(@PathParam("id") long id) {
+    public AnswerEntity get(@PathParam("id") long id) {
         if (!serviceQdump.answerEntityExists(id)) {
             exceptionCreator(Status.NOT_FOUND, String.format("Answer with id = %d is not exists", id));
         }
-        return responseCreator(Status.OK, serviceQdump.getAnswerEntity(id));
+        return serviceQdump.getAnswerEntity(id);
     }
 
     public List<AnswerEntity> get() {

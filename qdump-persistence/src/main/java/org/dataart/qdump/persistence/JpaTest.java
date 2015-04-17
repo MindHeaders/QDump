@@ -1,12 +1,11 @@
 package org.dataart.qdump.persistence;
 
-import org.dataart.qdump.entities.person.PersonQuestionnaireEntity;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
-import java.util.List;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class JpaTest {
 
@@ -15,39 +14,15 @@ public class JpaTest {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            Query query = em.createQuery("SELECT NEW PersonQuestionnaireEntity(pq.id, pq.status, q.id, q.name, pq.createdDate, pq.modifiedDate) " +
-                    "FROM PersonQuestionnaireEntity pq, PersonEntity p " +
-                    "LEFT JOIN pq.questionnaireEntity q " +
-                    "WHERE pq MEMBER OF p.personQuestionnaireEntities " +
-                    "AND p.id = ?1 " +
-                    "AND pq.status NOT IN ('in progress', 'not specified')");
-            query.setParameter(1, 1l);
-            List<PersonQuestionnaireEntity> personQuestionnaireEntities = query.getResultList();
-            System.out.println(personQuestionnaireEntities.size());
-
-//            PersonEntity personEntity = (PersonEntity) em.createQuery("SELECT p FROM PersonEntity p WHERE p.id = 1")
-//                    .getSingleResult();
-//            for(int i = 0; i < 10; i++) {
-//                QuestionnaireEntity questionnaireEntity = new QuestionnaireEntity();
-//                PersonQuestionnaireEntity personQuestionnaireEntity = new PersonQuestionnaireEntity();
-//                personQuestionnaireEntity.setStatus(QuestionnaireStatusEnums.IN_CHECKING_PROCESS.getName());
-//                personQuestionnaireEntity.setQuestionnaireEntity(questionnaireEntity);
-//                QuestionEntity questionEntity = new QuestionEntity();
-//                questionEntity.setType(QuestionTypeEnums.TEXTAREA);
-//                PersonQuestionEntity personQuestionEntity = new PersonQuestionEntity();
-//                personQuestionEntity.setQuestionEntity(questionEntity);
-//                PersonAnswerEntity personAnswerEntity = new PersonAnswerEntity();
-//                personQuestionEntity.setPersonAnswerEntities(Arrays.asList(personAnswerEntity));
-//                questionnaireEntity.setName("This is the test questionnaire #" + (i + 1));
-//                questionnaireEntity.setPublished(true);
-//                questionEntity.setQuestion("This is the test question #" + (i + 1));
-//                questionnaireEntity.setQuestionEntities(Arrays.asList(questionEntity));
-//                personQuestionEntity.getPersonAnswerEntities().get(0).setPersonAnswer("This is the test person answer" +
-//                        " #" + (i + 1));
-//                personQuestionnaireEntity.setPersonQuestionEntities(Arrays.asList(personQuestionEntity));
-//                em.persist(questionnaireEntity);
-//                personEntity.getPersonQuestionnaireEntities().add(personQuestionnaireEntity);
-//            }
+            Query query = em.createQuery("SELECT q.createdDate FROM QuestionnaireEntity q ORDER BY q.createdDate DESC");
+            query.setMaxResults(1);
+            Timestamp timestamp = (Timestamp) query.getSingleResult();
+            LocalDateTime dateTime = timestamp.toLocalDateTime();
+            System.out.println(dateTime);
+//            select * from persons p WHERE p.id_person = " +
+//            "(select maxCount.created_by from (select counter.created_by, MAX(counter.createdByCounter) from " +
+//                    "(select q.created_by, count(*) AS createdByCounter from questionnaires q WHERE q.created_by IS " +
+//                    "NOT NULL group by q.created_by) counter) maxCount)
             em.getTransaction().commit();
         } finally {
             if (em.isOpen()) {

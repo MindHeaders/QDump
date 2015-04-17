@@ -4,6 +4,7 @@
         <tab ng-repeat="tab in tabs" heading="{{tab.title}}" select="change_type(tab, $index)" active="tab.active">
             <tab-heading>
                 {{tab.title}}
+                <span ng-if="!tab.badge" class="badge">{{tab.badge}}</span>
             </tab-heading>
             <div ng-include="tab.template"></div>
         </tab>
