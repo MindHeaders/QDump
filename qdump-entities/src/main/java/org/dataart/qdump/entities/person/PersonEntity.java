@@ -103,7 +103,6 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 
 	@JsonProperty("password")
 	public void setPassword(String password) {
-//		this.password = BCrypt.hashpw(password, BCrypt.gensalt());
 		this.password = password;
 	}
 
@@ -154,11 +153,7 @@ public class PersonEntity extends QuestionnaireBaseEntity implements Serializabl
 	}
 
 	public void setPersonGroup(PersonGroupEnums personGroup) {
-		if(personGroup == null) {
-			this.personGroup = PersonGroupEnums.USER;
-		} else {
-			this.personGroup = personGroup;
-		}
+		this.personGroup = personGroup;
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = PersonQuestionnaireEntity.class,
