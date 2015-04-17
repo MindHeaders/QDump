@@ -1,0 +1,22 @@
+<dataset>
+    <persons id_person="1" email="testemail@mail.com" password="testpassword" enabled="true" firstname="firstname"
+             lastname="lastname" login="login" gender="1" person_group="ADMIN" created_date="2015-04-08 01:00:00"/>
+    <persons id_person="2" email="testemail3@mail.com" password="testpassword" enabled="true" firstname="firstname"
+             lastname="lastname" login="login3" gender="9" person_group="USER" created_date="2015-04-08 01:00:00"/>
+    <persons id_person="3" email="testemail2@mail.com" password="testpassword2" enabled="false" firstname="firstname2"
+             lastname="lastname2" login="login2" gender="2" person_group="USER" created_date="2015-04-08 01:00:00"/>
+    <questionnaires id_questionnaire="1" published="true" name="This is the test questionnaire" created_by="2"
+                    created_date="2015-04-08 01:00:00"/>
+    <questions id_question="1" question="This is the first question" question_type="RADIO" id_questionnaire="1" created_date="2015-04-08 01:00:00"/>
+    <questions id_question="2" question="This is the second question" question_type="TEXTAREA" id_questionnaire="1" created_date="2015-04-08 01:00:00"/>
+    <answers id_answer="1" answer="First answer" correct="true" id_question="1" created_date="2015-04-08 01:00:00"/>
+    <answers id_answer="2" answer="Second answer" correct="false" id_question="1" created_date="2015-04-08 01:00:00"/>
+    <person_questionnaires id_person_questionnaire="1" id_person="2" id_questionnaire="1" status="in checking process"
+                           created_date="2015-04-08 01:00:00"/>
+    <person_questions id_person_questionnaire="1" id_person_question="1" id_question="1" correct="true"
+                      checked="true" created_date="2015-04-08 01:00:00"/>
+    <person_questions id_person_questionnaire="1" id_person_question="2" id_question="2" correct="false"
+                      checked="false" created_date="2015-04-08 01:00:00"/>
+    <person_answers id_person_question="1" id_person_answer="1" id_answer="1" marked="true" created_date="2015-04-08 01:00:00"/>
+    <person_answers id_person_question="1" id_person_answer="2" id_answer="2" marked="false" created_date="2015-04-08 01:00:00"/>
+</dataset>

@@ -1,0 +1,16 @@
+<h2 align="center">Questionnaires Statistics</h2>
+<hr/>
+<div class="col-md-12">
+    <ul style="list-style-type: none">
+        <li>Total created questionnaires:
+            <span ng-bind="questionnaireStatistics.totalQuestionnaireEntities"></span></li>
+        <li>Published questionnaires:
+            <span ng-bind="questionnaireStatistics.publishedQuestionnaireEntities"></span></li>
+        <li>Popular questionnaire:
+            <ul style="list-style-type: none">
+                <li>Name: <span ng-bind="questionnaireStatistics.popularQuestionnaireEntity.name"></span></li>
+            </ul>
+        </li>
+        <li>Date of last created questionnaire: <span ng-bind="questionnaireStatistics.dateOfLastCreatedQuestionnaireEntity | date:'MM/dd/yyyy'"></span></li>
+    </ul>
+</div>
