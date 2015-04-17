@@ -4,133 +4,121 @@
 var services = angular.module('questionnaire.services', ['ngResource']);
 
 services.factory('PersonQuestionnairesFactory', function($resource) {
-    return $resource('/rest/persons/questionnaires/:completed/:started/:count/:type',
-        {completed: '@completed', started: '@started', count: '@count', type: '@type'},
+    return $resource('/rest/persons/questionnaires/:statistic/:completed/:started/:checking/:count/:type/:id',
         {
-            completed: {
+            statistic: '@statistic',
+            completed: '@completed',
+            started: '@started',
+            checking: '@checking',
+            count: '@count',
+            type: '@type',
+            id: '@id'
+        }, {
+            getCompleted: {
                 method: 'GET',
                 params: {
                     completed: 'completed'
                 },
                 isArray: true
             },
-            started: {
+            getChecking: {
                 method: 'GET',
                 params: {
-                    started: 'started'
+                    completed: 'checking'
                 },
                 isArray: true
             },
-            count_completed: {
+            getStarted: {
                 method: 'GET',
                 params: {
-                    count: 'count',
-                    type: 'completed'
-                }
-            },
-            count_started: {
-                method: 'GET',
-                params: {
-                    count: 'count',
-                    type: 'started'
-                }
+                    completed: 'started'
+                },
+                isArray: true
             }
         })
 });
-services.factory('CreateQuestionnaireFactory', function($resource) {
-    return $resource('/rest/questionnaires/:create/:update',
-        {
-            create: '@create',
-            update: '@update'
-        }, {
-            save: {
-                method: 'POST',
-                params: {
-                    create: 'create'
-                }
-            },
-            update: {
-                method: 'PUT',
-                params: {
-                    update: 'update'
-                }
-            }
-        });
+services.factory('UpdatePersonQuestionnaire', function($resource) {
+    return $resource('/rest/persons/questionnaires', {}, {
+        update: {
+            method: 'PUT'
+        }
+    })
 });
 services.factory('QuestionnaireFactory', function($resource) {
-    return $resource('/rest/questionnaires/:get/:published/:delete/:personal/:id/:all/:count', {
+    return $resource('/rest/questionnaires/:statistic/:published/:personal/:count/:id', {
+            statistic: '@statistic',
             published: '@published',
-            get: '@get',
-            id: '@id',
+            personal: '@personal',
             count: '@count',
-            all: '@all',
-            delete: '@delete',
-            personal: '@personal'
+            id: '@id'
         },
         {
-            get_published: {
+            getPublished: {
                 method: 'GET',
                 params: {
-                    get: 'get',
                     published: 'published'
                 },
                 isArray: true
-            },
-            get_one: {
-                method: 'GET',
-                params: {
-                    get: 'get'
-                },
-                isArray: false
-            },
-            count_published: {
-                method: 'GET',
-                params: {
-                    get: 'get',
-                    published: 'published',
-                    count: 'count'
-                }
-            },
-            get_all: {
-                method: 'GET',
-                params: {
-                    get: 'get',
-                    all: 'all'
-                },
-                isArray: true
-            },
-            count_all: {
-                method: 'GET',
-                params: {
-                    get: 'get',
-                    all: 'all',
-                    count: 'count'
-                }
-            },
-            delete_one: {
-                method: 'DELETE',
-                params: {
-                    delete: 'delete'
-                }
             }
         }
     )
 });
-services.factory('PersonalQuestionnaireFactory', function() {
-    var questionnaireId = null;
-    var personQuestionnaireId = null;
+services.factory('UpdateQuestionnaire', function($resource) {
+    return $resource('/rest/questionnaires', {}, {update: {method: 'PUT'}});
+});
+services.factory('QuestionFactory', function($resource) {
+    return $resource('/rest/questions/:id', {
+        id: '@id'
+    })
+});
+services.factory('AnswerFactory', function($resource) {
+   return $resource('/rest/answers/:id', {
+       id: '@id'
+   })
+});
+services.factory('PersonQuestionFactory', function($resource) {
+    return $resource('/rest/persons/questions/:checking/:count/:id',
+        {
+            count: '@count',
+            checking: '@checking',
+            id: '@id'
+
+        }, {
+            getNotChecked: {
+                method: 'GET',
+                params: {
+                    checking: 'checking'
+                },
+                isArray: true
+            }
+        })
+});
+services.factory('PersonAnswerFactory', function($resource) {
+   return $resource('/rest/persons/answers/:id', {
+       id: '@id'
+   })
+});
+services.factory('PersonalQuestionnaire', function($cookieStore) {
     return {
         getQuestionnaireId: function() {
-            return questionnaireId;
+            return typeof(Storage) != 'undefined' ?
+                Number(sessionStorage.getItem('questionnaireId')) :
+                $cookieStore.get('questionnaireId');
         },
         setQuestionnaireId: function(id) {
-            questionnaireId = id;
+            typeof(Storage) != 'undefined' ?
+                sessionStorage.setItem('questionnaireId', id) :
+                $cookieStore.put('questionnaireId', id);
         },
         getPersonQuestionnaireId: function() {
-            return personQuestionnaireId;
+            return typeof(Storage) != 'undefined' ?
+                Number(sessionStorage.getItem('personQuestionnaireId')) :
+                $cookieStore.get('personQuestionnaireId');
         },
         setPersonQuestionnaireId: function(id) {
-            personQuestionnaireId = id;
+            typeof(Storage) != 'undefined' ?
+                sessionStorage.setItem('personQuestionnaireId', id) :
+                $cookieStore.put('personQuestionnaireId', id);
         }
     }
 });
@@ -161,27 +149,4 @@ services.factory('Questionnaire', function($resource, $cookieStore, ErrorFactory
         }
     };
     return questionnaire;
-});
-services.factory('QuestionFactory', function($resource) {
-    return $resource('/rest/questions/:delete/:create/:get/:id', {
-        delete: '@delete',
-        create: '@create',
-        get: '@get',
-        id: '@id'
-    }, {})
-});
-services.factory('DeleteQuestionFactory', function($resource) {
-    return $resource('/rest/questions/delete/entity',{},{
-        delete_entity: {
-            method: 'DELETE'
-        }
-    });
-});
-services.factory('AnswerFactory', function($resource) {
-   return $resource('/rest/answers/:delete/:create/:get/:id', {
-       delete: '@delete',
-       create: '@create',
-       get: '@get',
-       id: '@id'
-   })
 });

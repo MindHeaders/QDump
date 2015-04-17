@@ -3,8 +3,8 @@
  */
 var app = angular.module('additional.controllers', ['ngCookies']);
 
-app.controller('MainCtrl', ['$scope', '$route', '$cookieStore', '$http', '$location', '$window', 'PersonFactory', 'Authorization', 'RegistrationFactory', 'ErrorFactory', 'Permission',
-    function($scope, $route, $cookieStore, $http, $location, $window, PersonFactory, Authorization, RegistrationFactory, ErrorFactory, Permission) {
+app.controller('MainCtrl', ['$scope', '$route', '$cookieStore', '$http', '$location', '$window', 'PersonFactory', 'Authorization', 'Registration', 'ErrorFactory', 'Permission',
+    function($scope, $route, $cookieStore, $http, $location, $window, PersonFactory, Authorization, Registration, ErrorFactory, Permission) {
         if($cookieStore.get('isAuth') == null) {
             Authorization.isAuth().$promise.then(
                 function() {Authorization.setIsAuth(true)},
@@ -45,7 +45,8 @@ app.controller('MainCtrl', ['$scope', '$route', '$cookieStore', '$http', '$locat
         $scope.lastnamePattern = /[a-zA-z]+([ '-][a-zA-Z]+)*/i;
         $scope.user = {};
         $scope.registration = function() {
-            RegistrationFactory.registration($scope.user,
+            console.log('inside registration');
+            Registration.registration($scope.user,
                 function(){
                     $cookieStore.put('success', 'You successfully registered on QDump Project.\n We send you verification link to your email. Life time of this link is 24 hours');
                     $location.path('/success');
@@ -150,7 +151,7 @@ app.controller('ContactsCtrl', ['$scope',
                 skype: 'martens121087',
                 linkedin: 'https://www.linkedin.com/in/vlasovartem',
                 github: 'https://github.com/VlasovArtem',
-                icon: '/style/icons/personal/vlasovartem.jpg'
+                icon: '/style/icons/personal/vlasovartem.png'
             },
             {
                 name: 'Evgeniy',
@@ -161,7 +162,7 @@ app.controller('ContactsCtrl', ['$scope',
                 skype: 'esudreame',
                 linkedin: '',
                 github: '',
-                icon: '/style/icons/personal/esudreame.png'
+                icon: ''
             },
             {
                 name: 'Anastasia',
@@ -183,7 +184,7 @@ app.controller('ContactsCtrl', ['$scope',
                 skype: 'rain_b1ack',
                 linkedin: '',
                 github: '',
-                icon: '/style/icons/personal/b1ackrain.png'
+                icon: ''
             },
             {
                 name: 'Aleksandr',
@@ -222,19 +223,5 @@ app.controller('ContactsCtrl', ['$scope',
         $scope.checkField = function(fieldName, index) {
             return ($scope.contactsDevelopers[index][fieldName] == null || $scope.contactsDevelopers[index][fieldName] == '')
         }
-    }
-]);
-app.controller('TestDirectiveCtrl', ['$scope', 'QuestionnaireFactory',
-    function($scope, QuestionnaireFactory) {
-        $scope.dataSorting = [
-            {type: 'createdDate', direction: 'DESC'},
-            {type: 'modifiedDate', direction: 'DESC'}
-        ];
-        $scope.getData = function(queryParams) {
-            $scope.questionnaires = QuestionnaireFactory.get_all(queryParams);
-            QuestionnaireFactory.count_all(function(data) {
-                $scope.totalItems = data.count;
-            });
-        };
     }
 ]);

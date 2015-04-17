@@ -1,8 +1,8 @@
 var app = angular.module('account.controllers', ['ngCookies']);
 
-app.controller('AccountCtrl', ['$rootScope', '$scope', '$http', '$cookieStore', '$location', '$window', 'PersonFactory', 'ErrorFactory',
-    function($rootScope, $scope, $http, $cookieStore, $location, $window, PersonFactory, ErrorFactory) {
-        $scope.user = PersonFactory.page(
+app.controller('AccountCtrl', ['$modal', '$scope', '$http', '$cookieStore', '$location', '$window', 'PersonFactory', 'ErrorFactory', 'UpdateUserData', 'ResetPassword',
+    function($modal, $scope, $http, $cookieStore, $location, $window, PersonFactory, ErrorFactory, UpdateUserData, ResetPassword) {
+        $scope.user = PersonFactory.get({personal: 'personal'},
             function() {
                 $scope.changedUser = angular.copy($scope.user);
                 $scope.reset = function() {
@@ -23,25 +23,40 @@ app.controller('AccountCtrl', ['$rootScope', '$scope', '$http', '$cookieStore', 
             template: { menu: '/app/Account/float-menu.html'}
         }];
         $scope.template = $scope.templates[0].template;
-        $scope.update = function(changedUser, user) {
-            if(changedUser.email != user.email) {
-                confirm("You change your email. This changes will disabled your account. " +
-                "If you confirm update your personal data you should to enabled " +
-                "your account with confirming it with url that we send to your new email.")
-            }
-            var isUpdate = confirm("Do you want to continue update user?");
-            if(isUpdate) PersonFactory.update(changedUser);
+        $scope.updateUser = function(user_id) {
+            var modalInstance = $modal.open({
+                templateUrl: '/app/Account/update-user-data.html',
+                controller: 'UpdateUserCtrl',
+                resolve: {
+                    user: function() {
+                        return PersonFactory.get({id: user_id});
+                    }
+                }
+            });
+            modalInstance.result.then(function(data) {
+                if(_.isEqual(data, "success")) {
+                    $route.reload();
+                    alert('User data successfully updated');
+                }
+            }, function(data) {
+                ErrorFactory.setErrorMessage(data.data.error);
+            })
         };
         $scope.resetPassword = function() {
             var reset = confirm("Reset password: We will generate new password and send to your email. " +
             "Do you want to continue?");
-            if(reset) PersonFactory.resetPassword();
+            if(reset) ResetPassword.resetPassword();
         };
     }
 ]);
-app.controller('AdminPanelCtrl', ['page_type', 'tab_number', '$route', '$resource', '$scope', '$location', '$cookieStore', '$modal', 'QuestionnaireFactory', 'PersonFactory', 'ErrorFactory', 'PersonQuestionFactory',
-    function(page_type, tab_number, $route, $resource, $scope, $location, $cookieStore, $modal, QuestionnaireFactory, PersonFactory, ErrorFactory, PersonQuestionFactory) {
+app.controller('AdminPanelCtrl', ['page_type', 'tab_number', '$timeout', '$route', '$resource', '$scope', '$location', '$cookieStore', '$modal', 'QuestionnaireFactory', 'PersonFactory', 'PersonQuestionnairesFactory', 'ErrorFactory', 'PersonQuestionFactory',
+    function(page_type, tab_number, $timeout, $route, $resource, $scope, $location, $cookieStore, $modal, QuestionnaireFactory, PersonFactory, PersonQuestionnairesFactory, ErrorFactory, PersonQuestionFactory) {
         $scope.page_type = page_type;
+        $timeout(function() {
+            PersonQuestionFactory.get({get: 'get', checking: 'checking', count: 'count'}, function(data) {
+                $scope.questionBadge = data.count;
+            })
+        }, 1800000);
         $scope.tabs = [
             {
                 title: 'Edit Q`s',
@@ -66,12 +81,21 @@ app.controller('AdminPanelCtrl', ['page_type', 'tab_number', '$route', '$resourc
             },
             {
                 title: 'Questions Ver.',
+
                 label: 'questions_verification',
                 template: '/app/Questionnaire/question-verification.html',
                 name: 'Questions verification',
                 dataSorting: null,
-                active: false
+                active: false,
+                badge: $scope.questionBadge
 
+            },
+            {
+                title: 'Statistics',
+                label: 'statistics',
+                template: '/app/Additional/statistics.html',
+                name: 'Project Statistics',
+                active: false
             }
         ];
         $scope.tabs[tab_number].active = true;
@@ -100,25 +124,41 @@ app.controller('AdminPanelCtrl', ['page_type', 'tab_number', '$route', '$resourc
                         getQuestion(queryParams);
                     }
                     break;
+                case $scope.tabs[3].label:
+                    if($scope.personQuestions == null) {
+                        getStatistics();
+                    }
             }
         };
         var getQuestionnaires = function(queryParams) {
-            $scope.questionnaires = QuestionnaireFactory.get_all(queryParams);
-            QuestionnaireFactory.count_all(function(data) {
+            $scope.questionnaires = QuestionnaireFactory.query(queryParams);
+            QuestionnaireFactory.get({count: 'count'}, function(data) {
                 $scope.totalItems = data.count;
             })
         };
         var getUsers = function(queryParams) {
-            $scope.users = PersonFactory.get_all_questionnaires(queryParams);
-            PersonFactory.count(function(data) {
+            $scope.users = PersonFactory.query(queryParams);
+            PersonFactory.get({count: 'count'}, function(data) {
                 $scope.totalItems = data.count;
             });
         };
         var getQuestion = function(queryParams) {
-            $scope.personQuestions = PersonQuestionFactory.get_not_checked(queryParams);
-            PersonQuestionFactory.get({count: 'count', checking: 'checking'}, function(data) {
+            $scope.personQuestions = PersonQuestionFactory.getNotChecked(queryParams);
+            PersonQuestionFactory.get({checking: 'checking', count: 'count'}, function(data) {
                 $scope.totalItems = data.count;
             })
+        };
+        var getStatistics = function() {
+            PersonFactory.get({statistic: 'statistic'}, function(data) {
+                $scope.personsStatistic = data;
+            });
+            QuestionnaireFactory.get({statistic: 'statistic'}, function(data) {
+                console.log(data);
+                $scope.questionnairesStatistic = data;
+            });
+            PersonQuestionnairesFactory.get({statistic: 'statistic'}, function(data) {
+                $scope.personQuestionnairesStatistic = data;
+            });
         };
         $scope.updateGroup = function(user) {
             var modalInstance = $modal.open({
@@ -130,9 +170,11 @@ app.controller('AdminPanelCtrl', ['page_type', 'tab_number', '$route', '$resourc
                     }
                 }
             });
-            modalInstance.result.then(function() {
-                $route.reload();
-                alert('User group successfully updated');
+            modalInstance.result.then(function(data) {
+                if(_.isEqual(data, "success")) {
+                    $route.reload();
+                    alert('User group successfully updated');
+                }
             }, function(data) {
                 ErrorFactory.setErrorMessage(data.data.error);
             })
@@ -143,20 +185,22 @@ app.controller('AdminPanelCtrl', ['page_type', 'tab_number', '$route', '$resourc
                 controller: 'UpdateUserCtrl',
                 resolve: {
                     user: function() {
-                        return PersonFactory.get_for_update({id: user_id});
+                        return PersonFactory.get({id: user_id});
                     }
                 }
             });
-            modalInstance.result.then(function() {
-                $route.reload();
-                alert('User data successfully updated');
+            modalInstance.result.then(function(data) {
+                if(_.isEqual(data, "success")) {
+                    $route.reload();
+                    alert('User data successfully updated');
+                }
             }, function(data) {
                 ErrorFactory.setErrorMessage(data.data.error);
             })
         };
         $scope.delete = function(user) {
             var confirmed = confirm('Do you want to delete user with next credentials: \nlogin - ' + user.login + '\nemail - ' + user.email);
-            if(confirmed) PersonFactory.delete({delete: 'delete', id: user.id}).$promise.then(
+            if(confirmed) PersonFactory.delete({id: user.id}).$promise.then(
                 function() {
                     $route.reload();
                 }, function(data) {
@@ -188,8 +232,8 @@ app.controller('AdminPanelCtrl', ['page_type', 'tab_number', '$route', '$resourc
         }
     }
 ]);
-app.controller('UpdateGroupCtrl', ['user', '$scope', '$modalInstance', '$resource', 'ErrorFactory',
-    function(user, $scope, $modalInstance, $resource, ErrorFactory) {
+app.controller('UpdateGroupCtrl', ['user', '$scope', '$modalInstance', '$resource',
+    function(user, $scope, $modalInstance, $resource) {
         $scope.user = user;
         $scope.groups = ['ADMIN', 'USER'];
         $scope.currentGroup = $scope.user.person_group;
@@ -198,21 +242,20 @@ app.controller('UpdateGroupCtrl', ['user', '$scope', '$modalInstance', '$resourc
             if($scope.currentGroup != $scope.newGroup) {
                 $resource('/rest/persons/update/:id', {id: $scope.user.id, group: $scope.newGroup},
                     {update: {method: 'PUT'}}).update(function() {
-                        $modalInstance.close();
+                        $modalInstance.close("success");
                     }, function(data) {
                         $modalInstance.dismiss(data);
                     });
             }
-
         };
         $scope.close = function() {
-            $modalInstance.close();
+            $modalInstance.close("closed");
         }
 
     }
 ]);
-app.controller('UpdateUserCtrl', ['user', '$scope', '$modalInstance', '$location', 'UpdateUserDataFactory', 'ErrorFactory',
-    function(user, $scope, $modalInstance, $location, UpdateUserDataFactory, ErrorFactory) {
+app.controller('UpdateUserCtrl', ['user', '$scope', '$modalInstance', '$location', 'UpdateUserData', 'ErrorFactory',
+    function(user, $scope, $modalInstance, $location, UpdateUserData, ErrorFactory) {
         user.$promise.then(
             function(user) {
                 $scope.user = user;
@@ -228,8 +271,8 @@ app.controller('UpdateUserCtrl', ['user', '$scope', '$modalInstance', '$location
                 "your account with confirming it with url that we send to your new email.")
             }
             var isUpdate = confirm("Do you want to continue update user?");
-            if(isUpdate) UpdateUserDataFactory.update($scope.changedUser, function() {
-                $modalInstance.close();
+            if(isUpdate) UpdateUserData.update($scope.changedUser, function() {
+                $modalInstance.close("success");
             }, function(data) {
                 $modalInstance.dismiss(data);
             });

@@ -2,6 +2,8 @@ package org.dataart.qdump.service.resource;
 
 import org.dataart.qdump.entities.questionnaire.QuestionEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -25,22 +27,21 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface QuestionEntityResource {
     @POST
-    @Path("create")
-    public Response add(QuestionEntity questionEntity);
+    Response add(QuestionEntity questionEntity);
 
     @DELETE
-    @Path("delete")
-    public void delete();
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    void delete();
 
     @DELETE
-    @Path("delete/{id}")
-    public Response delete(@PathParam("id") long id);
+    @Path("{id : \\d+}")
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    Response delete(@PathParam("id") long id);
 
     @GET
-    @Path("get")
-    public List<QuestionEntity> get();
+    List<QuestionEntity> get();
 
     @GET
-    @Path("get/{id}")
-    public Response get(@PathParam("id") long id);
+    @Path("{id : \\d+}")
+    QuestionEntity get(@PathParam("id") long id);
 }

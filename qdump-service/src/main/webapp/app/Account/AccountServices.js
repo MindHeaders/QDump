@@ -4,21 +4,14 @@
 var services = angular.module('account.services', ['ngResource']);
 
 services.factory('PersonFactory', function($resource) {
-    return $resource('/rest/persons/:count/:authentication/:delete/:logout/:verify/:personal/:update/:reset/:password/:questionnaires/:pagination/:create/:get/:admin/:id',
+    return $resource('/rest/persons/:authentication/:logout/:statistic/:verify/:count/:personal/:id',
         {
-            count: '@count',
             authentication: '@authentication',
-            delete: '@delete',
             logout: '@logout',
+            statistic: '@statistic',
             verify: '@verify',
+            count: '@count',
             personal: '@personal',
-            reset: '@reset',
-            password: '@password',
-            questionnaires: '@questionnaires',
-            pagination: '@pagination',
-            create: '@create',
-            get: '@get',
-            admin: '@admin',
             id: '@id'
         },
         {
@@ -37,93 +30,32 @@ services.factory('PersonFactory', function($resource) {
                 params: {
                     logout: 'logout'
                 }
-            },
-            verify: {
-                method: 'GET',
-                params: {
-                    verify: 'verify'
-                }
-            },
-            page: {
-                method: 'GET',
-                params: {
-                    personal: 'personal'
-                }
-            },
-            resetPassword: {
-                method: 'PUT',
-                params: {
-                    reset: 'reset',
-                    password: 'password'
-                }
-            },
-            completed: {
-                method: 'GET',
-                params: {
-                    pagination: 'pagination',
-                    questionnaires: 'questionnaires'
-                },
-                isArray: true
-            },
-            create: {
-                method: 'POST',
-                params: {
-                    questionnaires: 'questionnaires',
-                    create: 'create'
-                }
-            },
-            get_questionnaire: {
-                method: 'GET',
-                params: {
-                    questionnaires: 'questionnaires',
-                    get: 'get'
-                }
-            },
-            get_all_questionnaires: {
-                method: 'GET',
-                params: {
-                    get: 'get',
-                    admin: 'admin'
-                },
-                isArray: true
-            },
-            count: {
-                method: 'GET',
-                params: {
-                    count: 'count'
-                }
-            },
-            get_for_update: {
-                method: 'GET',
-                params: {
-                    personal: 'personal'
-                }
             }
         })
 });
-services.factory('ResetPasswordFactory', function($resource) {
+services.factory('ResetPassword', function($resource) {
     return $resource('/rest/person/reset/password', {}, {
         resetPassword : {
             method: 'PUT'
         }
     })
 });
-services.factory('RegistrationFactory', function($resource) {
+services.factory('Registration', function($resource) {
     return $resource('/rest/persons/registration', {}, {
         registration: {
             method: 'POST'
         }
     })
 });
-services.factory('UpdateUserGroupFactory', function($resource) {
-    return $resource('/rest/persons/update/:id', {id: '@id'}, {
+services.factory('UpdateUserGroup', function($resource) {
+    return $resource('/rest/persons/:id', {id: '@id'}, {
         update: {
             method: 'PUT'
         }
     });
 });
-services.factory('UpdateUserDataFactory', function($resource) {
-    return $resource('/rest/persons/update', {}, {
+services.factory('UpdateUserData', function($resource) {
+    return $resource('/rest/persons', {}, {
         update: {
             method: 'PUT'
         }
@@ -176,24 +108,4 @@ services.factory('Permission', function($resource, $q) {
             return deferred.promise;
         }
     }
-});
-services.factory('PersonQuestionFactory', function($resource) {
-    return $resource('/rest/persons/questions/:delete/:get/:count/:checking/:id',
-        {
-            delete: '@delete',
-            get: '@get',
-            count: '@count',
-            checking: '@checking',
-            id: '@id'
-
-        }, {
-            get_not_checked: {
-                method: 'GET',
-                params: {
-                    get: 'get',
-                    checking: 'checking'
-                },
-                isArray: true
-            }
-        })
 });

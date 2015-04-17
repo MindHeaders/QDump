@@ -1,19 +1,21 @@
 package org.dataart.qdump.persistence.repository;
 
 import org.dataart.qdump.entities.person.PersonQuestionEntity;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface PersonQuestionCrudRepository extends
-		CrudRepository<PersonQuestionEntity, Long> {
+        JpaRepository<PersonQuestionEntity, Long> {
 
-    List<PersonQuestionEntity> findByPersonId(long id);
+    List<PersonQuestionEntity> findTextareaQuestionByPersonId(long id);
     @Query(value = "SELECT pqe FROM PersonQuestionEntity pqe WHERE pqe.questionEntity.type = 'TEXTAREA' AND pqe.checked = false",
             countQuery = "SELECT COUNT(pqe) FROM PersonQuestionEntity pqe WHERE pqe.questionEntity.type = 'TEXTAREA' AND pqe.checked = false")
-    Page<PersonQuestionEntity> findNotCheckedQuestions(Pageable pageable);
+    List<PersonQuestionEntity> findNotCheckedQuestions(Pageable pageable);
     long countNotCheckedQuestions();
+    PersonQuestionEntity findById(long id);
 }

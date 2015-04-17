@@ -1,0 +1,27 @@
+<h2 align="center">Persons Statistic</h2>
+<hr/>
+<div class="col-md-12">
+    <ul style="list-style-type: none">
+        <li>Registered on the project: <span ng-bind="personsStatistic.registeredPersonEntities"></span></li>
+        <li>Authenticated on the project: <span ng-bind="personsStatistic.enabledPersonEntities"></span></li>
+        <li>Registered by gender:
+            <ul style="list-style-type: none">
+                <li>Male: <span ng-bind="personsStatistic.maleRegisteredPersonEntities"></span></li>
+                <li>Female: <span ng-bind="personsStatistic.femaleRegisteredPersonEntities"></span></li>
+            </ul>
+        </li>
+        <li>
+            Most Active users:
+            <ul style="list-style-type: none">
+                <li>Passing questionnaires: <span ng-bind="personsStatistic.mostActivePersonEntityInPassingQuestionnaireEntities.email"></span></li>
+                <li>Creating questionnaires: <span ng-bind="personsStatistic.mostActivePersonEntityInCreatingQuestionnaireEntities.email"></span></li>
+            </ul>
+        </li>
+        <li>
+            Top 10 active users:
+            <ul style="list-style-type: none">
+                <li><span ng-repeat="user in personsStatistic.top10ActivePersonEntities">{{user.email}}</span></li>
+            </ul>
+        </li>
+    </ul>
+</div>

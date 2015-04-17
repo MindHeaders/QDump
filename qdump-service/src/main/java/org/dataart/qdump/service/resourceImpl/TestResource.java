@@ -69,4 +69,16 @@ public class TestResource {
     public QuestionnaireEntity getData() {
         return service.getQuestionnaireEntity(6l);
     }
+
+    @GET
+    @Path("test/{id}")
+    public QuestionnaireEntity test(@PathParam("id") long id) {
+        return service.test(id);
+    }
+
+    @GET
+    @Path("test2/{id}")
+    public QuestionnaireEntity test2(@PathParam("id") long id) {
+        return service.test2(id);
+    }
 }

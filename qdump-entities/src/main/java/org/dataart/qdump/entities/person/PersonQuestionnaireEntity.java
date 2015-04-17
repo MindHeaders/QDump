@@ -2,10 +2,12 @@ package org.dataart.qdump.entities.person;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.dataart.qdump.entities.questionnaire.BaseEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
 import org.dataart.qdump.entities.serializer.QuestionnairePersonSerializer;
+import org.dataart.qdump.entities.serializer.View;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -19,7 +21,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -27,20 +28,21 @@ import java.util.List;
 @AttributeOverride(name = "id", column = @Column(name = "id_person_questionnaire", insertable = false, updatable = false))
 @JsonAutoDetect
 @NamedQueries({
-		@NamedQuery(name = "PersonQuestionnaireEntity.findByQuestionnaireName", query = "FROM " +
-                "PersonQuestionnaireEntity pinq WHERE pinq.questionnaireEntity.name = ?1"),
-        @NamedQuery(name = "PersonQuestionnaireEntity.findByPersonQuestionnaireIdAndPersonId", query = "SELECT pq " +
-                "FROM " +
-                "PersonQuestionnaireEntity pq, PersonEntity p WHERE pq.id = ?1 AND p.id = ?2"),
-        @NamedQuery(name = "PersonQuestionnaireEntity.countCompletedByPersonId", query = "SELECT count(pq) FROM PersonQuestionnaireEntity pq, PersonEntity p WHERE p.id = ?1 AND pq.status NOT IN ('in progress', 'not specified')"),
+        @NamedQuery(name = "PersonQuestionnaireEntity.findByPersonQuestionnaireIdAndPersonId",
+                query = "SELECT pq FROM PersonQuestionnaireEntity pq, PersonEntity p " +
+                        "WHERE pq.id = ?1 AND p.id = ?2"),
+        @NamedQuery(name = "PersonQuestionnaireEntity.countCompletedByPersonId",
+                query = "SELECT count(pq) FROM PersonQuestionnaireEntity pq, PersonEntity p WHERE p.id = ?1 AND pq.status NOT IN ('in progress', 'not specified')"),
         @NamedQuery(name = "PersonQuestionnaireEntity.countStartedByPersonId", query = "SELECT " +
                 "COUNT(pq) FROM PersonQuestionnaireEntity pq, PersonEntity p WHERE p.id = ?1 AND pq.status = 'in " +
                 "progress'"),
-        @NamedQuery(name = "PersonQuestionnaireEntity.countByStatus", query = "SELECT COUNT(pq) FROM " +
-                "PersonQuestionnaireEntity pq WHERE pq.status = ?1"),
         @NamedQuery(name = "PersonQuestionnaireEntity.findByPersonQuestionId",
                 query = "SELECT pq FROM PersonQuestionnaireEntity pq, PersonQuestionEntity pqe " +
-                        "WHERE pqe MEMBER OF pq.personQuestionEntities AND pqe.id = ?1")
+                        "WHERE pqe MEMBER OF pq.personQuestionEntities AND pqe.id = ?1"),
+        @NamedQuery(name = "PersonQuestionnaireEntity.countStartedQuestionnaires",
+                query = "SELECT COUNT(pq) FROM PersonQuestionnaireEntity pq WHERE pq.status = 'in progress'"),
+        @NamedQuery(name = "PersonQuestionnaireEntity.countCompletedQuestionnaires",
+                query = "SELECT COUNT(pq) FROM PersonQuestionnaireEntity pq WHERE pq.status NOT IN ('in progress', 'not specified')")
 })
 public class PersonQuestionnaireEntity extends BaseEntity
 		implements Serializable {
@@ -50,18 +52,8 @@ public class PersonQuestionnaireEntity extends BaseEntity
 	private QuestionnaireEntity questionnaireEntity;
 	private String status;
 	@JsonProperty("person_question_entities")
+    @JsonView(View.User.class)
 	private List<PersonQuestionEntity> personQuestionEntities;
-
-    public PersonQuestionnaireEntity() {
-        super();
-    }
-    public PersonQuestionnaireEntity(long id, String status, long questionnaireId, String questionnaireName, Date createdDate, Date modifiedDate) {
-        this.id = id;
-        this.status = status;
-        this.questionnaireEntity = new QuestionnaireEntity(questionnaireId, questionnaireName, null);
-        this.modifiedDate = modifiedDate;
-        this.createdDate = createdDate;
-    }
 
     @OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_questionnaire", referencedColumnName = "id_questionnaire")
@@ -82,7 +74,7 @@ public class PersonQuestionnaireEntity extends BaseEntity
 		this.status = status;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, targetEntity = PersonQuestionEntity.class)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "id_person_questionnaire", referencedColumnName = "id_person_questionnaire")
 	public List<PersonQuestionEntity> getPersonQuestionEntities() {
 		return personQuestionEntities;

@@ -1,9 +1,15 @@
 package org.dataart.qdump.entities.questionnaire;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.dataart.qdump.entities.converters.LocalDateTimePersistenceConverter;
+import org.dataart.qdump.entities.serializer.LocalDateTimeDeserializer;
+import org.dataart.qdump.entities.serializer.LocalDateTimeSerializer;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -11,14 +17,20 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
 	private static final long serialVersionUID = -1310872166991256747L;
 	protected long id;
-	protected Date createdDate;
-	protected Date modifiedDate;
+    @Convert(converter = LocalDateTimePersistenceConverter.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+	protected LocalDateTime createdDate;
+    @Convert(converter = LocalDateTimePersistenceConverter.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+	protected LocalDateTime modifiedDate;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,32 +42,32 @@ public abstract class BaseEntity implements Serializable {
 		this.id = id;
 	}
 
-	public void setCreatedDate(Date createdDate) {
+	public void setCreatedDate(LocalDateTime createdDate) {
 		this.createdDate = createdDate;
 	}
 
     @Column(name = "created_date", nullable = false, updatable = false)
-    public Date getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
 	@Column(name = "modified_date", nullable = true)
-	public Date getModifiedDate() {
+	public LocalDateTime getModifiedDate() {
 		return modifiedDate;
 	}
 
-	public void setModifiedDate(Date modifiedDate) {
+	public void setModifiedDate(LocalDateTime modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
 	
 	@PrePersist
 	public void putCreatedDate() {
-        this.createdDate = new Date();
+        this.createdDate = LocalDateTime.now();
 	}
 	
 	@PreUpdate
 	public void putModifiedDate() {
-		this.modifiedDate = new Date();
+		this.modifiedDate = LocalDateTime.now();
 	}
 
 	@Override

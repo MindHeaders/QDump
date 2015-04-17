@@ -1,7 +1,6 @@
 package org.dataart.qdump.entities.person;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -32,7 +31,6 @@ public class PersonAnswerEntity extends BaseEntity implements
 	@JsonProperty("person_answer")
 	private String personAnswer;
 	private boolean marked;
-
 
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_answer")

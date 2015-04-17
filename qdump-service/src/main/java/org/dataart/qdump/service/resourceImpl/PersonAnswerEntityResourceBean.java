@@ -38,7 +38,7 @@ public class PersonAnswerEntityResourceBean implements PersonAnswerEntityResourc
     }
 
     public void delete() {
-        serviceQdump.deleteAllPersonAnswerEntity();
+        serviceQdump.deletePersonAnswerEntities();
     }
 
     public Response get(@PathParam("id") long id) {

@@ -1,10 +1,14 @@
 package org.dataart.qdump.entities.questionnaire;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.dataart.qdump.entities.person.PersonEntity;
 import org.dataart.qdump.entities.serializer.PersonEntitySerializer;
+import org.dataart.qdump.entities.serializer.View;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
 
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;

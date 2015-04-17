@@ -1,9 +1,10 @@
 package org.dataart.qdump.entities.questionnaire;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.dataart.qdump.entities.enums.QuestionTypeEnums;
+import org.dataart.qdump.entities.serializer.View;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.AttributeOverride;
@@ -23,13 +24,13 @@ import java.util.List;
 @Table(name = "questions")
 @AttributeOverride(name = "id", column = @Column(name = "id_question", insertable = false, updatable = false))
 @JsonAutoDetect
-@JsonIgnoreProperties({ "createdDate", "modifiedDate"})
 public class QuestionEntity extends BaseEntity implements Serializable {
 	private static final long serialVersionUID = 7827573669263895832L;
 	private String question;
 	@JsonProperty("question_type")
 	private QuestionTypeEnums type;
 	@JsonProperty("answer_entities")
+    @JsonView(View.User.class)
 	private List<AnswerEntity> answerEntities;
 
 	@Column(name = "question", nullable = false, length = 250)

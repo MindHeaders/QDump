@@ -4,8 +4,8 @@ import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.dataart.qdump.entities.enums.PersonGroupEnums;
 import org.dataart.qdump.entities.person.PersonEntity;
+import org.dataart.qdump.entities.statistics.PersonEntitiesStatistic;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.Consumes;
@@ -31,127 +31,100 @@ import java.util.List;
  * Time: 0:18
  */
 @Component
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 @Path("/persons")
+@Transactional
 public interface PersonEntityResource {
 
     @POST
     @Path("authentication")
-    public Response authentication(@FormParam("login_or_email") String loginOrEmail,
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    Response authentication(@FormParam("login_or_email") String loginOrEmail,
                                    @FormParam("password") String password,
                                    @FormParam("rememberMe") boolean rememberMe);
 
     @GET
     @Path("logout")
     @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
-    public void logout();
+    void logout();
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     @Path("registration")
-    public Response registration(PersonEntity entity, @Context UriInfo uriInfo);
+    Response registration(PersonEntity entity, @Context UriInfo uriInfo);
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("get")
     @RequiresRoles("ADMIN")
-    public List<PersonEntity> get();
+    List<PersonEntity> get();
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("get/admin")
     @RequiresRoles("ADMIN")
-    public List<PersonEntity> getForAdminPanel(
+    List<PersonEntity> get(
             @DefaultValue("0") @QueryParam("page") int page,
             @DefaultValue("15") @QueryParam("size") int size,
             @DefaultValue("DESC") @QueryParam("direction") String direction,
             @DefaultValue("createdDate") @QueryParam("sort") String sort);
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("get/{id}")
+    @Path("{id : \\d+}")
     @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
-    public Response get(@PathParam("id") long id);
+    PersonEntity get(@PathParam("id") long id);
+
+    @GET
+    @Path("personal")
+    @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
+    PersonEntity getPersonal();
 
     @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("delete")
     @RequiresRoles("ADMIN")
-    public void delete();
+    void delete();
 
     @DELETE
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("delete/{id}")
+    @Path("{id : \\d+}")
     @RequiresRoles("ADMIN")
-    public Response delete(@PathParam("id") long id);
+    Response delete(@PathParam("id") long id);
 
     @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("update/{id}")
+    @Path("{id : \\d+}")
     @RequiresRoles("ADMIN")
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public void updatePersonGroup(@PathParam("id") long id, @DefaultValue("USER") @QueryParam("group") PersonGroupEnums
+    void updatePersonGroup(@PathParam("id") long id, @DefaultValue("USER") @QueryParam("group") PersonGroupEnums
             group);
 
     @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("update")
     @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public Response update(PersonEntity source, @Context UriInfo uriInfo);
+    Response update(PersonEntity source, @Context UriInfo uriInfo);
 
     @GET
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("check/email")
-    public Response checkEmail(@QueryParam("email") String email);
+    Response checkEmail(@QueryParam("email") String email);
 
     @GET
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("check/login")
-    public Response checkLogin(@QueryParam("login") String login);
+    Response checkLogin(@QueryParam("login") String login);
 
     @GET
-    @Consumes(MediaType.TEXT_PLAIN)
-    @Produces(MediaType.TEXT_PLAIN)
     @Path("verify")
-    public Response verifyAccount(@QueryParam("token") String token, @Context UriInfo uriInfo);
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("personal")
-    @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
-    public Response getEntityForPersonalPage();
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("personal/{id}")
-    @RequiresRoles("ADMIN")
-    public Response getEntityForPersonalPage(@PathParam("id") long id);
+    Response verifyAccount(@QueryParam("token") String token, @Context UriInfo uriInfo);
 
     @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("reset/password")
-    @RequiresRoles(value = {"ADMIN", "USER"}, logical = Logical.OR)
-    public Response resetPassword();
+    @RequiresRoles(value = {"USER", "ADMIN"}, logical = Logical.OR)
+    Response resetPassword();
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("authorized")
-    public Response getAuthorized();
+    Response getAuthorized();
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("check/permission/{role}")
-    public Response checkPermission(@PathParam("role") String role);
+    @Path("check/permission/{role : \\D+}")
+    Response checkPermission(@PathParam("role") String role);
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("count")
-    public Response count();
+    Response count();
+
+    @GET
+    @Path("statistic")
+    @RequiresRoles("ADMIN")
+    PersonEntitiesStatistic getStatistics();
 }

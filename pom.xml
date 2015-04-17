@@ -15,12 +15,12 @@
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.version>4.1.1.RELEASE</spring.version>
-		<hibernate.version>4.3.7.Final</hibernate.version>
-		<jersey.version>2.13</jersey.version>
+		<spring.version>4.1.6.RELEASE</spring.version>
+		<hibernate.version>4.3.8.Final</hibernate.version>
 		<shiro.version>1.2.3</shiro.version>
         <slf4j.version>1.7.10</slf4j.version>
         <logback.version>1.1.2</logback.version>
+        <jackson.version>2.5.2</jackson.version>
 	</properties>
 	<dependencies>
 
@@ -51,11 +51,16 @@
 			<artifactId>spring-security-core</artifactId>
 			<version>3.1.0.RELEASE</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-jpa</artifactId>
-			<version>1.7.1.RELEASE</version>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>1.8.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
 		<!-- JUnit -->
 		<dependency>
@@ -112,22 +117,22 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-jsonSchema</artifactId>
-			<version>2.4.4</version>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.5.1</version>
+			<version>${jackson.version}</version>
 		</dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-hibernate4</artifactId>
-            <version>2.5.1</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>2.4.0</version>
+            <version>${jackson.version}</version>
         </dependency>
 
         <!-- Inject -->

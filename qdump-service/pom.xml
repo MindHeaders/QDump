@@ -13,8 +13,8 @@
 	<name>qdump-service Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	<properties>
-		<resteasy.version>3.0.10.Final</resteasy.version>
-		<spring.version>4.1.1.RELEASE</spring.version>
+		<resteasy.version>3.0.11.Final</resteasy.version>
+		<spring.version>4.1.6.RELEASE</spring.version>
 	</properties>
 	<dependencies>
 		<!-- Qdump Dependencies -->
@@ -48,16 +48,6 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aspects</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-jpa</artifactId>
-			<version>1.7.0.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
 
@@ -103,7 +93,7 @@
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jackson2-provider</artifactId>
-			<version>3.0.11.Final</version>
+			<version>${resteasy.version}</version>
 		</dependency>
 
         <!-- OCP Soft Rewrite -->

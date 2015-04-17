@@ -8,100 +8,111 @@ import org.dataart.qdump.entities.questionnaire.AnswerEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionEntity;
 import org.dataart.qdump.entities.questionnaire.QuestionnaireEntity;
 import org.dataart.qdump.entities.security.VerificationTokenEntity;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ServiceQdump {
 	//PersonEntity
 	void addPersonEntity(PersonEntity personEntity);
 	void deletePersonEntity(long id);
-	void deleteAllPersonEntities();
-	PersonEntity getPersonEntity(long id);
-	List<PersonEntity> getPersonEntities();
-	PersonEntity getPersonEntityByEmail(String email);
-	PersonEntity getPersonEntityByLogin(String login);
-	PersonEntity getPersonEntityAuthorization(String login);
-	boolean personEntityExists(long id);
-	long personEntitiesCount();
-	boolean personEntityExistsByLogin(String login);
-	boolean personEntityExistsByEmail(String email);
+	void deletePersonEntities();
+    boolean personEntityExists(long id);
+    boolean personEntityExistsByLogin(String login);
+    boolean personEntityExistsByEmail(String email);
     boolean personEntityIsEnabledByLogin(String login);
     boolean personEntityIsEnabledByEmail(String email);
+    long personEntitiesCount();
+    long personEntitiesCount(boolean enabled);
+    long personEntitiesCount(byte gender);
     String getPersonEntityRole(long id);
-    Page<PersonEntity> getPersonQuestionnairesInCheckingProcess(Pageable pageable);
-    Page<PersonEntity> getPersonEntitiesForAdminPanel(Pageable pageable);
-    PersonEntity getPersonEntityForAccountPanel(long id);
+	PersonEntity getPersonEntity(long id);
+    PersonEntity getPersonEntityByEmail(String email);
+    PersonEntity getPersonEntityByLogin(String login);
+    PersonEntity mostActivePersonEntityInCreatingQuestionnaires();
+    PersonEntity mostActivePersonEntityInPassingQuestionnaires();
+	List<PersonEntity> getPersonEntities();
+    List<PersonEntity> top10ActivePersonEntities();
+    List<PersonEntity> top10ActivePersonEntitiesTest();
+    List<PersonEntity> getPersonEntities(Pageable pageable);
 
 	//PersonQuestionnaireEntity
 	void addPersonQuestionnaireEntity(PersonQuestionnaireEntity personQuestionnaireEntity);
 	void deletePersonQuestionnaireEntity(long id);
-	void deleteAllPersonQuestionnaireEntities();
+	void deletePersonQuestionnaireEntities();
+    void deletePersonQuestionnaireEntities(long questionnaireId);
+    boolean personQuestionnaireEntityExists(long id);
+    long personQuestionnaireEntitiesCount();
+    long completedPersonQuestionnaireEntitiesCount(long id);
+    long startedPersonQuestionnaireEntitiesCount(long id);
+    long personQuestionnaireCountByStatus(String status);
+    long startedQuestionnaireEntitiesCount();
+    long completedQuestionnaireEntitiesCount();
 	PersonQuestionnaireEntity getPersonQuestionnaireEntity(long id);
-	List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities();
-	boolean personQuestionnaireEntityExists(long id);
-	long personQuestionnaireEntitiesCount();
     PersonQuestionnaireEntity getPersonQuestionnaireEntity(long personQuestionnaireId, long personId);
-    Page<PersonQuestionnaireEntity> getCompletedPersonQuestionnaireEntities(long id, Pageable pageable);
-    Page<PersonQuestionnaireEntity> getStartedPersonQuestionnaireEntities(long id, Pageable pageable);
-    long countCompletedPersonQuestionnaireEntities(long id);
-    long countStartedPersonQuestionnaireEntities(long id);
-    long countPersonQuestionnaireByStatus(String status);
     PersonQuestionnaireEntity getPersonQuestionnaireByPersonQuestion(long id);
+    List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities();
+    List<PersonQuestionnaireEntity> getPersonQuestionnaireEntities(String status);
+    List<PersonQuestionnaireEntity> getPersonQuestionnaireEntitiesByQuestionnaireName(String name);
+    List<PersonQuestionnaireEntity> getPersonQuestionnairesInCheckingProcess(Pageable pageable);
+    List<PersonQuestionnaireEntity> getCompletedPersonQuestionnaireEntities(long id, Pageable pageable);
+    List<PersonQuestionnaireEntity> getStartedPersonQuestionnaireEntities(long id, Pageable pageable);
 	
 	//PersonQuestionEntity
 	void addPersonQuestionEntity(PersonQuestionEntity personQuestionEntity);
 	void deletePersonQuestionEntity(long id);
-	void deleteAllPersonQuestionEntity();
+	void deletePersonQuestionEntities();
+    boolean personQuestionEntityExists(long id);
+    long personQuestionEntitiesCount();
+    long notCheckedPersonQuestionEntitiesCount();
 	PersonQuestionEntity getPersonQuestionEntity(long id);
 	List<PersonQuestionEntity> getPersonQuestionEntities();
-	boolean personQuestionEntityExists(long id);
-	long personQuestionEntitiesCount();
     List<PersonQuestionEntity> getPersonQuestionEntitiesByPersonEntityId(long id);
-    long countNotCheckedPersonQuestionEntities();
-    Page<PersonQuestionEntity> getNotCheckedPersonQuestionEntities(Pageable pageable);
+    List<PersonQuestionEntity> getNotCheckedPersonQuestionEntities(Pageable pageable);
 	
 	//PersonAnswerEntity
 	void addPersonAnswerEntity(PersonAnswerEntity personAnswerEntity);
 	void deletePersonAnswerEntity(long id);
-	void deleteAllPersonAnswerEntity();
+	void deletePersonAnswerEntities();
+    boolean personAnswerEntityExists(long id);
+    long personAnswerEntitiesCount();
 	PersonAnswerEntity getPersonAnswerEntity(long id);
 	List<PersonAnswerEntity> getPersonAnswerEntities();
-	boolean personAnswerEntityExists(long id);
-	long personAnswerEntitiesCount();
 	
 	//QuestionnaireEntity
 	void addQuestionnaireEntity(QuestionnaireEntity questionnaireEntity);
 	void deleteQuestionnaireEntity(long id);
-	void deleteAllQuestionnaireEntity();
+	void deleteQuestionnaireEntities();
+    boolean questionnaireEntityExists(long id);
+    long questionnaireEntitiesCount();
+    long publishedQuestionnaireEntitiesCount(boolean published);
 	QuestionnaireEntity getQuestionnaireEntity(long id);
+	QuestionnaireEntity getQuestionnaireEntity(String name);
+    QuestionnaireEntity getQuestionnaireEntity(boolean published, long id);
+    QuestionnaireEntity getPopularQuestionnaireEntity();
 	List<QuestionnaireEntity> getQuestionnaireEntities();
-	boolean questionnaireEntityExists(long id);
-    Page<QuestionnaireEntity> getAllQuestionnaireEntities(Pageable pageable);
-	long questionnaireEntitiesCount();
-    Page<QuestionnaireEntity> getPublishedQuestionnaireEntities(Pageable pageable);
-    long countPublishedQuestionnaireEntities();
-    QuestionnaireEntity getPublishedQuestionnaireEntities(long id);
+    List<QuestionnaireEntity> getQuestionnaireEntities(Pageable pageable);
+    List<QuestionnaireEntity> getQuestionnaireEntities(boolean published, Pageable pageable);
+    LocalDateTime getLastQuestionnaireEntityCreatedDate();
 	
 	//QuestionEntity
 	void addQuestionEntity(QuestionEntity questionEntity);
 	void deleteQuestionEntity(long id);
-    void deleteQuestionEntity(QuestionEntity questionEntity);
-	void deleteAllQuestionEntity();
+	void deleteQuestionEntities();
+    boolean questionEntityExists(long id);
+    long questionEntitiesCount();
 	QuestionEntity getQuestionEntity(long id);
 	List<QuestionEntity> getQuestionEntities();
-	boolean questionEntityExists(long id);
-	long questionEntitiesCount();
 	
 	//AnswerEntity
 	void addAnswerEntity(AnswerEntity answerEntity);
 	void deleteAnswerEntity(long id);
-	void deleteAllAnswerEntity();
+	void deleteAnswerEntities();
+    boolean answerEntityExists(long id);
+    long answerEntitiesCount();
 	AnswerEntity getAnswerEntity(long id);
 	List<AnswerEntity> getAnswerEntities();
-	boolean answerEntityExists(long id);
-	long answerEntitiesCount();
 
     //VerificationTokenEntity
     void addVerificationTokenEntity(VerificationTokenEntity verificationTokenEntity);
@@ -116,4 +127,6 @@ public interface ServiceQdump {
     VerificationTokenEntity getVerificationTokenEntity(long id);
     List<VerificationTokenEntity> getVerificationTokenEntities();
 
+    QuestionnaireEntity test(long id);
+    QuestionnaireEntity test2(long id);
 }
