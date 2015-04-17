@@ -32,6 +32,7 @@ import static org.junit.Assert.*;
         TransactionalTestExecutionListener.class,
         DbUnitTestExecutionListener.class})
 @DatabaseSetup("/META-INF/dbtest/TestData.xml")
+@Ignore
 public class PersonCrudRepositoryTest {
     @Autowired
     private PersonCrudRepository personCrudRepository;

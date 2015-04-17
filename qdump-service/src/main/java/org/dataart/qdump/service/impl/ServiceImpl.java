@@ -515,6 +515,11 @@ public class ServiceImpl implements ServiceQdump {
     }
 
     @Override
+    public void deleteVerificationTokenEntityByPersonEntityId(long id) {
+        verificationTokenCrudRepository.deleteByPersonEntityId(id);
+    }
+
+    @Override
     public boolean verificationTokenEntityExists(String token) {
         return verificationTokenCrudRepository.exists(token);
     }
@@ -542,15 +547,5 @@ public class ServiceImpl implements ServiceQdump {
     @Override
     public List<VerificationTokenEntity> getVerificationTokenEntities() {
         return verificationTokenCrudRepository.findAll();
-    }
-
-    @Override
-    public QuestionnaireEntity test(long id) {
-        return questionnaireCrudRepository.findOne(id);
-    }
-
-    @Override
-    public QuestionnaireEntity test2(long id) {
-        return questionnaireCrudRepository.getOne(id);
     }
 }
