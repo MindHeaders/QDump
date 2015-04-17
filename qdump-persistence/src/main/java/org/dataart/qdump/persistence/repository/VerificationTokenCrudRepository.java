@@ -11,6 +11,7 @@ public interface VerificationTokenCrudRepository extends JpaRepository<Verificat
     void deleteExpired();
     void deleteVerified();
     boolean exists(String token);
+    void deleteByPersonEntityId(long id);
     VerificationTokenEntity findByToken(String token);
     VerificationTokenEntity findByPersonEntityEmailConstructor(String email);
     VerificationTokenEntity findById(long id);

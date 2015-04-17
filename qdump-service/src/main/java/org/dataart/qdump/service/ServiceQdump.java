@@ -120,13 +120,11 @@ public interface ServiceQdump {
     void deleteAllVerificationTokenEntity();
     void deleteExpired();
     void deleteVerified();
+    void deleteVerificationTokenEntityByPersonEntityId(long id);
     boolean verificationTokenEntityExists(String token);
     VerificationTokenEntity getVerificationTokenEntity(String email);
     VerificationTokenEntity getVerificationTokenEntityConstructor(String email);
     VerificationTokenEntity getVerificationTokenEntityByToken(String token);
     VerificationTokenEntity getVerificationTokenEntity(long id);
     List<VerificationTokenEntity> getVerificationTokenEntities();
-
-    QuestionnaireEntity test(long id);
-    QuestionnaireEntity test2(long id);
 }

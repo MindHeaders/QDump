@@ -84,6 +84,7 @@ public class PersonEntityResourceBean implements PersonEntityResource{
     public Response registration(PersonEntity entity, UriInfo uriInfo) {
         String hashedPassword = BCrypt.hashpw(entity.getPassword(), BCrypt.gensalt());
         entity.setPassword(hashedPassword);
+        entity.setPersonGroup(PersonGroupEnums.USER);
         serviceQdump.addPersonEntity(entity);
         PersonEntity persistedEntity = serviceQdump.getPersonEntityByEmail(entity.getEmail());
         VerificationTokenEntity tokenEntity = new VerificationTokenEntity();
@@ -143,6 +144,7 @@ public class PersonEntityResourceBean implements PersonEntityResource{
         if (!serviceQdump.personEntityExists(id)) {
             exceptionCreator(Status.NOT_FOUND, "Person with this id is not exist");
         }
+        serviceQdump.deleteVerificationTokenEntityByPersonEntityId(id);
         serviceQdump.deletePersonEntity(id);
         return Response.ok().build();
     }
