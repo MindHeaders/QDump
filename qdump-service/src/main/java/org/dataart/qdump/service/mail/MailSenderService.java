@@ -9,6 +9,8 @@ import org.dataart.qdump.service.config.MailConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.mail.Session;
+
 /**
  * Created by artemvlasov on 07/02/15.
  */
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class MailSenderService {
     private Email email;
     private MailConfig mailConfig;
+    private Session session;
 
     public MailSenderService() {
         email = new SimpleEmail();
@@ -30,7 +33,10 @@ public class MailSenderService {
         String personLogin = verificationToken.getPersonEntity().getLogin() == null ? "user" : verificationToken.getPersonEntity().getLogin();
         String emailMsg = String.format(mailConfig.getMsg(),personLogin,tokenUrl);
         try {
-            prepareMailApi();
+            if(session == null) {
+                prepareMailApi();
+                session = email.getMailSession();
+            }
             email.setMsg(emailMsg);
             email.addTo(verificationToken.getPersonEntity().getEmail());
             email.send();
@@ -42,7 +48,10 @@ public class MailSenderService {
         Preconditions.checkNotNull(mail, "Mail address cannot be null");
         Preconditions.checkNotNull(msg, "Message entity cannot be null");
         try {
-            prepareMailApi();
+            if(session == null) {
+                prepareMailApi();
+                session = email.getMailSession();
+            }
             email.setMsg(msg);
             email.addTo(mail);
             email.send();
