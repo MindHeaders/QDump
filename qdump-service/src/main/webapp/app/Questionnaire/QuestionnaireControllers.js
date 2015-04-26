@@ -70,7 +70,9 @@ app.controller('CreateQuestionnaireCtrl', ['questionnaire', '$scope', '$location
             $scope.questionnaire.question_entities.splice(questionIndex, 1);
         };
         $scope.addQuestion = function() {
-            if ($scope.questionsLimit == $scope.questionnaire.question_entities.length) {
+            if($scope.questionnaire.question_entities == null) {
+                $scope.questionnaire.question_entities = [];
+            } else if ($scope.questionsLimit == $scope.questionnaire.question_entities.length) {
                 alert("You can add only 15 questions");
             } else {
                 $scope.questionnaire.question_entities.push({
