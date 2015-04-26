@@ -3,6 +3,11 @@ package org.dataart.qdump.persistence.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import org.apache.commons.dbcp2.BasicDataSource;
+import java.util.Properties;
+
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -12,6 +17,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -37,13 +43,11 @@ public class AppConfig extends WebMvcConfigurerAdapter{
 	private DataSource dataSource;
 
 	@Bean
-	public BasicDataSource dataSource() {
-		BasicDataSource basicDataSource = new BasicDataSource();
-		basicDataSource.setUrl(env.getProperty("db.url"));
-		basicDataSource.setUsername(env.getProperty("db.user"));
-		basicDataSource.setPassword(env.getProperty("db.password"));
-		basicDataSource.setDriverClassName(env.getProperty("db.driver"));
-		return basicDataSource;
+	public DataSource dataSource() {
+		final JndiDataSourceLookup dsLookup = new JndiDataSourceLookup();
+		dsLookup.setResourceRef(true);
+		DataSource dataSource = dsLookup.getDataSource("java:jboss/datasources/MySQLDS");
+		return dataSource;
 	}
 
 	@Bean
@@ -57,7 +61,6 @@ public class AppConfig extends WebMvcConfigurerAdapter{
 		LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
 		bean.setPackagesToScan("org.dataart.qdump");
 		bean.setDataSource(dataSource);
-//        bean.setPersistenceXmlLocation("META-INF/persistence.xml");
 		Properties properties = new Properties();
 		properties.put("hibernate.dialect",
 				env.getProperty("hibernate.dialect"));
