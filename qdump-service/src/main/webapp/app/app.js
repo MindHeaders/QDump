@@ -98,7 +98,7 @@ var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap',
                     },
                     questionnaire: function(QuestionnaireFactory, PersonalQuestionnaire) {
                         var id = PersonalQuestionnaire.getQuestionnaireId();
-                        return _.isNull(id) ? new Object({question_entities: []}) : QuestionnaireFactory.get({id: id}, function(data) { return data});
+                        return (_.isNull(id) || id == 0) ? new Object({question_entities: []}) : QuestionnaireFactory.get({id: id}, function(data) { return data});
                     }
                 }
             }).
