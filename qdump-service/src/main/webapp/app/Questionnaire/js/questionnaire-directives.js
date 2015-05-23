@@ -2,7 +2,7 @@
  * Created by artemvlasov on 05/02/15.
  */
 var app = angular.module('questionnaire.directives',[]);
-app.directive('showErrors', function($timeout){
+app.directive('showErrors', ["$timeout", function($timeout){
     return {
         restrict: 'A',
         require: '^form',
@@ -34,7 +34,7 @@ app.directive('showErrors', function($timeout){
             });
         }
     }
-});
+}]);
 app.directive('putAnswer', function() {
     return {
         restrict: 'E',

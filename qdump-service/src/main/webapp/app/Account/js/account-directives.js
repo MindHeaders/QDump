@@ -2,7 +2,7 @@
  * Created by artemvlasov on 05/02/15.
  */
 var app = angular.module('account.directives',[]);
-app.directive('ensureUnique', function($http) {
+app.directive('ensureUnique', ["$http", function($http) {
     var toId;
     return {
         restrict: 'A',
@@ -31,4 +31,4 @@ app.directive('ensureUnique', function($http) {
             })
         }
     }
-});
+}]);

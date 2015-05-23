@@ -3,7 +3,7 @@
  */
 var services = angular.module('account.services', ['ngResource']);
 
-services.factory('PersonFactory', function($resource) {
+services.factory('PersonFactory', ["$resource", function($resource) {
     return $resource('/rest/persons/:authentication/:logout/:statistic/:verify/:count/:personal/:id',
         {
             authentication: '@authentication',
@@ -32,36 +32,36 @@ services.factory('PersonFactory', function($resource) {
                 }
             }
         })
-});
-services.factory('ResetPassword', function($resource) {
+}]);
+services.factory('ResetPassword', ["$resource", function($resource) {
     return $resource('/rest/person/reset/password', {}, {
         resetPassword : {
             method: 'PUT'
         }
     })
-});
-services.factory('Registration', function($resource) {
+}]);
+services.factory('Registration', ["$resource", function($resource) {
     return $resource('/rest/persons/registration', {}, {
         registration: {
             method: 'POST'
         }
     })
-});
-services.factory('UpdateUserGroup', function($resource) {
+}]);
+services.factory('UpdateUserGroup', ["$resource", function($resource) {
     return $resource('/rest/persons/:id', {id: '@id'}, {
         update: {
             method: 'PUT'
         }
     });
-});
-services.factory('UpdateUserData', function($resource) {
+}]);
+services.factory('UpdateUserData', ["$resource", function($resource) {
     return $resource('/rest/persons', {}, {
         update: {
             method: 'PUT'
         }
     })
-});
-services.factory('Authorization', function($resource, $cookieStore, $q) {
+}]);
+services.factory('Authorization', ["$resource", "$cookieStore", "$q", function($resource, $cookieStore, $q) {
     var isAuth = null;
     return {
         isAuth: function() {
@@ -90,8 +90,8 @@ services.factory('Authorization', function($resource, $cookieStore, $q) {
             $cookieStore.remove('isAuth');
         }
     }
-});
-services.factory('Permission', function($resource, $q) {
+}]);
+services.factory('Permission', ["$resource", "$q", function($resource, $q) {
     return {
         check_permission: function(userRole) {
             return $resource('/rest/persons/check/permission/:role', {role: userRole}).get();
@@ -108,4 +108,4 @@ services.factory('Permission', function($resource, $q) {
             return deferred.promise;
         }
     }
-});
+}]);

@@ -5,7 +5,7 @@
  * Created by artemvlasov on 05/02/15.
  */
 var app = angular.module('additional.directives',[]);
-app.directive('showErrors', function($timeout){
+app.directive('showErrors', ["$timeout", function($timeout){
     return {
         restrict: 'A',
         require: '^form',
@@ -37,7 +37,7 @@ app.directive('showErrors', function($timeout){
             });
         }
     }
-});
+}]);
 app.directive('ngFocus', [function() {
     var FOCUS_CLASS = "ng-focused";
     return {

@@ -3,7 +3,7 @@
  */
 var services = angular.module('additional.services', ['ngResource']);
 
-services.factory('ErrorFactory', function($location) {
+services.factory('ErrorFactory', ["$location", function($location) {
     var errorMessage;
     return {
         getErrorMessage: function() {
@@ -14,4 +14,4 @@ services.factory('ErrorFactory', function($location) {
             $location.path('/error')
         }
     }
-});
+}]);

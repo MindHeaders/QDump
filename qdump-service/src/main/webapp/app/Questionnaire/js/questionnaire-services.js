@@ -3,7 +3,7 @@
  */
 var services = angular.module('questionnaire.services', ['ngResource']);
 
-services.factory('PersonQuestionnairesFactory', function($resource) {
+services.factory('PersonQuestionnairesFactory', ["$resource", function($resource) {
     return $resource('/rest/persons/questionnaires/:statistic/:completed/:started/:checking/:count/:type/:id',
         {
             statistic: '@statistic',
@@ -36,15 +36,15 @@ services.factory('PersonQuestionnairesFactory', function($resource) {
                 isArray: true
             }
         })
-});
-services.factory('UpdatePersonQuestionnaire', function($resource) {
+}]);
+services.factory('UpdatePersonQuestionnaire', ["$resource", function($resource) {
     return $resource('/rest/persons/questionnaires', {}, {
         update: {
             method: 'PUT'
         }
     })
-});
-services.factory('QuestionnaireFactory', function($resource) {
+}]);
+services.factory('QuestionnaireFactory', ["$resource", function($resource) {
     return $resource('/rest/questionnaires/:statistic/:published/:personal/:count/:id', {
             statistic: '@statistic',
             published: '@published',
@@ -62,21 +62,21 @@ services.factory('QuestionnaireFactory', function($resource) {
             }
         }
     )
-});
-services.factory('UpdateQuestionnaire', function($resource) {
+}]);
+services.factory('UpdateQuestionnaire', ["$resource", function($resource) {
     return $resource('/rest/questionnaires', {}, {update: {method: 'PUT'}});
-});
-services.factory('QuestionFactory', function($resource) {
+}]);
+services.factory('QuestionFactory', ["$resource", function($resource) {
     return $resource('/rest/questions/:id', {
         id: '@id'
     })
-});
-services.factory('AnswerFactory', function($resource) {
+}]);
+services.factory('AnswerFactory', ["$resource", function($resource) {
    return $resource('/rest/answers/:id', {
        id: '@id'
    })
-});
-services.factory('PersonQuestionFactory', function($resource) {
+}]);
+services.factory('PersonQuestionFactory', ["$resource", function($resource) {
     return $resource('/rest/persons/questions/:checking/:count/:id',
         {
             count: '@count',
@@ -92,13 +92,13 @@ services.factory('PersonQuestionFactory', function($resource) {
                 isArray: true
             }
         })
-});
-services.factory('PersonAnswerFactory', function($resource) {
+}]);
+services.factory('PersonAnswerFactory', ["$resource", function($resource) {
    return $resource('/rest/persons/answers/:id', {
        id: '@id'
    })
-});
-services.factory('PersonalQuestionnaire', function($cookieStore) {
+}]);
+services.factory('PersonalQuestionnaire', ["$cookieStore", function($cookieStore) {
     return {
         getQuestionnaireId: function() {
             return typeof(Storage) != 'undefined' ?
@@ -121,7 +121,7 @@ services.factory('PersonalQuestionnaire', function($cookieStore) {
                 $cookieStore.put('personQuestionnaireId', id);
         }
     }
-});
+}]);
 services.factory('Questionnaires', function() {
     var questionnaireId = null;
     return {
@@ -133,7 +133,7 @@ services.factory('Questionnaires', function() {
         }
     };
 });
-services.factory('Questionnaire', function($resource, $cookieStore, ErrorFactory, $location) {
+services.factory('Questionnaire', ["$resource", "$cookieStore", "ErrorFactory", "$location", function($resource, $cookieStore, ErrorFactory, $location) {
     var questionnaireId = null;
     var questionnaire = {
         getPersonQuestionnaire: function() {
@@ -149,4 +149,4 @@ services.factory('Questionnaire', function($resource, $cookieStore, ErrorFactory
         }
     };
     return questionnaire;
-});
+}]);
