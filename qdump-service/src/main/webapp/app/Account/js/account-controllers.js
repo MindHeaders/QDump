@@ -208,7 +208,6 @@ app.controller('AdminPanelCtrl', ['page_type', 'tab_number', '$timeout', '$route
                 });
         };
         $scope.verify = function(personQuestionId, personQuestionCorrect) {
-            console.log('Inside verify');
             $resource('/rest/persons/questions/verify/:id',
                 {id: personQuestionId, correct: personQuestionCorrect},
                 {verify: {method: 'PUT'}}).verify(function() {

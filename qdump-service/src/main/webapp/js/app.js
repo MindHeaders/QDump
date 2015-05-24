@@ -1,4 +1,4 @@
-var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap',
+var app = angular.module('qdumpApp', ['ngRoute', 'ngMessages', 'ui.bootstrap', 'base64',
     'account.services', 'account.controllers', 'account.directives',
     'additional.controllers', 'additional.directives', 'additional.services',
     'questionnaire.controllers', 'questionnaire.directives', 'questionnaire.services', 'underscore']).

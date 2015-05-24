@@ -3,8 +3,13 @@
  */
 var app = angular.module('additional.controllers', ['ngCookies']);
 
-app.controller('MainCtrl', ['$scope', '$route', '$cookieStore', '$http', '$location', '$window', 'PersonFactory', 'Authorization', 'Registration', 'ErrorFactory', 'Permission',
-    function($scope, $route, $cookieStore, $http, $location, $window, PersonFactory, Authorization, Registration, ErrorFactory, Permission) {
+app.controller('MainCtrl', ['$scope', '$route', '$cookieStore', '$http', '$location', '$window', 'PersonFactory', 'Authorization', 'Registration', 'ErrorFactory', 'Permission', 'Twitter',
+    function($scope, $route, $cookieStore, $http, $location, $window, PersonFactory, Authorization, Registration, ErrorFactory, Permission, Twitter) {
+        Twitter.get(function(data) {
+            console.log(data);
+        }, function(data) {
+            console.log(data);
+        });
         if($cookieStore.get('isAuth') == null) {
             Authorization.isAuth().$promise.then(
                 function() {Authorization.setIsAuth(true)},

@@ -72,9 +72,9 @@ services.factory('QuestionFactory', ["$resource", function($resource) {
     })
 }]);
 services.factory('AnswerFactory', ["$resource", function($resource) {
-   return $resource('/rest/answers/:id', {
-       id: '@id'
-   })
+    return $resource('/rest/answers/:id', {
+        id: '@id'
+    })
 }]);
 services.factory('PersonQuestionFactory', ["$resource", function($resource) {
     return $resource('/rest/persons/questions/:checking/:count/:id',
@@ -94,9 +94,9 @@ services.factory('PersonQuestionFactory', ["$resource", function($resource) {
         })
 }]);
 services.factory('PersonAnswerFactory', ["$resource", function($resource) {
-   return $resource('/rest/persons/answers/:id', {
-       id: '@id'
-   })
+    return $resource('/rest/persons/answers/:id', {
+        id: '@id'
+    })
 }]);
 services.factory('PersonalQuestionnaire', ["$cookieStore", function($cookieStore) {
     return {
@@ -149,4 +149,30 @@ services.factory('Questionnaire', ["$resource", "$cookieStore", "ErrorFactory", 
         }
     };
     return questionnaire;
+}]);
+services.factory('Twitter', ["$resource", "$http", "$base64", function($resource, $http, $base64) {
+    var consumerKey = encodeURIComponent('U35e0lcpdQ3YKUREqm1uLOSr8');
+    var consumerSecret = encodeURIComponent('uIkQImB660qSMdURHEm5336rSIxh3dDXfpqJ5Q3Dx90nCMtynx');
+    var credentials = $base64.encode(consumerKey + ':' + consumerSecret);
+    var twitterOauthEndpoint = $http.post(
+        'https://api.twitter.com/oauth2/token',
+        "grant_type=client_credentials",
+        {headers: {
+            'Authorization': 'Basic ' + credentials,
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'}}
+
+    );
+    twitterOauthEndpoint.success(function(response) {
+        services.$httpProvider.defaults.headers.common['Authorization'] = "Bearer " + response.access_token;
+    }).error(function(data) {
+        console.log(data);
+    });
+    return $resource('https://api.twitter.com/1.1/search/:action',
+        {
+            action: 'tweets.json',
+            q: '#RazborPoletov',
+            result_type: 'recent',
+            count: 6
+        }
+    );
 }]);
