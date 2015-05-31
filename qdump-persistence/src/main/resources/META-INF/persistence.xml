@@ -4,6 +4,7 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 	<persistence-unit name="qdump-persistence">
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		<jta-data-source>java:jboss/datasources/MySQLDS</jta-data-source>
 		<class>org.dataart.qdump.entities.questionnaire.BaseEntity</class>
 		<class>org.dataart.qdump.entities.questionnaire.QuestionnaireBaseEntity</class>
 		<class>org.dataart.qdump.entities.questionnaire.AnswerEntity</class>
@@ -16,10 +17,6 @@
         <class>org.dataart.qdump.entities.security.VerificationTokenEntity</class>
         <class>org.dataart.qdump.entities.converters.LocalDateTimePersistenceConverter</class>
 		<properties>
-			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
-			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/qdump" />
-			<property name="hibernate.connection.username" value="root" />
-			<property name="hibernate.connection.password" value="422617" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 			<property name="hibernate.hbm2ddl.auto" value="update" />
 			<property name="hibernate.ejb.interceptor"

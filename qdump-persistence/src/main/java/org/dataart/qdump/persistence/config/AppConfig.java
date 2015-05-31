@@ -2,7 +2,6 @@ package org.dataart.qdump.persistence.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -12,6 +11,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -37,13 +37,11 @@ public class AppConfig extends WebMvcConfigurerAdapter{
 	private DataSource dataSource;
 
 	@Bean
-	public BasicDataSource dataSource() {
-		BasicDataSource basicDataSource = new BasicDataSource();
-		basicDataSource.setUrl(env.getProperty("db.url"));
-		basicDataSource.setUsername(env.getProperty("db.user"));
-		basicDataSource.setPassword(env.getProperty("db.password"));
-		basicDataSource.setDriverClassName(env.getProperty("db.driver"));
-		return basicDataSource;
+	public DataSource dataSource() {
+		final JndiDataSourceLookup
+				dsLookup = new JndiDataSourceLookup();
+		dsLookup.setResourceRef(true);
+		return dsLookup.getDataSource("java:jboss/datasources/MySQLDS");
 	}
 
 	@Bean
