@@ -1,0 +1,15 @@
+= QDump Project
+
+Project was created as a train project during Dataart IT School.
+
+== Techologies
+* Programming Language: *Java*
+* Database: *MySQL*
+* Database helper: *Spring Data JPA*
+* Communication Server - Client: *RESTFul*
+* RESTFul Framework: *RESTEasy*
+* Front-end framework: *AngularJS*
+* Application Server: *Wildfly*
+* PaaS: *Openshift*
+
+
